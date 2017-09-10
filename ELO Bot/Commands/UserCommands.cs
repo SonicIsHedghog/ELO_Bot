@@ -9,7 +9,6 @@ namespace ELO_Bot.Commands
     [RequireContext(ContextType.Guild)]
     public class UserCommands : ModuleBase
     {
-
         [Command("Register")]
         [Summary("Register <username>")]
         [Remarks("registers the user in the server")]
@@ -44,7 +43,8 @@ namespace ELO_Bot.Commands
 
                 if (server.UserList.Any(member => member.UserId == Context.User.Id))
                 {
-                    embed.AddField("ERROR", "You are already registered, if you wish to be renamed talk to an administrator");
+                    embed.AddField("ERROR",
+                        "You are already registered, if you wish to be renamed talk to an administrator");
                     embed.WithColor(Color.Red);
                     await ReplyAsync("", false, embed.Build());
                     return;

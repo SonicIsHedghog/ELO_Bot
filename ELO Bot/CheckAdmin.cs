@@ -33,18 +33,15 @@ namespace ELO_Bot
             IServiceProvider prov)
         {
             var s1 = ServerList.Load(context.Guild);
-    
+
             try
             {
                 if (s1.UserList.FirstOrDefault(x => x.UserId == context.User.Id) != null)
-                {
                     return await Task.FromResult(PreconditionResult.FromSuccess());
-                }
 
-                    return await Task.FromResult(
-                        PreconditionResult.FromError(
-                            $"You are not registered, type `=register <name>` to begin"));
-                
+                return await Task.FromResult(
+                    PreconditionResult.FromError(
+                        $"You are not registered, type `=register <name>` to begin"));
             }
             catch
             {

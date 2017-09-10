@@ -1,69 +1,17 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using Newtonsoft.Json;
 
 namespace ELO_Bot.Commands
 {
     [RequireContext(ContextType.Guild)]
-    [RequireUserPermission(GuildPermission.Administrator)]
     public class Other : ModuleBase
     {
-        [Command("Premium")]
-        [Summary("Premium <key>")]
-        [Remarks("Upgrade the server to premium and increase the userlimit to unlimited")]
-        public async Task PremiumCommand(string key = null)
-        {
-            var server = ServerList.Load(Context.Guild);
-            var embed = new EmbedBuilder();
-
-            if (key == null)
-            {
-                embed.AddField("Premium",
-                    "Premium allows servers to use the bot with more than 20 users to purchase it, check here: https://rocketr.net/buy/0e79a25902f5");
-                embed.Color = Color.Blue;
-                await ReplyAsync("", false, embed.Build());
-                return;
-            }
-
-
-            if (Program.Keys.Contains(key))
-            {
-                if (server.IsPremium)
-                {
-                    embed.AddField("ERROR",
-                        "This server is already premium, to avoid wasting your key, you may use it on any other server that isnt premium");
-                    embed.Color = Color.Red;
-                    await ReplyAsync("", false, embed.Build());
-                    return;
-                }
-                Program.Keys.Remove(key);
-                var obj = JsonConvert.SerializeObject(Program.Keys, Formatting.Indented);
-                File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "setup/keys.json"), obj);
-
-                server.IsPremium = true;
-                server.PremiumKey = key;
-                embed.AddField("SUCCESS",
-                    "This server has been upgraded to premium, userlimits for registrations is now greater than 20!");
-                embed.Color = Color.Green;
-                await ReplyAsync("", false, embed.Build());
-                ServerList.Saveserver(server);
-            }
-            else
-            {
-                embed.AddField("ERROR INVALID KEY",
-                    "Premium allows servers to use the bot with more than 20 users to purchase it, check here: https://rocketr.net/buy/0e79a25902f5");
-                embed.Color = Color.Red;
-                await ReplyAsync("", false, embed.Build());
-            }
-        }
-
         private readonly CommandService _service;
 
         public Other(CommandService service)
@@ -80,7 +28,8 @@ namespace ELO_Bot.Commands
         {
             var embed = new EmbedBuilder();
             foreach (var module in _service.Modules)
-                if (module.Name.ToLower() == "admin" || module.Name.ToLower() == "winloss" || module.Name.ToLower() == "ranking")
+                if (module.Name.ToLower() != "usercommands" && module.Name.ToLower() != "matchmaking" &&
+                    module.Name.ToLower() != "owner" && module.Name.ToLower() != "other")
                 {
                     var desc = "";
                     foreach (var command in module.Commands)
@@ -93,6 +42,7 @@ namespace ELO_Bot.Commands
                                                           "Invite the BOT: https://goo.gl/mbfnjj");
             await ReplyAsync("", false, embed.Build());
         }
+
         [Command("Help")]
         [Summary("Help")]
         [Remarks("Small amount of info about the bot and stuff")]
@@ -100,7 +50,8 @@ namespace ELO_Bot.Commands
         {
             var embed = new EmbedBuilder();
             foreach (var module in _service.Modules)
-                if (module.Name.ToLower() != "owner" && module.Name.ToLower() != "admin" && module.Name.ToLower() != "winloss" && module.Name.ToLower() != "ranking")
+                if (module.Name.ToLower() == "usercommands" || module.Name.ToLower() == "matchmaking" ||
+                    module.Name.ToLower() == "other")
                 {
                     var desc = "";
                     foreach (var command in module.Commands)
@@ -118,6 +69,7 @@ namespace ELO_Bot.Commands
         [Command("Stats")]
         [Remarks("Stats and info about the bot & current server")]
         [Summary("Stats")]
+        [CheckRegistered]
         public async Task Stats()
         {
             var server = ServerList.Load(Context.Guild);

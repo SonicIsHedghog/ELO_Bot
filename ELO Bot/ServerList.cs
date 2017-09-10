@@ -66,6 +66,7 @@ namespace ELO_Bot
             public ulong AdminRole { get; set; }
             public string Registermessage { get; set; } = "Thankyou for Registering";
             public List<User> UserList { get; set; }
+            public ulong AnnouncementsChannel { get; set; }
 
             public int Winamount { get; set; }
             public int Lossamount { get; set; }
@@ -73,17 +74,32 @@ namespace ELO_Bot
 
             public List<Gamemode> Gamemodes { get; set; } = new List<Gamemode>();
             public List<string> Maps { get; set; } = new List<string>();
+
+            public List<Q> Queue { get; set; }
+
+            public List<PreviouMatches> Gamelist { get; set; } = new List<PreviouMatches>();
+
             public class Gamemode
             {
                 public string Name { get; set; }
                 public int PlayerLimit { get; set; }
             }
 
-            public List<Q> Queue { get; set; }
             public class Q
             {
                 public List<ulong> Users { get; set; } = new List<ulong>();
                 public ulong ChannelId { get; set; }
+                public int UserLimit { get; set; } = 10;
+                public string ChannelGametype { get; set; } = "Unknown";
+                public int Games { get; set; } = 0;
+            }
+
+            public class PreviouMatches
+            {
+                public int GameNumber { get; set; }
+                public ulong LobbyId { get; set; }
+                public List<ulong> Team1 { get; set; } = new List<ulong>();
+                public List<ulong> Team2 { get; set; } = new List<ulong>();
             }
 
 

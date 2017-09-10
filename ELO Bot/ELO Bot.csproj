@@ -132,12 +132,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CheckAdmin.cs" />
-    <Compile Include="Commands\Admin.cs" />
-    <Compile Include="Commands\Match10.cs" />
+    <Compile Include="Commands\Admin\Admin.cs" />
+    <Compile Include="Commands\Admin\LobbyManagement.cs" />
+    <Compile Include="Commands\Admin\MapManagement.cs" />
+    <Compile Include="Commands\Admin\Premium.cs" />
+    <Compile Include="Commands\Admin\RankManagement.cs" />
+    <Compile Include="Commands\Admin\UserManagement.cs" />
+    <Compile Include="Commands\Admin\WinLossManagement.cs" />
+    <Compile Include="Commands\MatchMaking.cs" />
     <Compile Include="RequireTopic.cs" />
     <Compile Include="Config.cs" />
-    <Compile Include="Commands\Owner.cs" />
-    <Compile Include="Commands\Premium.cs" />
+    <Compile Include="Commands\Admin\Owner.cs" />
+    <Compile Include="Commands\Other.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerList.cs" />

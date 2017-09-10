@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Discord.Commands;
 using Newtonsoft.Json;
 
-namespace ELO_Bot.Commands
+namespace ELO_Bot.Commands.Admin
 {
     [RequireOwner]
     public class Owner : ModuleBase
