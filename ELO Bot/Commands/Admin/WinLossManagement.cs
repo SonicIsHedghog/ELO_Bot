@@ -38,7 +38,7 @@ namespace ELO_Bot.Commands.Admin
         {
             var embed = new EmbedBuilder();
             var server = ServerList.Load(Context.Guild);
-            var points = server.Winamount;
+            var points = server.Lossamount;
 
             if (!(server.Lossamount > 0))
             {
@@ -54,7 +54,7 @@ namespace ELO_Bot.Commands.Admin
         [Command("game")]
         [Summary("game <lobbyname> <gamenumber> <winningteam>")]
         [Remarks("Automatically update wins/losses for the selected team")]
-        public async Task win(string lobbyname, int gamenumber, string team)
+        public async Task Win(string lobbyname, int gamenumber, string team)
         {
             var server = ServerList.Load(Context.Guild);
             IMessageChannel channel = null;

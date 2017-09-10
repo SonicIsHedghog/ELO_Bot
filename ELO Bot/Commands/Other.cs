@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
@@ -19,49 +20,53 @@ namespace ELO_Bot.Commands
             _service = service;
         }
 
-        [Command("AdminHelp")]
-        [Summary("AdminHelp")]
-        [Remarks("Admin Commands")]
-        [CheckAdmin]
-        [CheckRegistered]
-        public async Task AdminHelp()
+        [Command("help")]
+        [Summary("help")]
+        [Remarks("all help commands")]
+        public async Task HelpAsync(string modulearg = null)
         {
-            var embed = new EmbedBuilder();
-            foreach (var module in _service.Modules)
-                if (module.Name.ToLower() != "usercommands" && module.Name.ToLower() != "matchmaking" &&
-                    module.Name.ToLower() != "owner" && module.Name.ToLower() != "other")
+            var embed = new EmbedBuilder
+            {
+                Color = new Color(114, 137, 218),
+                Title = $"ELO BOT | Commands | Prefix: {Config.Load().Prefix}"
+            };
+            if (modulearg == null) //ShortHelp
+            {
+                foreach (var module in _service.Modules)
                 {
-                    var desc = "";
-                    foreach (var command in module.Commands)
-                        desc += $"{Config.Load().Prefix}{command.Summary} - {command.Remarks}\n";
-                    embed.AddField(module.Name, desc);
+                    var list = module.Commands.Select(command => command.Name).ToList();
+                    if (module.Commands.Count > 0)
+                        embed.AddField(x =>
+                        {
+                            x.Name = module.Name;
+                            x.Value = string.Join(", ", list);
+                        });
                 }
+                embed.AddField("**NOTE**",
+                    $"You can also see modules in more detail using `=help <modulename>`");
 
-            embed.AddField("Developed By PassiveModding", "Support Server: https://discord.gg/n2Vs38n \n" +
-                                                          "Patreon: https://www.patreon.com/passivebot  \n" +
-                                                          "Invite the BOT: https://goo.gl/mbfnjj");
-            await ReplyAsync("", false, embed.Build());
-        }
-
-        [Command("Help")]
-        [Summary("Help")]
-        [Remarks("Small amount of info about the bot and stuff")]
-        public async Task Help()
-        {
-            var embed = new EmbedBuilder();
-            foreach (var module in _service.Modules)
-                if (module.Name.ToLower() == "usercommands" || module.Name.ToLower() == "matchmaking" ||
-                    module.Name.ToLower() == "other")
+                embed.AddField("Developed By PassiveModding", "Support Server: https://discord.gg/n2Vs38n \n" +
+                                                              "Patreon: https://www.patreon.com/passivebot  \n" +
+                                                              "Invite the BOT: https://goo.gl/mbfnjj");
+            }
+            else
+            {
+                foreach (var module in _service.Modules)
+                    if (String.Equals(module.Name, modulearg, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        var list = new List<string>();
+                        foreach (var command in module.Commands)
+                            list.Add(
+                                $"{Config.Load().Prefix}{command.Summary} - {command.Remarks}");
+                        embed.AddField(module.Name, string.Join("\n", list));
+                    }
+                if (embed.Fields.Count == 0)
                 {
-                    var desc = "";
-                    foreach (var command in module.Commands)
-                        desc += $"{Config.Load().Prefix}{command.Summary} - {command.Remarks}\n";
-                    embed.AddField(module.Name, desc);
+                    embed.AddField("Error", $"{modulearg} is not a module");
+                    var list = _service.Modules.Select(module => module.Name).ToList();
+                    embed.AddField("Modules", string.Join("\n", list));
                 }
-
-            embed.AddField("Developed By PassiveModding", "Support Server: https://discord.gg/n2Vs38n \n" +
-                                                          "Patreon: https://www.patreon.com/passivebot  \n" +
-                                                          "Invite the BOT: https://goo.gl/mbfnjj");
+            }
             await ReplyAsync("", false, embed.Build());
         }
 

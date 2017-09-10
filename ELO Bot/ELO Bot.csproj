@@ -135,6 +135,7 @@
     <Compile Include="Commands\Admin\Admin.cs" />
     <Compile Include="Commands\Admin\LobbyManagement.cs" />
     <Compile Include="Commands\Admin\MapManagement.cs" />
+    <Compile Include="Commands\Admin\PointManagement.cs" />
     <Compile Include="Commands\Admin\Premium.cs" />
     <Compile Include="Commands\Admin\RankManagement.cs" />
     <Compile Include="Commands\Admin\UserManagement.cs" />
