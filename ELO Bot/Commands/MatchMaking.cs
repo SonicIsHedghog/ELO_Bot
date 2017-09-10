@@ -95,19 +95,19 @@ namespace ELO_Bot.Commands
 
             if (lobby.Users.Count < lobby.UserLimit)
             {
-                //if (!lobby.Users.Contains(Context.User.Id))
+                if (!lobby.Users.Contains(Context.User.Id))
                 {
                     lobby.Users.Add(Context.User.Id);
                     embed.AddField("Success", $"Added to the queue **[{lobby.Users.Count}/{lobby.UserLimit}]**");
                     await ReplyAsync("", false, embed.Build());
                     ServerList.Saveserver(server);
                 }
-                //else
-                //{
-                //    embed.AddField("ERROR", "Already in queue.");
-                //    await ReplyAsync("", false, embed.Build());
-                //    return;
-                //}
+                else
+                {
+                    embed.AddField("ERROR", "Already in queue.");
+                    await ReplyAsync("", false, embed.Build());
+                    return;
+                }
                 if (lobby.Users.Count >= lobby.UserLimit)
                 {
                     lobby.Games++;
@@ -115,6 +115,46 @@ namespace ELO_Bot.Commands
                     await FullQueue(server);
                 }
             }
+        }
+
+        [Command("subfor")]
+        [Summary("subfor <@user>")]
+        [Remarks("replace the given user in the queue")]
+        public async Task Sub(IUser user)
+        {
+            var server = ServerList.Load(Context.Guild);
+            var embed = new EmbedBuilder();
+            var queue = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
+            if (queue != null)
+            {
+                if (queue.Users.Contains(Context.User.Id))
+                {
+                    await ReplyAsync("Hey... youre already queued you coon.");
+                    return;
+                }
+                if (queue.Users.Contains(user.Id))
+                {
+                    queue.Users.Remove(user.Id);
+
+                    queue.Users.Add(Context.User.Id);
+                    embed.AddField("Success", $"{user.Mention} has been replaced by {Context.User.Mention}\n" +
+                                              $"**[{queue.Users.Count}/{queue.UserLimit}]**");
+                }
+                else
+                {
+                    embed.AddField("ERROR", $"{user.Mention} is not queued\n" +
+                                            $"**[{queue.Users.Count}/{queue.UserLimit}]**");
+                }
+
+
+                ServerList.Saveserver(server);
+                await ReplyAsync("", false, embed.Build());
+            }
+            else
+            {
+                await ReplyAsync("Error: No queue? or something... ask passive idk");
+            }
+
         }
 
         [Command("Leave")]

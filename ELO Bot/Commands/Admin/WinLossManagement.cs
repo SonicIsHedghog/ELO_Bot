@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Discord.WebSocket;
 
 namespace ELO_Bot.Commands.Admin
 {
@@ -51,12 +52,35 @@ namespace ELO_Bot.Commands.Admin
         }
 
         [Command("game")]
-        [Summary("game <gamenumber> <winningteam>")]
+        [Summary("game <lobbyname> <gamenumber> <winningteam>")]
         [Remarks("Automatically update wins/losses for the selected team")]
-        public async Task win(int gamenumber, string team)
+        public async Task win(string lobbyname, int gamenumber, string team)
         {
             var server = ServerList.Load(Context.Guild);
-            var game = server.Gamelist.FirstOrDefault(x => x.LobbyId == Context.Channel.Id
+            IMessageChannel channel = null;
+            foreach (var chan in (Context.Guild as SocketGuild).Channels)
+            {
+                if (chan.Name.ToLower() == lobbyname.ToLower())
+                {
+                    channel = chan as IMessageChannel;
+                }
+            }
+
+            if (channel == null)
+            {
+                var queuechannels = "";
+                foreach (var chan in server.Queue)
+                {
+                    var getqueuechannels = await Context.Guild.GetChannelAsync(chan.ChannelId);
+                    queuechannels += $"{getqueuechannels.Name}\n";
+                }
+                await ReplyAsync("**ERROR:** Please specify the channel in which queue was created\n" +
+                                 "Here are a list:\n" +
+                                 $"{queuechannels}");
+                return;
+            }
+
+            var game = server.Gamelist.FirstOrDefault(x => x.LobbyId == channel.Id
                                                            || x.GameNumber == gamenumber);
             var team1 = new List<IUser>();
             var team2 = new List<IUser>();
