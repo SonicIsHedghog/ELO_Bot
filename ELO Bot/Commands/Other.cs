@@ -52,7 +52,7 @@ namespace ELO_Bot.Commands
             else
             {
                 foreach (var module in _service.Modules)
-                    if (String.Equals(module.Name, modulearg, StringComparison.CurrentCultureIgnoreCase))
+                    if (string.Equals(module.Name, modulearg, StringComparison.CurrentCultureIgnoreCase))
                     {
                         var list = new List<string>();
                         foreach (var command in module.Commands)

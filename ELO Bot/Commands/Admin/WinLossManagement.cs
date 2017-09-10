@@ -26,8 +26,7 @@ namespace ELO_Bot.Commands.Admin
                 return;
             }
 
-            foreach (var user in userlist)
-                await WinLossPoints(server, user, true, points);
+                await WinLossPoints(server, userlist.ToList(), true, points);
         }
 
         [Command("Lose")]
@@ -47,8 +46,7 @@ namespace ELO_Bot.Commands.Admin
                 return;
             }
 
-            foreach (var user in userlist)
-                await WinLossPoints(server, user, false, points);
+                await WinLossPoints(server, userlist.ToList(), false, points);
         }
 
         [Command("game")]
@@ -93,17 +91,13 @@ namespace ELO_Bot.Commands.Admin
             var win = "";
             if (team.ToLower() == "team1")
             {
-                foreach (var member in team1)
-                    await WinLossPoints(server, member, true, server.Winamount);
-                foreach (var member in team2)
-                    await WinLossPoints(server, member, false, server.Lossamount);
+                    await WinLossPoints(server, team1, true, server.Winamount);
+                    await WinLossPoints(server, team2, false, server.Lossamount);
             }
             else if (team.ToLower() == "team2")
             {
-                foreach (var member in team2)
-                    await WinLossPoints(server, member, true, server.Winamount);
-                foreach (var member in team1)
-                    await WinLossPoints(server, member, false, server.Lossamount);
+                    await WinLossPoints(server, team2, true, server.Winamount);
+                    await WinLossPoints(server, team1, false, server.Lossamount);
             }
             else
             {
@@ -112,9 +106,10 @@ namespace ELO_Bot.Commands.Admin
             }
         }
 
-        public async Task WinLossPoints(ServerList.Server server, IUser user, bool win, int points)
+        public async Task WinLossPoints(ServerList.Server server, List<IUser> users, bool win, int points)
         {
             var embed = new EmbedBuilder();
+            foreach (var user in users)
             foreach (var usr in server.UserList)
                 if (user.Id == usr.UserId)
                 {
@@ -122,10 +117,8 @@ namespace ELO_Bot.Commands.Admin
                     {
                         usr.Points = usr.Points + points;
                         usr.Wins++;
-                        embed.AddField($"{usr.Username} WON", $"User Won\n" +
-                                                              $"Points: {usr.Points}\n" +
-                                                              $"Wins: {usr.Wins}\n" +
-                                                              $"Losses: {usr.Losses}");
+                        embed.AddField($"{usr.Username} WON", $"Points: **{usr.Points}**\n" +
+                                                              $"W/L: **[{usr.Wins}/{usr.Losses}]**");
                         embed.Color = Color.Green;
                     }
                     else
@@ -135,10 +128,8 @@ namespace ELO_Bot.Commands.Admin
                         usr.Losses++;
                         if (usr.Points < 0)
                             usr.Points = 0;
-                        embed.AddField($"{usr.Username} LOST", $"User Lost\n" +
-                                                               $"Points: {usr.Points}\n" +
-                                                               $"Wins: {usr.Wins}\n" +
-                                                               $"Losses: {usr.Losses}");
+                        embed.AddField($"{usr.Username} LOST", $"Points: **{usr.Points}*\n" +
+                                                               $"W/L: **[{usr.Wins}/{usr.Losses}]**");
                         embed.Color = Color.Red;
                     }
                     try
