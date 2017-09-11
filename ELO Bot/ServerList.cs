@@ -61,21 +61,21 @@ namespace ELO_Bot
             public string PremiumKey { get; set; } = "";
 
             public ulong ServerId { get; set; }
-            public ulong RegisterRole { get; set; }
+            public ulong RegisterRole { get; set; } = 0;
             public List<Ranking> Ranks { get; set; } = new List<Ranking>();
-            public ulong AdminRole { get; set; }
+            public ulong AdminRole { get; set; } = 0;
             public string Registermessage { get; set; } = "Thankyou for Registering";
-            public List<User> UserList { get; set; }
-            public ulong AnnouncementsChannel { get; set; }
+            public List<User> UserList { get; set; } = new List<User>();
+            public ulong AnnouncementsChannel { get; set; } = 0;
 
-            public int Winamount { get; set; }
-            public int Lossamount { get; set; }
+            public int Winamount { get; set; } = 10;
+            public int Lossamount { get; set; } = 5;
 
 
             public List<Gamemode> Gamemodes { get; set; } = new List<Gamemode>();
             public List<string> Maps { get; set; } = new List<string>();
 
-            public List<Q> Queue { get; set; }
+            public List<Q> Queue { get; set; } = new List<Q>();
 
             public List<PreviouMatches> Gamelist { get; set; } = new List<PreviouMatches>();
 
@@ -92,6 +92,15 @@ namespace ELO_Bot
                 public int UserLimit { get; set; } = 10;
                 public string ChannelGametype { get; set; } = "Unknown";
                 public int Games { get; set; } = 0;
+
+
+                public bool Captains { get; set; } = false;
+                public bool IsPickingTeams { get; set; } = false;
+
+                public ulong T1Captain { get; set; }
+                public ulong T2Captain { get; set; }
+                public List<ulong> Team1 { get; set; } = new List<ulong>();
+                public List<ulong> Team2 { get; set; } = new List<ulong>();
             }
 
             public class PreviouMatches

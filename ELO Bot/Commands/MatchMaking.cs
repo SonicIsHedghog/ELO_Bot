@@ -74,6 +74,190 @@ namespace ELO_Bot.Commands
             await ReplyAsync("", false, embed.Build());
         }
 
+        [Command("pick")]
+        [Summary("pick <@user>")]
+        [Remarks("Choose a player for your team")]
+        public async Task Pick(IUser user)
+        {
+            var server = ServerList.Load(Context.Guild);
+            var embed = new EmbedBuilder();
+
+            ServerList.Server.Q lobby;
+            try
+            {
+                lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
+            }
+            catch
+            {
+                embed.AddField("ERROR", "Current Channel is not a lobby!");
+                await ReplyAsync("", false, embed.Build());
+                return;
+            }
+
+            if (lobby.UserLimit != lobby.Users.Count && !lobby.IsPickingTeams)
+            {
+                embed.AddField("ERROR", "Lobby is not full!!");
+                await ReplyAsync("", false, embed.Build());
+                return;
+            }
+            if (!lobby.Users.Contains(user.Id))
+            {
+                embed.AddField("ERROR", "user is not in lobby.");
+                await ReplyAsync("", false, embed.Build());
+                return;
+            }
+
+
+            if (Context.User.Id == lobby.T1Captain)
+            {
+                
+                if (lobby.Team1.Count == 0 || lobby.Team1 == null)
+                {
+                    //Initialise with team1 always.
+                    if (user.Id == lobby.T2Captain)
+                    {
+                        embed.AddField("ERROR", "User is a captain you coon!");
+                        await ReplyAsync("", false, embed.Build());
+                        return;
+                    }
+                    lobby.Team1.Add(Context.User.Id);
+                    lobby.Team1.Add(user.Id);
+                    lobby.Users.Remove(user.Id);
+                    lobby.Users.Remove(Context.User.Id);
+                    lobby.Team2.Add(lobby.T2Captain);
+                    lobby.Users.Remove(lobby.T2Captain);
+
+                    var t1List = "";
+                    var t2List = "";
+                    var users = "";
+                    foreach (var us in lobby.Team1)
+                    {
+                        var u = await Context.Client.GetUserAsync(us);
+                        t1List += $"{u.Mention} ";
+                    }
+                    foreach (var us in lobby.Team2)
+                    {
+                        var u = await Context.Client.GetUserAsync(us);
+                        t2List += $"{u.Mention} ";
+                    }
+                    foreach (var us in lobby.Users)
+                    {
+                        var u = await Context.Client.GetUserAsync(us);
+                        users += $"{u.Mention} ";
+                    }
+                    embed.AddField($"{(user as IGuildUser).Nickname} Added", $"[{lobby.Team1.Count}/{lobby.UserLimit / 2}]\n" +
+                                                                             $"Team1: {t1List}\n" +
+                                                                             $"Team2: {t2List}\n" +
+                                                                             $"\n" +
+                                                                             $"Players Left: {users}");
+                    await ReplyAsync("", false, embed.Build());
+                    lobby.IsPickingTeams = true;
+                    ServerList.Saveserver(server);
+                    return;
+                }
+
+                if (lobby.Team1.Count >= lobby.Team2.Count)
+                {
+                    embed.AddField("ERROR", "Team 2's turn to pick.");
+                    await ReplyAsync("", false, embed.Build());
+                    return;
+                }
+
+                if (lobby.Team2.Count > lobby.Team1.Count)
+                {
+                    lobby.Team1.Add(Context.User.Id);
+                    lobby.Team1.Add(user.Id);
+                    lobby.Users.Remove(Context.User.Id);
+                    lobby.Users.Remove(user.Id);
+
+                    var t1List = "";
+                    var t2List = "";
+                    var users = "";
+                    foreach (var us in lobby.Team1)
+                    {
+                        var u = await Context.Client.GetUserAsync(us);
+                        t1List += $"{u.Mention} ";
+                    }
+                    foreach (var us in lobby.Team2)
+                    {
+                        var u = await Context.Client.GetUserAsync(us);
+                        t2List += $"{u.Mention} ";
+                    }
+                    foreach (var us in lobby.Users)
+                    {
+                        var u = await Context.Client.GetUserAsync(us);
+                        users += $"{u.Mention} ";
+                    }
+                    embed.AddField($"{(user as IGuildUser).Nickname} Added", $"[{lobby.Team1.Count}/{lobby.UserLimit / 2}]\n" +
+                                                                             $"Team1: {t1List}\n" +
+                                                                             $"Team2: {t2List}\n" +
+                                                                             $"\n" +
+                                                                             $"Players Left: {users}");
+
+                    await ReplyAsync("", false, embed.Build());
+                    lobby.IsPickingTeams = true;
+                    ServerList.Saveserver(server);
+                    return;
+                }
+                embed.AddField("ERROR", "FUCK");
+                await ReplyAsync("", false, embed.Build());
+            }
+            else if (Context.User.Id == lobby.T2Captain)
+            {
+                if (lobby.Team2.Count > lobby.Team1.Count || lobby.Team1.Count == 0 || lobby.Team1 == null)
+                {
+                    embed.AddField("ERROR", "Team 1's turn to pick.");
+                    await ReplyAsync("", false, embed.Build());
+                }
+
+                if (lobby.Team1.Count > lobby.Team2.Count)
+                {
+                    lobby.Team2.Add(Context.User.Id);
+                    lobby.Team2.Add(user.Id);
+                    lobby.Users.Remove(Context.User.Id);
+                    lobby.Users.Remove(user.Id);
+                    var t1List = "";
+                    var t2List = "";
+                    var users = "";
+                    foreach (var us in lobby.Team1)
+                    {
+                        var u = await Context.Client.GetUserAsync(us);
+                        t1List += $"{u.Mention} ";
+                    }
+                    foreach (var us in lobby.Team2)
+                    {
+                        var u = await Context.Client.GetUserAsync(us);
+                        t2List += $"{u.Mention} ";
+                    }
+                    foreach (var us in lobby.Users)
+                    {
+                        var u = await Context.Client.GetUserAsync(us);
+                        users += $"{u.Mention} ";
+                    }
+                    embed.AddField($"{(user as IGuildUser).Nickname} Added", $"[{lobby.Team2.Count}/{lobby.UserLimit / 2}]\n" +
+                                                                             $"Team1: {t1List}\n" +
+                                                                             $"Team2: {t2List}\n" +
+                                                                             $"\n" +
+                                                                             $"Players Left: {users}");
+
+
+                    await ReplyAsync("", false, embed.Build());
+                    lobby.IsPickingTeams = true;
+                    ServerList.Saveserver(server);
+                }
+
+                if (lobby.Users.Count == 0 || lobby.Users == null)
+                {
+                    await Teams(server, lobby.Team1, lobby.Team2);
+                }
+            }
+            else
+            {
+                embed.AddField("ERROR", "Not A Captain!");
+                await ReplyAsync("", false, embed.Build());
+            }
+        }
+
         [Command("Join")]
         [Summary("Join")]
         [Remarks("Join the current queue")]
@@ -93,6 +277,13 @@ namespace ELO_Bot.Commands
                 return;
             }
 
+            if (lobby.IsPickingTeams)
+            {
+                embed.AddField("ERROR", "Teams are being picked, you cannot join the queue");
+                await ReplyAsync("", false, embed.Build());
+                return;
+            }
+
             if (lobby.Users.Count < lobby.UserLimit)
             {
                 if (!lobby.Users.Contains(Context.User.Id))
@@ -105,8 +296,8 @@ namespace ELO_Bot.Commands
                 else
                 {
                     embed.AddField("ERROR", "Already in queue.");
-                    await ReplyAsync("", false, embed.Build());
-                    return;
+                   await ReplyAsync("", false, embed.Build());
+                    return;                    
                 }
                 if (lobby.Users.Count >= lobby.UserLimit)
                 {
@@ -167,6 +358,15 @@ namespace ELO_Bot.Commands
             try
             {
                 var queue = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
+
+                /*(if (queue.IsPickingTeams)
+                {
+                    embed.AddField("ERROR", "Teams are being picked, you cannot leave the queue. You may only be subbed.");
+                    await ReplyAsync("", false, embed.Build());
+                    return;
+                }*/
+
+
                 if (queue != null)
                 {
                     queue.Users.Remove(Context.User.Id);
@@ -186,6 +386,46 @@ namespace ELO_Bot.Commands
             }
         }
 
+
+        public async Task Teams(ServerList.Server server, List<ulong> team1, List<ulong> team2)
+        {
+            var team1Userlist = new List<IUser>();
+            string t1 = "";
+            foreach (var user in team1)
+            {
+                var u = await Context.Guild.GetUserAsync(user);
+                team1Userlist.Add(u);
+                t1 += $"{u.Mention} ";
+            }
+
+            var team2Userlist = new List<IUser>();
+            string t2 = "";
+            foreach (var user in team2)
+            {
+                var u = await Context.Guild.GetUserAsync(user);
+                team2Userlist.Add(u);
+                t2 += $"{u.Mention} ";
+            }
+
+            await ReplyAsync("**GAME ON**\n" +
+                             $"Team1: {t1}\n" +
+                             $"Team2: {t2}");
+
+            var host = await Context.Guild.GetUserAsync(team1[0]);
+
+            //ADD GAME SAVING
+
+            var currentqueue = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
+            currentqueue.Users = new List<ulong>();
+            currentqueue.Team1 = new List<ulong>();
+            currentqueue.Team2 = new List<ulong>();
+            currentqueue.T1Captain = 0;
+            currentqueue.T2Captain = 0;
+            currentqueue.IsPickingTeams = false;
+            await Announce(currentqueue, host, currentqueue.ChannelGametype, team1Userlist, team2Userlist);
+            ServerList.Saveserver(server);
+        }
+
         public async Task FullQueue(ServerList.Server server)
         {
             try
@@ -193,11 +433,33 @@ namespace ELO_Bot.Commands
                 var embed = new EmbedBuilder();
                 var userlist = new List<ServerList.Server.User>();
                 var currentqueue = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
+
                 foreach (var user in currentqueue.Users)
                 {
                     var us = server.UserList.FirstOrDefault(x => x.UserId == user);
                     userlist.Add(us);
                 }
+
+                //order list by User Points
+                if (currentqueue.Captains)
+                {
+                    var rnd = new Random();
+                    var captains = Enumerable.Range(0, currentqueue.Users.Count).OrderBy(x => rnd.Next()).Take(2).ToList();
+                    var cap1 = await Context.Guild.GetUserAsync(currentqueue.Users[captains[0]]);
+                    var cap2 = await Context.Guild.GetUserAsync(currentqueue.Users[captains[1]]);
+
+                    await ReplyAsync($"**Team 1 Captain:** {cap1.Mention}\n" +
+                                     $"**Team 2 Captain:** {cap2.Mention}\n" +
+                                     "**Select Your Teams!**");
+
+                    currentqueue.T1Captain = cap1.Id;
+                    currentqueue.T2Captain = cap2.Id;
+                    currentqueue.Team1 = new List<ulong>();
+                    currentqueue.Team2 = new List<ulong>();
+                    ServerList.Saveserver(server);
+                    return;
+                }
+
 
                 var sortedlist = userlist.OrderBy(x => x.Points).Reverse().ToList();
                 var team1 = new List<ServerList.Server.User>();
@@ -207,6 +469,7 @@ namespace ELO_Bot.Commands
                         team2.Add(user);
                     else
                         team1.Add(user);
+
 
                 var t1Desc = "";
                 var t1Sum = 0;
@@ -219,6 +482,7 @@ namespace ELO_Bot.Commands
                     t1Ulong.Add(user.UserId);
                     t1Sum = t1Sum + user.Points;
                 }
+
                 var t2Desc = "";
                 var t2Sum = 0;
                 var t2Users = new List<IUser>();
@@ -230,6 +494,8 @@ namespace ELO_Bot.Commands
                     t2Ulong.Add(user.UserId);
                     t2Sum = t2Sum + user.Points;
                 }
+
+
                 embed.Title = $"Match #{currentqueue.Games}";
                 embed.AddField($"Team 1 - {t1Sum}", $"{t1Desc}");
                 embed.AddField($"Team 2 - {t2Sum}", $"{t2Desc}");
@@ -238,7 +504,7 @@ namespace ELO_Bot.Commands
                     currentqueue.ChannelGametype = "Unknown";
                 embed.AddField($"Match Info", $"{currentqueue.ChannelGametype}");
 
-                try
+                /*try
                 {
                     var r = new Random().Next(0, server.Maps.Count);
                     var randmap = server.Maps[r];
@@ -247,7 +513,7 @@ namespace ELO_Bot.Commands
                 catch
                 {
                     //
-                }
+                }*/
 
 
                 await ReplyAsync("", false, embed.Build());

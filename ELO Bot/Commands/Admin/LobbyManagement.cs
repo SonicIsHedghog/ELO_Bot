@@ -13,7 +13,7 @@ namespace ELO_Bot.Commands.Admin
         [Summary("CreateLobby <userlimit> <lobby message>")]
         [Remarks("Turn The current channel into a lobby")]
         [CheckRegistered]
-        public async Task LobbyCreate(int userlimit, [Remainder] string lobbyMessage = null)
+        public async Task LobbyCreate(int userlimit, bool captains, [Remainder] string lobbyMessage = null)
         {
             try
             {
@@ -29,13 +29,15 @@ namespace ELO_Bot.Commands.Admin
                             ChannelId = Context.Channel.Id,
                             Users = new List<ulong>(),
                             UserLimit = userlimit,
-                            ChannelGametype = lobbyMessage
+                            ChannelGametype = lobbyMessage,
+                            Captains = captains
                         });
 
                         if (lobbyMessage == null)
                             lobbyMessage = "Unknown";
                         embed.AddField("LOBBY CREATED", $"**Lobby Name:** \n{Context.Channel.Name}\n" +
                                                         $"**PlayerLimit:** \n{userlimit}\n" +
+                                                        $"**Captains:** \n{captains}\n" +
                                                         $"**GameMode Info:**\n" +
                                                         $"{lobbyMessage}");
                     }
@@ -93,6 +95,12 @@ namespace ELO_Bot.Commands.Admin
             var server = ServerList.Load(Context.Guild);
             var q = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
             q.Users = new List<ulong>();
+            q.IsPickingTeams = false;
+            q.Team1 = new List<ulong>();
+            q.Team2 = new List<ulong>();
+            q.T1Captain = 0;
+            q.T2Captain = 0;
+
             ServerList.Saveserver(server);
             await ReplyAsync($"{Context.Channel.Name}'s queue has been cleared!");
         }
