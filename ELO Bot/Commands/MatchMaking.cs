@@ -111,7 +111,7 @@ namespace ELO_Bot.Commands
             if (Context.User.Id == lobby.T1Captain)
             {
                 
-                if (lobby.Team1.Count == 0 || lobby.Team1 == null)
+                if (lobby.Team1.Count == 0 || lobby.Team1 == null || lobby.Team2.Count > lobby.Team1.Count)
                 {
                     //Initialise with team1 always.
                     if (user.Id == lobby.T2Captain)
@@ -120,16 +120,24 @@ namespace ELO_Bot.Commands
                         await ReplyAsync("", false, embed.Build());
                         return;
                     }
-                    lobby.Team1.Add(Context.User.Id);
+                    if (lobby.Team1.Count == 0)
+                    {
+                        lobby.Team1.Add(Context.User.Id);
+                        lobby.Users.Remove(Context.User.Id);
+                        lobby.Team2.Add(lobby.T2Captain);
+                        lobby.Users.Remove(lobby.T2Captain);
+                    }
+                    
                     lobby.Team1.Add(user.Id);
                     lobby.Users.Remove(user.Id);
-                    lobby.Users.Remove(Context.User.Id);
-                    lobby.Team2.Add(lobby.T2Captain);
-                    lobby.Users.Remove(lobby.T2Captain);
 
                     var t1List = "";
                     var t2List = "";
                     var users = "";
+
+                    var cap1 =  await Context.Guild.GetUserAsync(lobby.T2Captain);
+                    var cap2 = await Context.Guild.GetUserAsync(lobby.T1Captain);
+
                     foreach (var us in lobby.Team1)
                     {
                         var u = await Context.Client.GetUserAsync(us);
@@ -148,7 +156,9 @@ namespace ELO_Bot.Commands
                     embed.AddField($"{(user as IGuildUser).Nickname} Added", $"[{lobby.Team1.Count}/{lobby.UserLimit / 2}]\n" +
                                                                              $"Team1: {t1List}\n" +
                                                                              $"Team2: {t2List}\n" +
-                                                                             $"\n" +
+                                                                             $"\nCaptains: \n" +
+                                                                             $"1: {cap1.Mention}\n" +
+                                                                             $"2: {cap2.Mention}\n" +
                                                                              $"Players Left: {users}");
                     await ReplyAsync("", false, embed.Build());
                     lobby.IsPickingTeams = true;
@@ -163,42 +173,11 @@ namespace ELO_Bot.Commands
                     return;
                 }
 
-                if (lobby.Team2.Count > lobby.Team1.Count)
+                if (lobby.Users.Count == 0 || lobby.Users == null)
                 {
-                    lobby.Team1.Add(Context.User.Id);
-                    lobby.Team1.Add(user.Id);
-                    lobby.Users.Remove(Context.User.Id);
-                    lobby.Users.Remove(user.Id);
-
-                    var t1List = "";
-                    var t2List = "";
-                    var users = "";
-                    foreach (var us in lobby.Team1)
-                    {
-                        var u = await Context.Client.GetUserAsync(us);
-                        t1List += $"{u.Mention} ";
-                    }
-                    foreach (var us in lobby.Team2)
-                    {
-                        var u = await Context.Client.GetUserAsync(us);
-                        t2List += $"{u.Mention} ";
-                    }
-                    foreach (var us in lobby.Users)
-                    {
-                        var u = await Context.Client.GetUserAsync(us);
-                        users += $"{u.Mention} ";
-                    }
-                    embed.AddField($"{(user as IGuildUser).Nickname} Added", $"[{lobby.Team1.Count}/{lobby.UserLimit / 2}]\n" +
-                                                                             $"Team1: {t1List}\n" +
-                                                                             $"Team2: {t2List}\n" +
-                                                                             $"\n" +
-                                                                             $"Players Left: {users}");
-
-                    await ReplyAsync("", false, embed.Build());
-                    lobby.IsPickingTeams = true;
-                    ServerList.Saveserver(server);
-                    return;
+                    await Teams(server, lobby.Team1, lobby.Team2);
                 }
+
                 embed.AddField("ERROR", "FUCK");
                 await ReplyAsync("", false, embed.Build());
             }
@@ -212,13 +191,16 @@ namespace ELO_Bot.Commands
 
                 if (lobby.Team1.Count > lobby.Team2.Count)
                 {
-                    lobby.Team2.Add(Context.User.Id);
+                    //lobby.Team2.Add(Context.User.Id);
                     lobby.Team2.Add(user.Id);
                     lobby.Users.Remove(Context.User.Id);
                     lobby.Users.Remove(user.Id);
                     var t1List = "";
                     var t2List = "";
                     var users = "";
+
+                    var cap1 = await Context.Guild.GetUserAsync(lobby.T2Captain);
+                    var cap2 = await Context.Guild.GetUserAsync(lobby.T1Captain);
                     foreach (var us in lobby.Team1)
                     {
                         var u = await Context.Client.GetUserAsync(us);
@@ -237,7 +219,9 @@ namespace ELO_Bot.Commands
                     embed.AddField($"{(user as IGuildUser).Nickname} Added", $"[{lobby.Team2.Count}/{lobby.UserLimit / 2}]\n" +
                                                                              $"Team1: {t1List}\n" +
                                                                              $"Team2: {t2List}\n" +
-                                                                             $"\n" +
+                                                                             $"\nCaptains: \n" +
+                                                                             $"1: {cap1.Mention}\n" +
+                                                                             $"2: {cap2.Mention}\n" +
                                                                              $"Players Left: {users}");
 
 
