@@ -32,24 +32,57 @@ namespace ELO_Bot.Commands
             var embed = new EmbedBuilder();
             try
             {
-                var lobbyexists = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
-                if (lobbyexists.Users.Count == 0)
+                var lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
+                if (lobby.IsPickingTeams)
+                {
+                    var t1List = "";
+                    var t2List = "";
+                    var users = "";
+
+                    var cap1 = await Context.Guild.GetUserAsync(lobby.T2Captain);
+                    var cap2 = await Context.Guild.GetUserAsync(lobby.T1Captain);
+
+                    foreach (var us in lobby.Team1)
+                    {
+                        var u = await Context.Client.GetUserAsync(us);
+                        t1List += $"{u.Mention} ";
+                    }
+                    foreach (var us in lobby.Team2)
+                    {
+                        var u = await Context.Client.GetUserAsync(us);
+                        t2List += $"{u.Mention} ";
+                    }
+                    foreach (var us in lobby.Users)
+                    {
+                        var u = await Context.Client.GetUserAsync(us);
+                        users += $"{u.Mention} ";
+                    }
+                    embed.AddField($"Lobby", $"[{lobby.Team1.Count}/{lobby.UserLimit / 2}]\n" +
+                                                                             $"Team1: {t1List}\n" +
+                                                                             $"Team2: {t2List}\n" +
+                                                                             $"\nCaptains: \n" +
+                                                                             $"1: {cap1.Mention}\n" +
+                                                                             $"2: {cap2.Mention}\n" +
+                                                                             $"Players Left: {users}");
+                    await ReplyAsync("", false, embed.Build());
+                }
+                if (lobby.Users.Count == 0)
                 {
                     //empty
-                    embed.AddField($"{Context.Channel.Name} Queue **[0/{lobbyexists.UserLimit}]** #{lobbyexists.Games + 1}", $"Empty");
+                    embed.AddField($"{Context.Channel.Name} Queue **[0/{lobby.UserLimit}]** #{lobby.Games + 1}", $"Empty");
                 }
                 else
                 {
                     //make list
                     var list = "";
-                    foreach (var user in lobbyexists.Users)
+                    foreach (var user in lobby.Users)
                     {
                         var subject = server.UserList.FirstOrDefault(x => x.UserId == user);
                         list += $"{subject.Username} - {subject.Points}\n";
                     }
 
                     embed.AddField(
-                        $"{Context.Channel.Name} Queue **[{lobbyexists.Users.Count}/{lobbyexists.UserLimit}]** #{lobbyexists.Games + 1}",
+                        $"{Context.Channel.Name} Queue **[{lobby.Users.Count}/{lobby.UserLimit}]** #{lobby.Games + 1}",
                         $"{list}");
 
 
