@@ -61,7 +61,7 @@ namespace ELO_Bot
             public string PremiumKey { get; set; } = "";
 
             public ulong ServerId { get; set; }
-            public ulong RegisterRole { get; set; } = 0;
+            public ulong RegisterRole { get; set; }
             public List<Ranking> Ranks { get; set; } = new List<Ranking>();
             public ulong AdminRole { get; set; } = 0;
             public string Registermessage { get; set; } = "Thankyou for Registering";

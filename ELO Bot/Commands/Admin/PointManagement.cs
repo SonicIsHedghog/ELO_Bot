@@ -1,10 +1,8 @@
-﻿using Discord.Commands;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Discord;
+using Discord.Commands;
 
 namespace ELO_Bot.Commands.Admin
 {
@@ -143,6 +141,7 @@ namespace ELO_Bot.Commands.Admin
             embed.Color = Color.Green;
             await ReplyAsync("", false, embed.Build());
         }
+
         [Command("DelLose")]
         [Summary("DelLose <users>")]
         [Remarks("remove a single loss from the specified users")]

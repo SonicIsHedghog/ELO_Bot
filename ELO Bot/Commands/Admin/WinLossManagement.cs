@@ -26,7 +26,7 @@ namespace ELO_Bot.Commands.Admin
                 return;
             }
 
-                await WinLossPoints(server, userlist.ToList(), true, points);
+            await WinLossPoints(server, userlist.ToList(), true, points);
         }
 
         [Command("Lose")]
@@ -57,12 +57,8 @@ namespace ELO_Bot.Commands.Admin
             var server = ServerList.Load(Context.Guild);
             IMessageChannel channel = null;
             foreach (var chan in (Context.Guild as SocketGuild).Channels)
-            {
                 if (string.Equals(chan.Name, lobbyname, StringComparison.CurrentCultureIgnoreCase))
-                {
                     channel = chan as IMessageChannel;
-                }
-            }
 
             if (channel == null)
             {

@@ -85,12 +85,8 @@ namespace ELO_Bot.Commands.Admin
 
             var removegames = server.Gamelist.Where(game => game.LobbyId == Context.Channel.Id).ToList();
             foreach (var game in removegames)
-            {
                 if (server.Gamelist.Contains(game))
-                {
                     server.Gamelist.Remove(game);
-                }
-            }
 
             ServerList.Saveserver(server);
             await ReplyAsync($"{Context.Channel.Name} is no longer a lobby!\n" +
