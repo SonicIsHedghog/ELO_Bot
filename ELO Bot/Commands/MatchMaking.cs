@@ -546,7 +546,7 @@ namespace ELO_Bot.Commands
                     currentqueue.ChannelGametype = "Unknown";
                 embed.AddField($"Match Info", $"{currentqueue.ChannelGametype}");
 
-                /*try
+                try
                 {
                     var r = new Random().Next(0, server.Maps.Count);
                     var randmap = server.Maps[r];
@@ -555,7 +555,7 @@ namespace ELO_Bot.Commands
                 catch
                 {
                     //
-                }*/
+                }
 
 
                 await ReplyAsync("", false, embed.Build());
@@ -585,9 +585,16 @@ namespace ELO_Bot.Commands
             List<IUser> team2)
         {
             var server = ServerList.Load(Context.Guild);
-            if (server.AnnouncementsChannel == 0)
-                return;
-            var channel = await Context.Guild.GetChannelAsync(server.AnnouncementsChannel);
+            IMessageChannel channel;
+            try
+            {
+                channel = await Context.Guild.GetChannelAsync(server.AnnouncementsChannel) as IMessageChannel;
+            }
+            catch
+            {
+                channel = Context.Channel;
+            }
+            
             var lobbychannel = await Context.Client.GetChannelAsync(lobby.ChannelId);
             var announcement = "**__Game Has Started__**\n" +
                                "**Lobby:** \n" +
@@ -598,7 +605,8 @@ namespace ELO_Bot.Commands
                                $"{matchdescription}\n" +
                                $"**Team 1:** [{string.Join(" ", team1.Select(x => x.Mention))}]\n" +
                                $"**Team 2**: [{string.Join(" ", team2.Select(x => x.Mention))}]";
-            await (channel as IMessageChannel).SendMessageAsync(announcement);
+
+            await channel.SendMessageAsync(announcement);
         }
     }
 }
