@@ -82,8 +82,19 @@ namespace ELO_Bot.Commands.Admin
             var server = ServerList.Load(Context.Guild);
             var q = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
             server.Queue.Remove(q);
+
+            var removegames = server.Gamelist.Where(game => game.LobbyId == Context.Channel.Id).ToList();
+            foreach (var game in removegames)
+            {
+                if (server.Gamelist.Contains(game))
+                {
+                    server.Gamelist.Remove(game);
+                }
+            }
+
             ServerList.Saveserver(server);
-            await ReplyAsync($"{Context.Channel.Name} is no longer a lobby!");
+            await ReplyAsync($"{Context.Channel.Name} is no longer a lobby!\n" +
+                             $"Previous games that took place in this lobby have been cleared from history.");
         }
 
         [Command("Clear")]

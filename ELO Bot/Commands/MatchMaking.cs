@@ -57,14 +57,16 @@ namespace ELO_Bot.Commands
                         var u = await Context.Client.GetUserAsync(us);
                         users += $"{u.Mention} ";
                     }
-                    embed.AddField($"Lobby", $"[{lobby.Team1.Count}/{lobby.UserLimit / 2}]\n" +
+                    embed.AddField("Lobby", $"[{lobby.Team1.Count}/{lobby.UserLimit / 2}]\n" +
                                                                              $"Team1: {t1List}\n" +
                                                                              $"Team2: {t2List}\n" +
-                                                                             $"\nCaptains: \n" +
+                                                                             "\nCaptains: \n" +
                                                                              $"1: {cap1.Mention}\n" +
                                                                              $"2: {cap2.Mention}\n" +
                                                                              $"Players Left: {users}");
                     await ReplyAsync("", false, embed.Build());
+                    return;
+
                 }
                 if (lobby.Users.Count == 0)
                 {
@@ -169,7 +171,7 @@ namespace ELO_Bot.Commands
             if (Context.User.Id == lobby.T1Captain)
             {
                 
-                if (lobby.Team1.Count == 0 || lobby.Team1 == null || lobby.Team2.Count > lobby.Team1.Count)
+                if (lobby.Team1.Count == 0 || lobby.Team1 == null || lobby.Team2.Count >= lobby.Team1.Count)
                 {
                     //Initialise with team1 always.
                     if (user.Id == lobby.T2Captain)
@@ -235,6 +237,7 @@ namespace ELO_Bot.Commands
                 if (lobby.Users.Count == 0 || lobby.Users == null)
                 {
                     await Teams(server, lobby.Team1, lobby.Team2);
+                    return;
                 }
 
                 embed.AddField("ERROR", "FUCK");
@@ -277,7 +280,7 @@ namespace ELO_Bot.Commands
                     embed.AddField($"{(user as IGuildUser).Nickname} Added", $"[{lobby.Team2.Count}/{lobby.UserLimit / 2}]\n" +
                                                                              $"Team1: {t1List}\n" +
                                                                              $"Team2: {t2List}\n" +
-                                                                             $"\nCaptains: \n" +
+                                                                             "\nCaptains: \n" +
                                                                              $"1: {cap1.Mention}\n" +
                                                                              $"2: {cap2.Mention}\n" +
                                                                              $"Players Left: {users}");
@@ -401,26 +404,20 @@ namespace ELO_Bot.Commands
             {
                 var queue = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
 
-                /*(if (queue.IsPickingTeams)
+                if (queue.IsPickingTeams)
                 {
                     embed.AddField("ERROR", "Teams are being picked, you cannot leave the queue. You may only be subbed.");
                     await ReplyAsync("", false, embed.Build());
                     return;
-                }*/
+                }
 
 
-                if (queue != null)
-                {
                     queue.Users.Remove(Context.User.Id);
                     embed.AddField("Success", "You have been removed from the queue.\n" +
                                               $"**[{queue.Users.Count}/{queue.UserLimit}]**");
 
                     ServerList.Saveserver(server);
                     await ReplyAsync("", false, embed.Build());
-                    return;
-                }
-
-                await ReplyAsync($"Removed From Queue **[{server.Queue.Count}/{queue.UserLimit}]**");
             }
             catch
             {
@@ -464,7 +461,19 @@ namespace ELO_Bot.Commands
             currentqueue.T1Captain = 0;
             currentqueue.T2Captain = 0;
             currentqueue.IsPickingTeams = false;
+
+            var newgame = new ServerList.Server.PreviouMatches
+            {
+                GameNumber = currentqueue.Games,
+                LobbyId = Context.Channel.Id,
+                Team1 = team1,
+                Team2 = team2
+            };
+            server.Gamelist.Add(newgame);
+
             await Announce(currentqueue, host, currentqueue.ChannelGametype, team1Userlist, team2Userlist);
+
+
             ServerList.Saveserver(server);
         }
 
@@ -604,7 +613,9 @@ namespace ELO_Bot.Commands
                                $"**Match Settings:**\n" +
                                $"{matchdescription}\n" +
                                $"**Team 1:** [{string.Join(" ", team1.Select(x => x.Mention))}]\n" +
-                               $"**Team 2**: [{string.Join(" ", team2.Select(x => x.Mention))}]";
+                               $"**Team 2**: [{string.Join(" ", team2.Select(x => x.Mention))}]\n" +
+                               $"When the game finishes, type `=game {lobbychannel.Name} {lobby.Games} <team1 or team2>`\n" +
+                               $"This will modify each team's points respectively.";
 
             await channel.SendMessageAsync(announcement);
         }

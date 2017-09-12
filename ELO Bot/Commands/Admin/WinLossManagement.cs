@@ -46,7 +46,7 @@ namespace ELO_Bot.Commands.Admin
                 return;
             }
 
-                await WinLossPoints(server, userlist.ToList(), false, points);
+            await WinLossPoints(server, userlist.ToList(), false, points);
         }
 
         [Command("game")]
@@ -58,7 +58,7 @@ namespace ELO_Bot.Commands.Admin
             IMessageChannel channel = null;
             foreach (var chan in (Context.Guild as SocketGuild).Channels)
             {
-                if (chan.Name.ToLower() == lobbyname.ToLower())
+                if (string.Equals(chan.Name, lobbyname, StringComparison.CurrentCultureIgnoreCase))
                 {
                     channel = chan as IMessageChannel;
                 }
@@ -87,22 +87,21 @@ namespace ELO_Bot.Commands.Admin
 
             foreach (var user in game.Team2)
                 team2.Add(await Context.Guild.GetUserAsync(user));
-            var embed = new EmbedBuilder();
-            var win = "";
-            if (team.ToLower() == "team1")
+
+            switch (team.ToLower())
             {
+                case "team1":
                     await WinLossPoints(server, team1, true, server.Winamount);
                     await WinLossPoints(server, team2, false, server.Lossamount);
-            }
-            else if (team.ToLower() == "team2")
-            {
+                    break;
+                case "team2":
                     await WinLossPoints(server, team2, true, server.Winamount);
                     await WinLossPoints(server, team1, false, server.Lossamount);
-            }
-            else
-            {
-                await ReplyAsync(
-                    "Please specify a team in the following format `=game <number> team1` or `=game <number> team2`");
+                    break;
+                default:
+                    await ReplyAsync(
+                        "Please specify a team in the following format `=game <number> team1` or `=game <number> team2`");
+                    break;
             }
         }
 

@@ -46,6 +46,7 @@ namespace ELO_Bot.Commands
                     embed.AddField("ERROR",
                         "You are already registered, if you wish to be renamed talk to an administrator");
                     embed.WithColor(Color.Red);
+
                     await ReplyAsync("", false, embed.Build());
                     return;
                 }
