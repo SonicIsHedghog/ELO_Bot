@@ -499,9 +499,22 @@ namespace ELO_Bot.Commands
                     var cap1 = await Context.Guild.GetUserAsync(currentqueue.Users[captains[0]]);
                     var cap2 = await Context.Guild.GetUserAsync(currentqueue.Users[captains[1]]);
 
+                    var players = "";
+                    foreach (var user in currentqueue.Users)
+                    {
+                        var u = await Context.Guild.GetUserAsync(user);
+                        if (u != cap1 && u != cap2)
+                        {
+                            players += $"{u.Mention} ";
+                        }
+                    }
+
                     await ReplyAsync($"**Team 1 Captain:** {cap1.Mention}\n" +
                                      $"**Team 2 Captain:** {cap2.Mention}\n" +
-                                     "**Select Your Teams!**");
+                                     "**Select Your Teams!**\n" +
+                                     "**Captain 1 Always Picks First**\n" +
+                                     "**Players:**\n" +
+                                     $"{players}");
 
                     currentqueue.T1Captain = cap1.Id;
                     currentqueue.T2Captain = cap2.Id;
