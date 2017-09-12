@@ -43,8 +43,41 @@ namespace ELO_Bot.Commands
 
                 if (server.UserList.Any(member => member.UserId == Context.User.Id))
                 {
+                    var userprofile = server.UserList.FirstOrDefault(x => x.UserId == Context.User.Id);
                     embed.AddField("ERROR",
                         "You are already registered, if you wish to be renamed talk to an administrator");
+
+                    if (!(Context.User as IGuildUser).RoleIds.Contains(server.RegisterRole))
+                    {
+                        if (server.RegisterRole != 0)
+                            try
+                            {
+                                var serverrole = Context.Guild.GetRole(server.RegisterRole);
+                                try
+                                {
+                                    await (Context.User as IGuildUser).AddRoleAsync(serverrole);
+                                }
+                                catch
+                                {
+                                    embed.AddField("ERROR", "User Role Unable to be modified");
+                                }
+                            }
+                            catch
+                            {
+                                embed.AddField("ERROR", "Register Role is Unavailable");
+                            }
+
+
+                    }
+                    try
+                        {
+                            await (Context.User as IGuildUser).ModifyAsync(x => { x.Nickname = $"{userprofile.Points} ~ {username}"; });
+                        }
+                        catch
+                        {
+                            embed.AddField("ERROR", "Username Unable to be modified (Permissions are above the bot)");
+                        }
+
                     embed.WithColor(Color.Red);
 
                     await ReplyAsync("", false, embed.Build());
