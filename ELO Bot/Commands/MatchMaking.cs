@@ -505,7 +505,7 @@ namespace ELO_Bot.Commands
 
                     await ReplyAsync($"**Team 1 Captain:** {cap1.Mention}\n" +
                                      $"**Team 2 Captain:** {cap2.Mention}\n" +
-                                     "**Select Your Teams!**\n" +
+                                     "**Select Your Teams using `=pick <@user>`**\n" +
                                      "**Captain 1 Always Picks First**\n" +
                                      "**Players:**\n" +
                                      $"{players}");
