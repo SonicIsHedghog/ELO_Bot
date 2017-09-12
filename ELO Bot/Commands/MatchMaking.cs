@@ -36,7 +36,7 @@ namespace ELO_Bot.Commands
                 if (lobbyexists.Users.Count == 0)
                 {
                     //empty
-                    embed.AddField($"{Context.Channel.Name} Queue **[0/{lobbyexists.UserLimit}]**", $"Empty");
+                    embed.AddField($"{Context.Channel.Name} Queue **[0/{lobbyexists.UserLimit}]** #{lobbyexists.Games + 1}", $"Empty");
                 }
                 else
                 {
@@ -49,9 +49,36 @@ namespace ELO_Bot.Commands
                     }
 
                     embed.AddField(
-                        $"{Context.Channel.Name} Queue **[{lobbyexists.Users.Count}/{lobbyexists.UserLimit}]**",
+                        $"{Context.Channel.Name} Queue **[{lobbyexists.Users.Count}/{lobbyexists.UserLimit}]** #{lobbyexists.Games + 1}",
                         $"{list}");
+
+
                 }
+                embed.AddField("Join/Leave", "`=Join` To Join the queue\n" +
+                                         "`=Leave` To Leave the queue");
+            }
+            catch
+            {
+                embed.AddField("Error", "The current channel is not a lobby, there is no queue here.");
+            }
+
+
+
+
+            await ReplyAsync("", false, embed.Build());
+        }
+
+        [Command("Lobby")]
+        [Summary("Lobby")]
+        [Remarks("Gamemode Info")]
+        public async Task Lobby()
+        {
+            var server = ServerList.Load(Context.Guild);
+            var embed = new EmbedBuilder();
+            try
+            {
+                var lobbyexists = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
+
                 if (lobbyexists.ChannelGametype == null)
                     lobbyexists.ChannelGametype = "Unknown";
 
@@ -59,6 +86,8 @@ namespace ELO_Bot.Commands
                                              $"{lobbyexists.UserLimit}\n" +
                                              $"**Game Number:**\n" +
                                              $"{lobbyexists.Games + 1}\n" +
+                                             $"**Automatic Teams:**\n" +
+                                             $"{!lobbyexists.Captains}\n" +
                                              $"**Gamemode Description:**\n" +
                                              $"{lobbyexists.ChannelGametype}");
             }
@@ -66,10 +95,6 @@ namespace ELO_Bot.Commands
             {
                 embed.AddField("Error", "The current channel is not a lobby, there is no queue here.");
             }
-
-            embed.AddField("Join/Leave", "`=Join` To Join the queue\n" +
-                                         "`=Leave` To Leave the queue");
-
 
             await ReplyAsync("", false, embed.Build());
         }
@@ -120,6 +145,7 @@ namespace ELO_Bot.Commands
                         await ReplyAsync("", false, embed.Build());
                         return;
                     }
+
                     if (lobby.Team1.Count == 0)
                     {
                         lobby.Team1.Add(Context.User.Id);
@@ -187,13 +213,12 @@ namespace ELO_Bot.Commands
                 {
                     embed.AddField("ERROR", "Team 1's turn to pick.");
                     await ReplyAsync("", false, embed.Build());
+                    return;
                 }
 
                 if (lobby.Team1.Count > lobby.Team2.Count)
                 {
-                    //lobby.Team2.Add(Context.User.Id);
                     lobby.Team2.Add(user.Id);
-                    lobby.Users.Remove(Context.User.Id);
                     lobby.Users.Remove(user.Id);
                     var t1List = "";
                     var t2List = "";
