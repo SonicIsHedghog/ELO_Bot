@@ -21,99 +21,99 @@ namespace ELO_Bot.Commands
                 embed.AddField("ERROR", "Please specify a name to be registered with");
                 embed.WithColor(Color.Red);
                 await ReplyAsync("", false, embed.Build());
+                return;
             }
-            else
+
+
+            var user = new ServerList.Server.User
             {
-                var user = new ServerList.Server.User
-                {
-                    UserId = Context.User.Id,
-                    Username = username,
-                    Points = 0
-                };
+                UserId = Context.User.Id,
+                Username = username,
+                Points = 0
+            };
 
-                var server = ServerList.Load(Context.Guild);
-                if (server.UserList.Count >= 20)
-                    if (!server.IsPremium)
-                    {
-                        embed.AddField("ERROR",
-                            "Free User limit has been hit. To upgrade the limit from 20 users to unlimited users, Purchase premium here: https://rocketr.net/buy/0e79a25902f5");
-                        await ReplyAsync("", false, embed.Build());
-                        return;
-                    }
-
-                if (server.UserList.Any(member => member.UserId == Context.User.Id))
+            var server = ServerList.Load(Context.Guild);
+            if (server.UserList.Count >= 20 && !server.IsPremium)
                 {
-                    var userprofile = server.UserList.FirstOrDefault(x => x.UserId == Context.User.Id);
                     embed.AddField("ERROR",
-                        "You are already registered, if you wish to be renamed talk to an administrator");
-
-                    if (!(Context.User as IGuildUser).RoleIds.Contains(server.RegisterRole))
-                    {
-                        if (server.RegisterRole != 0)
-                            try
-                            {
-                                var serverrole = Context.Guild.GetRole(server.RegisterRole);
-                                try
-                                {
-                                    await (Context.User as IGuildUser).AddRoleAsync(serverrole);
-                                }
-                                catch
-                                {
-                                    embed.AddField("ERROR", "User Role Unable to be modified");
-                                }
-                            }
-                            catch
-                            {
-                                embed.AddField("ERROR", "Register Role is Unavailable");
-                            }
-
-
-                    }
-                    try
-                        {
-                            await (Context.User as IGuildUser).ModifyAsync(x => { x.Nickname = $"{userprofile.Points} ~ {username}"; });
-                        }
-                        catch
-                        {
-                            embed.AddField("ERROR", "Username Unable to be modified (Permissions are above the bot)");
-                        }
-
-                    embed.WithColor(Color.Red);
-
+                        "Free User limit has been hit. To upgrade the limit from 20 users to unlimited users, Purchase premium here: https://rocketr.net/buy/0e79a25902f5");
                     await ReplyAsync("", false, embed.Build());
                     return;
                 }
-                server.UserList.Add(user);
-                ServerList.Saveserver(server);
-                embed.AddField($"{Context.User.Username} registered as {username}", $"{server.Registermessage}");
-                embed.WithColor(Color.Blue);
+
+            if (server.UserList.Any(member => member.UserId == Context.User.Id))
+            {
+                var userprofile = server.UserList.FirstOrDefault(x => x.UserId == Context.User.Id);
+                embed.AddField("ERROR",
+                    "You are already registered, if you wish to be renamed talk to an administrator");
+
+                if (!(Context.User as IGuildUser).RoleIds.Contains(server.RegisterRole) && server.RegisterRole != 0)
+                {
+                        try
+                        {
+                            var serverrole = Context.Guild.GetRole(server.RegisterRole);
+                            try
+                            {
+                                await (Context.User as IGuildUser).AddRoleAsync(serverrole);
+                            }
+                            catch
+                            {
+                                embed.AddField("ERROR", "User Role Unable to be modified");
+                            }
+                        }
+                        catch
+                        {
+                            embed.AddField("ERROR", "Register Role is Unavailable");
+                        }
+
+
+                }
+
                 try
                 {
-                    await (Context.User as IGuildUser).ModifyAsync(x => { x.Nickname = $"0 ~ {username}"; });
+                    await (Context.User as IGuildUser).ModifyAsync(x => { x.Nickname = $"{userprofile.Points} ~ {username}"; });
                 }
                 catch
                 {
                     embed.AddField("ERROR", "Username Unable to be modified (Permissions are above the bot)");
                 }
-                if (server.RegisterRole != 0)
+
+                embed.WithColor(Color.Red);
+
+                await ReplyAsync("", false, embed.Build());
+                return;
+            }
+
+            server.UserList.Add(user);
+            ServerList.Saveserver(server);
+            embed.AddField($"{Context.User.Username} registered as {username}", $"{server.Registermessage}");
+            embed.WithColor(Color.Blue);
+            try
+            {
+                await (Context.User as IGuildUser).ModifyAsync(x => { x.Nickname = $"0 ~ {username}"; });
+            }
+            catch
+            {
+                embed.AddField("ERROR", "Username Unable to be modified (Permissions are above the bot)");
+            }
+            if (server.RegisterRole != 0)
+                try
+                {
+                    var serverrole = Context.Guild.GetRole(server.RegisterRole);
                     try
                     {
-                        var serverrole = Context.Guild.GetRole(server.RegisterRole);
-                        try
-                        {
-                            await (Context.User as IGuildUser).AddRoleAsync(serverrole);
-                        }
-                        catch
-                        {
-                            embed.AddField("ERROR", "User Role Unable to be modified");
-                        }
+                        await (Context.User as IGuildUser).AddRoleAsync(serverrole);
                     }
                     catch
                     {
-                        embed.AddField("ERROR", "Register Role is Unavailable");
+                        embed.AddField("ERROR", "User Role Unable to be modified");
                     }
-                await ReplyAsync("", false, embed.Build());
-            }
+                }
+                catch
+                {
+                    embed.AddField("ERROR", "Register Role is Unavailable");
+                }
+            await ReplyAsync("", false, embed.Build());
         }
 
         [Command("GetUser")]
