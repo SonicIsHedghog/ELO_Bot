@@ -225,7 +225,7 @@ namespace ELO_Bot.Commands
                     return;
                 }
 
-                if (lobby.Team1.Count >= lobby.Team2.Count)
+                if (lobby.Team1.Count > lobby.Team2.Count)
                 {
                     embed.AddField("ERROR", "Team 2's turn to pick.");
                     await ReplyAsync("", false, embed.Build());
