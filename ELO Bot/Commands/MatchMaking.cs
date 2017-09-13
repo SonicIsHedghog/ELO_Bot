@@ -290,7 +290,13 @@ namespace ELO_Bot.Commands
                 }
 
                 if (lobby.Users.Count == 0 || lobby.Users == null)
+                {
                     await Teams(server, lobby.Team1, lobby.Team2);
+                }
+
+                embed.AddField("ERROR", "I dont think it's your turn to pick a player.....");
+                await ReplyAsync("", false, embed.Build());
+
             }
             else
             {
@@ -441,16 +447,33 @@ namespace ELO_Bot.Commands
                 team2Userlist.Add(u);
                 t2 += $"{u.Mention} ";
             }
+            
+            
 
-            await ReplyAsync("**GAME ON**\n" +
-                             $"Team1: {t1}\n" +
-                             $"Team2: {t2}");
+
 
             var host = await Context.Guild.GetUserAsync(team1[0]);
 
             //ADD GAME SAVING
 
             var currentqueue = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
+
+                if (currentqueue.Maps.Count > 0 && currentqueue.Maps != null)
+                {
+                    var rnd = new Random().Next(0, currentqueue.Maps.Count);
+                    await ReplyAsync("**GAME ON**\n" +
+                                     $"Team1: {t1}\n" +
+                                     $"Team2: {t2}\n\n" +
+                                     $"Random Map: {currentqueue.Maps[rnd]}");
+                }
+                else
+                {
+                    await ReplyAsync("**GAME ON**\n" +
+                                     $"Team1: {t1}\n" +
+                                     $"Team2: {t2}");
+                }
+
+
             currentqueue.Users = new List<ulong>();
             currentqueue.Team1 = new List<ulong>();
             currentqueue.Team2 = new List<ulong>();
