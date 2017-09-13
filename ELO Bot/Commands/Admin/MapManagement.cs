@@ -1,6 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Discord.Commands;
-using System.Linq;
 
 namespace ELO_Bot.Commands.Admin
 {

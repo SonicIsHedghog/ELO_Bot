@@ -35,8 +35,8 @@ namespace ELO_Bot.Commands
             if (modulearg == null) //ShortHelp
             {
                 foreach (var module in _service.Modules)
-                {
-                    if (module.Name.ToLower() != "other" && module.Name.ToLower() != "matchmaking" && module.Name.ToLower() != "usercommands")
+                    if (module.Name.ToLower() != "other" && module.Name.ToLower() != "matchmaking" &&
+                        module.Name.ToLower() != "usercommands")
                     {
                         var list = module.Commands.Select(command => command.Name).ToList();
                         if (module.Commands.Count > 0)
@@ -46,8 +46,6 @@ namespace ELO_Bot.Commands
                                 x.Value = string.Join(", ", list);
                             });
                     }
-
-                }
                 embed.AddField("**NOTE**",
                     $"You can also see modules in more detail using `=help <modulename>`");
 
@@ -86,13 +84,13 @@ namespace ELO_Bot.Commands
                 Color = new Color(114, 137, 218),
                 Title = $"ELO BOT | Commands | Prefix: {Config.Load().Prefix}"
             };
-            
+
 
             if (modulearg == null) //ShortHelp
             {
                 foreach (var module in _service.Modules)
-                {
-                    if (module.Name.ToLower() == "other" || module.Name.ToLower() == "matchmaking" || module.Name.ToLower() == "usercommands")
+                    if (module.Name.ToLower() == "other" || module.Name.ToLower() == "matchmaking" ||
+                        module.Name.ToLower() == "usercommands")
                     {
                         var list = module.Commands.Select(command => command.Name).ToList();
                         if (module.Commands.Count > 0)
@@ -102,8 +100,6 @@ namespace ELO_Bot.Commands
                                 x.Value = string.Join(", ", list);
                             });
                     }
-
-                }
                 embed.AddField("**NOTE**",
                     $"You can also see modules in more detail using `=help <modulename>`\n" +
                     $"Admins can use `=adminhelp` for admin commands");

@@ -36,7 +36,6 @@ namespace ELO_Bot.Commands
 
             if (server.UserList.Any(member => member.UserId == Context.User.Id))
             {
-
                 var userprofile = server.UserList.FirstOrDefault(x => x.UserId == Context.User.Id);
                 embed.AddField("ERROR",
                     "You are already registered, if you wish to be renamed talk to an administrator");
@@ -144,7 +143,7 @@ namespace ELO_Bot.Commands
         [Summary("Leaderboard <wins, losses, points>")]
         [Remarks("Displays Rank Leaderboard (Top 20 if too large)")]
         [CheckRegistered]
-        public async Task LeaderBoard([Remainder]string arg = null)
+        public async Task LeaderBoard([Remainder] string arg = null)
         {
             var embed = new EmbedBuilder();
             var server = ServerList.Load(Context.Guild);

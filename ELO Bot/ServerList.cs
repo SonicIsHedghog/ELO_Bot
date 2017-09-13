@@ -73,7 +73,7 @@ namespace ELO_Bot
 
 
             public List<Gamemode> Gamemodes { get; set; } = new List<Gamemode>();
-            
+
 
             public List<Q> Queue { get; set; } = new List<Q>();
 

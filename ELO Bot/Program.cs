@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Discord;
@@ -9,7 +10,6 @@ using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Serilog;
-using System.Linq;
 
 namespace ELO_Bot
 {
@@ -105,16 +105,12 @@ namespace ELO_Bot
             private async Task _client_UserUpdated(SocketUser userBefore, SocketUser userAfter)
             {
                 if (userBefore.Status != userAfter.Status)
-                {
-
                     if (userAfter.Status == UserStatus.Idle || userAfter.Status == UserStatus.Offline)
-                    {
                         try
                         {
                             var guild = (userBefore as IGuildUser).Guild;
                             var server = ServerList.Load(guild);
                             foreach (var userqueue in server.Queue.Where(x => x.Users.Contains(userAfter.Id)))
-                            {
                                 try
                                 {
                                     if (userqueue.IsPickingTeams)
@@ -130,24 +126,19 @@ namespace ELO_Bot
                                         userqueue.Users.Remove(userAfter.Id);
                                         var channel = await guild.GetChannelAsync(userqueue.ChannelId);
                                         await (channel as ITextChannel).SendMessageAsync(
-                                            $"{userAfter.Mention} has gone idle or offline and has been removed from this channel's queue");                                        
+                                            $"{userAfter.Mention} has gone idle or offline and has been removed from this channel's queue");
                                     }
-
                                 }
                                 catch
                                 {
                                     //
                                 }
-
-                            }
                             ServerList.Saveserver(server);
                         }
                         catch
                         {
                             //
-                        }                        
-                    }
-                }
+                        }
             }
 
             private static async Task _client_JoinedGuild(SocketGuild guild)
