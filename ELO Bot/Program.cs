@@ -9,6 +9,7 @@ using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Serilog;
+using System.Linq;
 
 namespace ELO_Bot
 {
@@ -98,6 +99,55 @@ namespace ELO_Bot
 
                 _client.MessageReceived += DoCommand;
                 _client.JoinedGuild += _client_JoinedGuild;
+                _client.GuildMemberUpdated += _client_UserUpdated;
+            }
+
+            private async Task _client_UserUpdated(SocketUser userBefore, SocketUser userAfter)
+            {
+                if (userBefore.Status != userAfter.Status)
+                {
+
+                    if (userAfter.Status == UserStatus.Idle || userAfter.Status == UserStatus.Offline)
+                    {
+                        try
+                        {
+                            var guild = (userBefore as IGuildUser).Guild;
+                            var server = ServerList.Load(guild);
+                            foreach (var userqueue in server.Queue.Where(x => x.Users.Contains(userAfter.Id)))
+                            {
+                                try
+                                {
+                                    if (userqueue.IsPickingTeams)
+                                    {
+                                        var channel = await guild.GetChannelAsync(userqueue.ChannelId);
+                                        await (channel as ITextChannel).SendMessageAsync(
+                                            $"{userAfter.Mention} has gone idle or offline, as this channel is currently picking teams they were unable to be replaced in the queue\n" +
+                                            $"if they are inactive it is recommended that someone use the command `=subfor <@user>` to replace them\n" +
+                                            $"if they were already chosen for a team then make sure to tell an admin before scores are updated.");
+                                    }
+                                    else
+                                    {
+                                        userqueue.Users.Remove(userAfter.Id);
+                                        var channel = await guild.GetChannelAsync(userqueue.ChannelId);
+                                        await (channel as ITextChannel).SendMessageAsync(
+                                            $"{userAfter.Mention} has gone idle or offline and has been removed from this channel's queue");                                        
+                                    }
+
+                                }
+                                catch
+                                {
+                                    //
+                                }
+
+                            }
+                            ServerList.Saveserver(server);
+                        }
+                        catch
+                        {
+                            //
+                        }                        
+                    }
+                }
             }
 
             private static async Task _client_JoinedGuild(SocketGuild guild)

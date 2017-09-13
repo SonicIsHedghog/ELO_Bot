@@ -515,6 +515,7 @@ namespace ELO_Bot.Commands
                     currentqueue.T2Captain = cap2.Id;
                     currentqueue.Team1 = new List<ulong>();
                     currentqueue.Team2 = new List<ulong>();
+                    currentqueue.IsPickingTeams = true;
                     ServerList.Saveserver(server);
                     return;
                 }
