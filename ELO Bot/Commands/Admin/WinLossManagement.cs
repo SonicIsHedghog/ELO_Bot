@@ -53,51 +53,59 @@ namespace ELO_Bot.Commands.Admin
         [Remarks("Automatically update wins/losses for the selected team")]
         public async Task Win(string lobbyname, int gamenumber, string team)
         {
-            var server = ServerList.Load(Context.Guild);
-            IMessageChannel channel = null;
-            foreach (var chan in (Context.Guild as SocketGuild).Channels)
-                if (string.Equals(chan.Name, lobbyname, StringComparison.CurrentCultureIgnoreCase))
-                    channel = chan as IMessageChannel;
-
-            if (channel == null)
+            try
             {
-                var queuechannels = "";
-                foreach (var chan in server.Queue)
+                var server = ServerList.Load(Context.Guild);
+                IMessageChannel channel = null;
+                foreach (var chan in (Context.Guild as SocketGuild).Channels)
+                    if (string.Equals(chan.Name, lobbyname, StringComparison.CurrentCultureIgnoreCase))
+                        channel = chan as IMessageChannel;
+
+                if (channel == null)
                 {
-                    var getqueuechannels = await Context.Guild.GetChannelAsync(chan.ChannelId);
-                    queuechannels += $"{getqueuechannels.Name}\n";
+                    var queuechannels = "";
+                    foreach (var chan in server.Queue)
+                    {
+                        var getqueuechannels = await Context.Guild.GetChannelAsync(chan.ChannelId);
+                        queuechannels += $"{getqueuechannels.Name}\n";
+                    }
+                    await ReplyAsync("**ERROR:** Please specify the channel in which queue was created\n" +
+                                     "Here are a list:\n" +
+                                     $"{queuechannels}");
+                    return;
                 }
-                await ReplyAsync("**ERROR:** Please specify the channel in which queue was created\n" +
-                                 "Here are a list:\n" +
-                                 $"{queuechannels}");
-                return;
+
+                var game = server.Gamelist.FirstOrDefault(x => x.LobbyId == channel.Id
+                                                               && x.GameNumber == gamenumber);
+                var team1 = new List<IUser>();
+                var team2 = new List<IUser>();
+                foreach (var user in game.Team1)
+                    team1.Add(await Context.Guild.GetUserAsync(user));
+
+                foreach (var user in game.Team2)
+                    team2.Add(await Context.Guild.GetUserAsync(user));
+
+                switch (team.ToLower())
+                {
+                    case "team1":
+                        await WinLossPoints(server, team1, true, server.Winamount);
+                        await WinLossPoints(server, team2, false, server.Lossamount);
+                        break;
+                    case "team2":
+                        await WinLossPoints(server, team2, true, server.Winamount);
+                        await WinLossPoints(server, team1, false, server.Lossamount);
+                        break;
+                    default:
+                        await ReplyAsync(
+                            "Please specify a team in the following format `=game <lobby> <number> team1` or `=game <lobby> <number> team2`");
+                        break;
+                }
             }
-
-            var game = server.Gamelist.FirstOrDefault(x => x.LobbyId == channel.Id
-                                                           || x.GameNumber == gamenumber);
-            var team1 = new List<IUser>();
-            var team2 = new List<IUser>();
-            foreach (var user in game.Team1)
-                team1.Add(await Context.Guild.GetUserAsync(user));
-
-            foreach (var user in game.Team2)
-                team2.Add(await Context.Guild.GetUserAsync(user));
-
-            switch (team.ToLower())
+            catch (Exception e)
             {
-                case "team1":
-                    await WinLossPoints(server, team1, true, server.Winamount);
-                    await WinLossPoints(server, team2, false, server.Lossamount);
-                    break;
-                case "team2":
-                    await WinLossPoints(server, team2, true, server.Winamount);
-                    await WinLossPoints(server, team1, false, server.Lossamount);
-                    break;
-                default:
-                    await ReplyAsync(
-                        "Please specify a team in the following format `=game <number> team1` or `=game <number> team2`");
-                    break;
+                await ReplyAsync(e.ToString());
             }
+
         }
 
         public async Task WinLossPoints(ServerList.Server server, List<IUser> users, bool win, int points)
