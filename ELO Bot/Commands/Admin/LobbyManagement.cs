@@ -21,6 +21,13 @@ namespace ELO_Bot.Commands.Admin
                 var embed = new EmbedBuilder();
                 try
                 {
+                    if (userlimit % 2 != 0)
+                    {
+                        embed.AddField("ERROR", "Userlimit must be even ie. 10 for two teams of 5");
+                        await ReplyAsync("", false, embed.Build());
+                        return;
+                    }
+
                     var lobbyexists = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
                     if (lobbyexists == null)
                     {

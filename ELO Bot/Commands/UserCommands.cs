@@ -143,53 +143,75 @@ namespace ELO_Bot.Commands
         [Summary("Leaderboard <wins, losses, points>")]
         [Remarks("Displays Rank Leaderboard (Top 20 if too large)")]
         [CheckRegistered]
-        public async Task LeaderBoard([Remainder] string arg = null)
+        public async Task LeaderBoard(string arg = null)
         {
             var embed = new EmbedBuilder();
             var server = ServerList.Load(Context.Guild);
             var desc = "";
-
-            if (arg.Contains("win"))
+            try
             {
-                var orderlist = server.UserList.OrderBy(x => x.Wins).Reverse().ToList();
+                if (arg.Contains("win"))
+                {
+                    var orderlist = server.UserList.OrderBy(x => x.Wins).Reverse().ToList();
 
-                var i = 0;
-                foreach (var user in orderlist)
-                {
-                    i++;
-                    if (i <= 20)
-                        desc += $"{i}. {user.Username} - {user.Wins}\n";
+                    var i = 0;
+                    foreach (var user in orderlist)
+                    {
+                        i++;
+                        if (i <= 20)
+                            desc += $"{i}. {user.Username} - {user.Wins}\n";
+                    }
+                    embed.WithFooter(x =>
+                    {
+                        x.Text = $"Usercount = {i}";
+                        x.IconUrl = Context.Client.CurrentUser.GetAvatarUrl();
+                    });
+                    embed.AddField("LeaderBoard Wins", desc);
+                    embed.Color = Color.Blue;
+                    await ReplyAsync("", false, embed.Build());
                 }
-                embed.WithFooter(x =>
+                else if (arg.Contains("los"))
                 {
-                    x.Text = $"Usercount = {i}";
-                    x.IconUrl = Context.Client.CurrentUser.GetAvatarUrl();
-                });
-                embed.AddField("LeaderBoard Wins", desc);
-                embed.Color = Color.Blue;
-                await ReplyAsync("", false, embed.Build());
-            }
-            else if (arg.Contains("lose"))
-            {
-                var orderlist = server.UserList.OrderBy(x => x.Losses).Reverse().ToList();
+                    var orderlist = server.UserList.OrderBy(x => x.Losses).Reverse().ToList();
 
-                var i = 0;
-                foreach (var user in orderlist)
-                {
-                    i++;
-                    if (i <= 20)
-                        desc += $"{i}. {user.Username} - {user.Losses}\n";
+                    var i = 0;
+                    foreach (var user in orderlist)
+                    {
+                        i++;
+                        if (i <= 20)
+                            desc += $"{i}. {user.Username} - {user.Losses}\n";
+                    }
+                    embed.WithFooter(x =>
+                    {
+                        x.Text = $"Usercount = {i}";
+                        x.IconUrl = Context.Client.CurrentUser.GetAvatarUrl();
+                    });
+                    embed.AddField("LeaderBoard Losses", desc);
+                    embed.Color = Color.Blue;
+                    await ReplyAsync("", false, embed.Build());
                 }
-                embed.WithFooter(x =>
+                else
                 {
-                    x.Text = $"Usercount = {i}";
-                    x.IconUrl = Context.Client.CurrentUser.GetAvatarUrl();
-                });
-                embed.AddField("LeaderBoard Losses", desc);
-                embed.Color = Color.Blue;
-                await ReplyAsync("", false, embed.Build());
+                    var orderlist = server.UserList.OrderBy(x => x.Points).Reverse().ToList();
+
+                    var i = 0;
+                    foreach (var user in orderlist)
+                    {
+                        i++;
+                        if (i <= 20)
+                            desc += $"{i}. {user.Username} - {user.Points}\n";
+                    }
+                    embed.WithFooter(x =>
+                    {
+                        x.Text = $"Usercount = {i}";
+                        x.IconUrl = Context.Client.CurrentUser.GetAvatarUrl();
+                    });
+                    embed.AddField("LeaderBoard Points", desc);
+                    embed.Color = Color.Blue;
+                    await ReplyAsync("", false, embed.Build());
+                }
             }
-            else
+            catch
             {
                 var orderlist = server.UserList.OrderBy(x => x.Points).Reverse().ToList();
 
@@ -209,6 +231,7 @@ namespace ELO_Bot.Commands
                 embed.Color = Color.Blue;
                 await ReplyAsync("", false, embed.Build());
             }
+
         }
 
         [Command("ranks")]
