@@ -36,8 +36,7 @@ namespace ELO_Bot
 
             Client = new DiscordSocketClient(new DiscordSocketConfig
             {
-                LogLevel = LogSeverity.Info,
-                MessageCacheSize = 500
+                LogLevel = LogSeverity.Info
             });
 
             try

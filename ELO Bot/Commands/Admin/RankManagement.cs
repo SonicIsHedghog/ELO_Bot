@@ -5,12 +5,12 @@ using Discord.Commands;
 
 namespace ELO_Bot.Commands.Admin
 {
+    [CheckAdmin]
     public class RankManagement : ModuleBase
     {
         [Command("addrank")]
         [Summary("addrank <points> <@role>")]
         [Remarks("set a Rank to join")]
-        [CheckAdmin]
         public async Task SetReg(int points, IRole role)
         {
             var embed = new EmbedBuilder();
@@ -63,7 +63,6 @@ namespace ELO_Bot.Commands.Admin
         [Command("removerank")]
         [Summary("removerank <@role>")]
         [Remarks("remove a role from the Ranks list")]
-        [CheckAdmin]
         public async Task Remove(IRole role = null)
         {
             var embed = new EmbedBuilder();

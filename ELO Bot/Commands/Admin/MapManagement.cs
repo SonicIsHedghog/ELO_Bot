@@ -1,20 +1,22 @@
 ﻿using System.Threading.Tasks;
 using Discord.Commands;
+using System.Linq;
 
 namespace ELO_Bot.Commands.Admin
 {
+    [CheckAdmin]
     public class MapManagement : ModuleBase
     {
         [Command("AddMap")]
         [Summary("AddMap <MapName>")]
         [Remarks("Add A Map")]
-        [CheckAdmin]
         public async Task AddMap(string mapName)
         {
             var server = ServerList.Load(Context.Guild);
-            if (!server.Maps.Contains(mapName))
+            var lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
+            if (!lobby.Maps.Contains(mapName))
             {
-                server.Maps.Add(mapName);
+                lobby.Maps.Add(mapName);
                 await ReplyAsync($"Map added {mapName}");
 
                 ServerList.Saveserver(server);
@@ -28,13 +30,13 @@ namespace ELO_Bot.Commands.Admin
         [Command("DelMap")]
         [Summary("DelMap <MapName>")]
         [Remarks("Delete A Map")]
-        [CheckAdmin]
         public async Task DeleteMap(string mapName)
         {
             var server = ServerList.Load(Context.Guild);
-            if (server.Maps.Contains(mapName))
+            var lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
+            if (lobby.Maps.Contains(mapName))
             {
-                server.Maps.Remove(mapName);
+                lobby.Maps.Remove(mapName);
                 await ReplyAsync($"Map Removed {mapName}");
                 ServerList.Saveserver(server);
             }

@@ -17,7 +17,8 @@ namespace ELO_Bot.Commands
         {
             var embed = new EmbedBuilder();
             var server = ServerList.Load(Context.Guild);
-            foreach (var map in server.Maps)
+            var lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
+            foreach (var map in lobby.Maps)
                 embed.Description += $"{map}\n";
 
             await ReplyAsync("", false, embed.Build());
@@ -564,8 +565,8 @@ namespace ELO_Bot.Commands
 
                 try
                 {
-                    var r = new Random().Next(0, server.Maps.Count);
-                    var randmap = server.Maps[r];
+                    var r = new Random().Next(0, currentqueue.Maps.Count);
+                    var randmap = currentqueue.Maps[r];
                     embed.AddField("Random Map", $"{randmap}");
                 }
                 catch

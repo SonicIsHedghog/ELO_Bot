@@ -5,12 +5,12 @@ using Discord.Commands;
 
 namespace ELO_Bot.Commands.Admin
 {
+    [CheckAdmin]
     public class UserManagement : ModuleBase
     {
         [Command("Deluser")]
         [Summary("DelUser <@user>")]
         [Remarks("deletes a user from the server's registered list")]
-        [CheckAdmin]
         public async Task DelUser(IUser user)
         {
             var embed = new EmbedBuilder();
@@ -115,7 +115,6 @@ namespace ELO_Bot.Commands.Admin
         [Command("Rename")]
         [Summary("Rename <@user>")]
         [Remarks("Sets the role users will join when registering")]
-        [CheckAdmin]
         public async Task Rename(IUser user, string newname = null)
         {
             var embed = new EmbedBuilder();

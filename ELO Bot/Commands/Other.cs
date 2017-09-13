@@ -20,6 +20,62 @@ namespace ELO_Bot.Commands
             _service = service;
         }
 
+        [Command("adminhelp")]
+        [Summary("adminhelp")]
+        [Remarks("adminall help commands")]
+        public async Task AHelpAsync(string modulearg = null)
+        {
+            var embed = new EmbedBuilder
+            {
+                Color = new Color(114, 137, 218),
+                Title = $"ELO BOT | Commands | Prefix: {Config.Load().Prefix}"
+            };
+
+
+            if (modulearg == null) //ShortHelp
+            {
+                foreach (var module in _service.Modules)
+                {
+                    if (module.Name.ToLower() != "other" && module.Name.ToLower() != "matchmaking" && module.Name.ToLower() != "usercommands")
+                    {
+                        var list = module.Commands.Select(command => command.Name).ToList();
+                        if (module.Commands.Count > 0)
+                            embed.AddField(x =>
+                            {
+                                x.Name = module.Name;
+                                x.Value = string.Join(", ", list);
+                            });
+                    }
+
+                }
+                embed.AddField("**NOTE**",
+                    $"You can also see modules in more detail using `=help <modulename>`");
+
+                embed.AddField("Developed By PassiveModding", "Support Server: https://discord.gg/n2Vs38n \n" +
+                                                              "Patreon: https://www.patreon.com/passivebot  \n" +
+                                                              "Invite the BOT: https://goo.gl/mbfnjj");
+            }
+            else
+            {
+                foreach (var module in _service.Modules)
+                    if (string.Equals(module.Name, modulearg, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        var list = new List<string>();
+                        foreach (var command in module.Commands)
+                            list.Add(
+                                $"{Config.Load().Prefix}{command.Summary} - {command.Remarks}");
+                        embed.AddField(module.Name, string.Join("\n", list));
+                    }
+                if (embed.Fields.Count == 0)
+                {
+                    embed.AddField("Error", $"{modulearg} is not a module");
+                    var list = _service.Modules.Select(module => module.Name).ToList();
+                    embed.AddField("Modules", string.Join("\n", list));
+                }
+            }
+            await ReplyAsync("", false, embed.Build());
+        }
+
         [Command("help")]
         [Summary("help")]
         [Remarks("all help commands")]
@@ -30,20 +86,27 @@ namespace ELO_Bot.Commands
                 Color = new Color(114, 137, 218),
                 Title = $"ELO BOT | Commands | Prefix: {Config.Load().Prefix}"
             };
+            
+
             if (modulearg == null) //ShortHelp
             {
                 foreach (var module in _service.Modules)
                 {
-                    var list = module.Commands.Select(command => command.Name).ToList();
-                    if (module.Commands.Count > 0)
-                        embed.AddField(x =>
-                        {
-                            x.Name = module.Name;
-                            x.Value = string.Join(", ", list);
-                        });
+                    if (module.Name.ToLower() == "other" || module.Name.ToLower() == "matchmaking" || module.Name.ToLower() == "usercommands")
+                    {
+                        var list = module.Commands.Select(command => command.Name).ToList();
+                        if (module.Commands.Count > 0)
+                            embed.AddField(x =>
+                            {
+                                x.Name = module.Name;
+                                x.Value = string.Join(", ", list);
+                            });
+                    }
+
                 }
                 embed.AddField("**NOTE**",
-                    $"You can also see modules in more detail using `=help <modulename>`");
+                    $"You can also see modules in more detail using `=help <modulename>`\n" +
+                    $"Admins can use `=adminhelp` for admin commands");
 
                 embed.AddField("Developed By PassiveModding", "Support Server: https://discord.gg/n2Vs38n \n" +
                                                               "Patreon: https://www.patreon.com/passivebot  \n" +

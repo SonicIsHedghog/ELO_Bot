@@ -8,12 +8,12 @@ using Discord.WebSocket;
 
 namespace ELO_Bot.Commands.Admin
 {
+    [CheckAdmin]
     public class WinLossManagement : ModuleBase
     {
         [Command("win")]
         [Summary("Win <users>")]
         [Remarks("Add a win + win points for the specified users")]
-        [CheckAdmin]
         public async Task Win(params IUser[] userlist)
         {
             var embed = new EmbedBuilder();
@@ -32,7 +32,6 @@ namespace ELO_Bot.Commands.Admin
         [Command("Lose")]
         [Summary("Lose <users>")]
         [Remarks("Add a loss to the specified users")]
-        [CheckAdmin]
         public async Task Lose(params IUser[] userlist)
         {
             var embed = new EmbedBuilder();

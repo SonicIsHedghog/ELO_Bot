@@ -73,7 +73,7 @@ namespace ELO_Bot
 
 
             public List<Gamemode> Gamemodes { get; set; } = new List<Gamemode>();
-            public List<string> Maps { get; set; } = new List<string>();
+            
 
             public List<Q> Queue { get; set; } = new List<Q>();
 
@@ -92,7 +92,7 @@ namespace ELO_Bot
                 public int UserLimit { get; set; } = 10;
                 public string ChannelGametype { get; set; } = "Unknown";
                 public int Games { get; set; } = 0;
-
+                public List<string> Maps { get; set; } = new List<string>();
 
                 public bool Captains { get; set; } = false;
                 public bool IsPickingTeams { get; set; } = false;

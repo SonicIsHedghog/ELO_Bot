@@ -24,54 +24,47 @@ namespace ELO_Bot.Commands
                 return;
             }
 
-
-            var user = new ServerList.Server.User
-            {
-                UserId = Context.User.Id,
-                Username = username,
-                Points = 0
-            };
-
             var server = ServerList.Load(Context.Guild);
+
             if (server.UserList.Count >= 20 && !server.IsPremium)
-                {
-                    embed.AddField("ERROR",
-                        "Free User limit has been hit. To upgrade the limit from 20 users to unlimited users, Purchase premium here: https://rocketr.net/buy/0e79a25902f5");
-                    await ReplyAsync("", false, embed.Build());
-                    return;
-                }
+            {
+                embed.AddField("ERROR",
+                    "Free User limit has been hit. To upgrade the limit from 20 users to unlimited users, Purchase premium here: https://rocketr.net/buy/0e79a25902f5");
+                await ReplyAsync("", false, embed.Build());
+                return;
+            }
 
             if (server.UserList.Any(member => member.UserId == Context.User.Id))
             {
+
                 var userprofile = server.UserList.FirstOrDefault(x => x.UserId == Context.User.Id);
                 embed.AddField("ERROR",
                     "You are already registered, if you wish to be renamed talk to an administrator");
 
                 if (!(Context.User as IGuildUser).RoleIds.Contains(server.RegisterRole) && server.RegisterRole != 0)
-                {
+                    try
+                    {
+                        var serverrole = Context.Guild.GetRole(server.RegisterRole);
                         try
                         {
-                            var serverrole = Context.Guild.GetRole(server.RegisterRole);
-                            try
-                            {
-                                await (Context.User as IGuildUser).AddRoleAsync(serverrole);
-                            }
-                            catch
-                            {
-                                embed.AddField("ERROR", "User Role Unable to be modified");
-                            }
+                            await (Context.User as IGuildUser).AddRoleAsync(serverrole);
                         }
                         catch
                         {
-                            embed.AddField("ERROR", "Register Role is Unavailable");
+                            embed.AddField("ERROR", "User Role Unable to be modified");
                         }
-
-
-                }
+                    }
+                    catch
+                    {
+                        embed.AddField("ERROR", "Register Role is Unavailable");
+                    }
 
                 try
                 {
-                    await (Context.User as IGuildUser).ModifyAsync(x => { x.Nickname = $"{userprofile.Points} ~ {username}"; });
+                    await (Context.User as IGuildUser).ModifyAsync(x =>
+                    {
+                        x.Nickname = $"{userprofile.Points} ~ {username}";
+                    });
                 }
                 catch
                 {
@@ -83,6 +76,13 @@ namespace ELO_Bot.Commands
                 await ReplyAsync("", false, embed.Build());
                 return;
             }
+
+            var user = new ServerList.Server.User
+            {
+                UserId = Context.User.Id,
+                Username = username,
+                Points = 0
+            };
 
             server.UserList.Add(user);
             ServerList.Saveserver(server);
@@ -141,32 +141,75 @@ namespace ELO_Bot.Commands
         }
 
         [Command("Leaderboard")]
-        [Summary("Leaderboard")]
+        [Summary("Leaderboard <wins, losses, points>")]
         [Remarks("Displays Rank Leaderboard (Top 20 if too large)")]
         [CheckRegistered]
-        public async Task LeaderBoard()
+        public async Task LeaderBoard([Remainder]string arg = null)
         {
             var embed = new EmbedBuilder();
             var server = ServerList.Load(Context.Guild);
             var desc = "";
 
-            var orderlist = server.UserList.OrderBy(x => x.Points).Reverse().ToList();
+            if (arg.Contains("win"))
+            {
+                var orderlist = server.UserList.OrderBy(x => x.Wins).Reverse().ToList();
 
-            var i = 0;
-            foreach (var user in orderlist)
-            {
-                i++;
-                if (i <= 20)
-                    desc += $"{i}. {user.Username} - {user.Points}\n";
+                var i = 0;
+                foreach (var user in orderlist)
+                {
+                    i++;
+                    if (i <= 20)
+                        desc += $"{i}. {user.Username} - {user.Wins}\n";
+                }
+                embed.WithFooter(x =>
+                {
+                    x.Text = $"Usercount = {i}";
+                    x.IconUrl = Context.Client.CurrentUser.GetAvatarUrl();
+                });
+                embed.AddField("LeaderBoard Wins", desc);
+                embed.Color = Color.Blue;
+                await ReplyAsync("", false, embed.Build());
             }
-            embed.WithFooter(x =>
+            else if (arg.Contains("lose"))
             {
-                x.Text = $"Usercount = {i}";
-                x.IconUrl = Context.Client.CurrentUser.GetAvatarUrl();
-            });
-            embed.AddField("LeaderBoard", desc);
-            embed.Color = Color.Blue;
-            await ReplyAsync("", false, embed.Build());
+                var orderlist = server.UserList.OrderBy(x => x.Losses).Reverse().ToList();
+
+                var i = 0;
+                foreach (var user in orderlist)
+                {
+                    i++;
+                    if (i <= 20)
+                        desc += $"{i}. {user.Username} - {user.Losses}\n";
+                }
+                embed.WithFooter(x =>
+                {
+                    x.Text = $"Usercount = {i}";
+                    x.IconUrl = Context.Client.CurrentUser.GetAvatarUrl();
+                });
+                embed.AddField("LeaderBoard Losses", desc);
+                embed.Color = Color.Blue;
+                await ReplyAsync("", false, embed.Build());
+            }
+            else
+            {
+                var orderlist = server.UserList.OrderBy(x => x.Points).Reverse().ToList();
+
+                var i = 0;
+                foreach (var user in orderlist)
+                {
+                    i++;
+                    if (i <= 20)
+                        desc += $"{i}. {user.Username} - {user.Points}\n";
+                }
+                embed.WithFooter(x =>
+                {
+                    x.Text = $"Usercount = {i}";
+                    x.IconUrl = Context.Client.CurrentUser.GetAvatarUrl();
+                });
+                embed.AddField("LeaderBoard Points", desc);
+                embed.Color = Color.Blue;
+                await ReplyAsync("", false, embed.Build());
+            }
         }
 
         [Command("ranks")]

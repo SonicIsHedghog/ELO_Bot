@@ -13,7 +13,6 @@ namespace ELO_Bot.Commands.Admin
         [Command("Premium")]
         [Summary("Premium <key>")]
         [Remarks("Upgrade the server to premium and increase the userlimit to unlimited")]
-        [CheckAdmin]
         public async Task PremiumCommand(string key = null)
         {
             var server = ServerList.Load(Context.Guild);

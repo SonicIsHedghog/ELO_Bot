@@ -8,6 +8,7 @@ namespace ELO_Bot.Commands.Admin
     [RequireTopic]
     [RequireContext(ContextType.Guild)]
     [CheckRegistered]
+    [CheckAdmin]
     public class AdminCommands : ModuleBase
     {
         [Command("SetAnnouncements")]
@@ -24,7 +25,6 @@ namespace ELO_Bot.Commands.Admin
         [Command("SetAdmin")]
         [Summary("SetAdmin <@role>")]
         [Remarks("sets the configurable admin role")]
-        [CheckAdmin]
         public async Task SetAdmin(IRole adminrole)
         {
             var embed = new EmbedBuilder();
@@ -41,7 +41,6 @@ namespace ELO_Bot.Commands.Admin
         [Command("SetWelcome")]
         [Summary("SetWelcome <message>")]
         [Remarks("sets the configurable welcome message")]
-        [CheckAdmin]
         public async Task SetWelcome([Remainder] string message = null)
         {
             var embed = new EmbedBuilder();
@@ -68,7 +67,6 @@ namespace ELO_Bot.Commands.Admin
         [Command("SetRegisterRole")]
         [Summary("SetRegisterRole <@role>")]
         [Remarks("Sets the role users will join when registering")]
-        [CheckAdmin]
         public async Task SetReg(IRole role = null)
         {
             var embed = new EmbedBuilder();
@@ -93,7 +91,6 @@ namespace ELO_Bot.Commands.Admin
         [Command("ModifyLoss")]
         [Summary("ModifyLoss <points>")]
         [Remarks("Sets the servers Loss amount")]
-        [CheckAdmin]
         public async Task Lose(int points)
         {
             var embed = new EmbedBuilder();
@@ -117,7 +114,6 @@ namespace ELO_Bot.Commands.Admin
         [Command("ModifyWin")]
         [Summary("ModifyWin <points>")]
         [Remarks("Sets the servers Win amount")]
-        [CheckAdmin]
         public async Task Win(int points)
         {
             var embed = new EmbedBuilder();

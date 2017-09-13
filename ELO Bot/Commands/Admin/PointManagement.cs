@@ -6,12 +6,12 @@ using Discord.Commands;
 
 namespace ELO_Bot.Commands.Admin
 {
+    [CheckAdmin]
     public class PointsManagement : ModuleBase
     {
         [Command("AddPoints")]
         [Summary("AddPoints <points> <users>")]
         [Remarks("add points to the specified users")]
-        [CheckAdmin]
         public async Task AddPoints(int points, params IUser[] userlist)
         {
             var embed = new EmbedBuilder();
@@ -64,7 +64,6 @@ namespace ELO_Bot.Commands.Admin
         [Command("DelPoints")]
         [Summary("DelPoints <points> <users>")]
         [Remarks("remove points from the specified users")]
-        [CheckAdmin]
         public async Task DelPoints(int points, params IUser[] userlist)
         {
             var embed = new EmbedBuilder();
@@ -112,7 +111,6 @@ namespace ELO_Bot.Commands.Admin
         [Command("DelWin")]
         [Summary("DelWin <users>")]
         [Remarks("remove one win from the specified users")]
-        [CheckAdmin]
         public async Task DelWin(params IUser[] userlist)
         {
             var embed = new EmbedBuilder();
@@ -145,7 +143,6 @@ namespace ELO_Bot.Commands.Admin
         [Command("DelLose")]
         [Summary("DelLose <users>")]
         [Remarks("remove a single loss from the specified users")]
-        [CheckAdmin]
         public async Task DelLose(params IUser[] userlist)
         {
             var embed = new EmbedBuilder();
@@ -178,7 +175,6 @@ namespace ELO_Bot.Commands.Admin
         [Command("SetPoints")]
         [Summary("SetPoints <points> <user>")]
         [Remarks("set a user's exact points")]
-        [CheckAdmin]
         public async Task DelPoints(int points, IUser user)
         {
             var embed = new EmbedBuilder();

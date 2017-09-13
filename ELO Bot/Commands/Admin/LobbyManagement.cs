@@ -7,12 +7,12 @@ using Discord.Commands;
 
 namespace ELO_Bot.Commands.Admin
 {
+    [CheckAdmin]
     public class LobbyManagement : ModuleBase
     {
         [Command("CreateLobby")]
         [Summary("CreateLobby <userlimit> <lobby message>")]
         [Remarks("Turn The current channel into a lobby")]
-        [CheckRegistered]
         public async Task LobbyCreate(int userlimit, bool captains, [Remainder] string lobbyMessage = null)
         {
             try
@@ -76,7 +76,6 @@ namespace ELO_Bot.Commands.Admin
         [Command("RemoveLobby")]
         [Summary("RemoveLobby")]
         [Remarks("Remove A Lobby")]
-        [CheckAdmin]
         public async Task ClearLobby()
         {
             var server = ServerList.Load(Context.Guild);
@@ -96,7 +95,6 @@ namespace ELO_Bot.Commands.Admin
         [Command("Clear")]
         [Summary("Clear")]
         [Remarks("Clear The Queue")]
-        [CheckAdmin]
         public async Task ClearQueue()
         {
             var server = ServerList.Load(Context.Guild);
