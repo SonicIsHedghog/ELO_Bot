@@ -25,6 +25,7 @@ namespace ELO_Bot.Commands
         }
 
         [Command("Queue")]
+        [Alias("q")]
         [Summary("Queue")]
         [Remarks("Display the current queue")]
         public async Task Queue()
@@ -133,6 +134,7 @@ namespace ELO_Bot.Commands
 
         [Command("pick")]
         [Summary("pick <@user>")]
+        [Alias("p")]
         [Remarks("Choose a player for your team")]
         public async Task Pick(IUser user)
         {
@@ -310,6 +312,7 @@ namespace ELO_Bot.Commands
 
         [Command("Join")]
         [Summary("Join")]
+        [Alias("j")]
         [Remarks("Join the current queue")]
         public async Task Join()
         {
