@@ -237,7 +237,7 @@ namespace ELO_Bot.Commands
                     return;
                 }
 
-                embed.AddField("ERROR", "FUCK");
+                embed.AddField("ERROR", "FUCK tell Passive to fix something...");
                 await ReplyAsync("", false, embed.Build());
             }
             else if (Context.User.Id == lobby.T2Captain)
@@ -257,8 +257,8 @@ namespace ELO_Bot.Commands
                     var t2List = "";
                     var users = "";
 
-                    var cap1 = await Context.Guild.GetUserAsync(lobby.T2Captain);
-                    var cap2 = await Context.Guild.GetUserAsync(lobby.T1Captain);
+                    var cap1 = await Context.Guild.GetUserAsync(lobby.T1Captain);
+                    var cap2 = await Context.Guild.GetUserAsync(lobby.T2Captain);
                     foreach (var us in lobby.Team1)
                     {
                         var u = await Context.Client.GetUserAsync(us);
@@ -287,6 +287,7 @@ namespace ELO_Bot.Commands
                     await ReplyAsync("", false, embed.Build());
                     lobby.IsPickingTeams = true;
                     ServerList.Saveserver(server);
+
                     if (lobby.Users.Count == 0 || lobby.Users == null)
                     {
                         await Teams(server, lobby.Team1, lobby.Team2);
@@ -396,6 +397,72 @@ namespace ELO_Bot.Commands
             }
         }
 
+
+        [Command("replace")]
+        [Summary("replace <@user>")]
+        [Remarks("replace the specified user in the previously chosen game")]
+        public async Task Replace(IUser user)
+        {
+            var server = ServerList.Load(Context.Guild);
+            var embed = new EmbedBuilder();
+            var queue = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
+            var oldgame = server.Gamelist.FirstOrDefault(x => x.LobbyId == Context.Channel.Id && x.GameNumber == queue.Games);
+            if (oldgame != null)
+            {
+                if (oldgame.Team1.Contains(Context.User.Id) || oldgame.Team2.Contains(Context.User.Id))
+                {
+                    await ReplyAsync("You are already in a team for the previous game. Only users that were'nt in this game can replace others.");
+                    return;
+                }
+
+                if (oldgame.Team1.Contains(user.Id))
+                {
+                    //remove specified user and replace with new user.
+                    oldgame.Team1.Remove(user.Id);
+                    oldgame.Team1.Add(user.Id);
+
+                    await ReplyAsync($"Game #{oldgame.GameNumber} Team 1: {user.Mention} has been replaced by {Context.User.Mention}");
+                }
+                if (oldgame.Team2.Contains(user.Id))
+                {
+                    oldgame.Team2.Remove(user.Id);
+                    oldgame.Team2.Add(user.Id);
+
+                    await ReplyAsync($"Game #{oldgame.GameNumber} Team 2: {user.Mention} has been replaced by {Context.User.Mention}");
+                }
+
+                if (server.AnnouncementsChannel != 0)
+                {
+                    
+                    var announcement = "**__Game Has Been Updated__**\n" +
+                   "**Lobby:** \n" +
+                   $"{Context.Channel.Name} - Match #{oldgame.GameNumber}\n" +
+                   $"**Team 1:** [{string.Join(" ", oldgame.Team1.Select(async x => (await Context.Guild.GetUserAsync(x)).Mention))}]\n" +
+                   $"**Team 2**: [{string.Join(" ", oldgame.Team2.Select(async x => (await Context.Guild.GetUserAsync(x)).Mention))}]\n" +
+                   $"When the game finishes, type `=game {Context.Channel.Name} {oldgame.GameNumber} <team1 or team2>`\n" +
+                   $"This will modify each team's points respectively.";
+
+                    try
+                    {
+                        var channel = await Context.Guild.GetChannelAsync(server.AnnouncementsChannel);
+                        await (channel as IMessageChannel).SendMessageAsync(announcement);
+                    }
+                    catch
+                    {
+                        await ReplyAsync(announcement);
+                    }
+
+                }
+
+                ServerList.Saveserver(server);
+                await ReplyAsync("", false, embed.Build());
+            }
+            else
+            {
+                await ReplyAsync("Error: No queue? or something... ask passive idk");
+            }
+        }
+
         [Command("Leave")]
         [Summary("Leave")]
         [Remarks("Leave the current queue")]
@@ -449,16 +516,10 @@ namespace ELO_Bot.Commands
                 team2Userlist.Add(u);
                 t2 += $"{u.Mention} ";
             }
-            
-            
-
-
-
-            var host = await Context.Guild.GetUserAsync(team1[0]);
-
-            //ADD GAME SAVING
 
             var currentqueue = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
+
+            var host = await Context.Guild.GetUserAsync(currentqueue.T1Captain);
 
                 if (currentqueue.Maps.Count > 0 && currentqueue.Maps != null)
                 {
@@ -503,18 +564,14 @@ namespace ELO_Bot.Commands
             try
             {
                 var embed = new EmbedBuilder();
-                var userlist = new List<ServerList.Server.User>();
                 var currentqueue = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
 
-                foreach (var user in currentqueue.Users)
-                {
-                    var us = server.UserList.FirstOrDefault(x => x.UserId == user);
-                    userlist.Add(us);
-                }
+                var userlist = currentqueue.Users.Select(user => server.UserList.FirstOrDefault(x => x.UserId == user)).ToList();
 
                 //order list by User Points
                 if (currentqueue.Captains)
                 {
+
                     var rnd = new Random();
                     var captains = Enumerable.Range(0, currentqueue.Users.Count).OrderBy(x => rnd.Next()).Take(2)
                         .ToList();
