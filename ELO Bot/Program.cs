@@ -51,6 +51,8 @@ namespace ELO_Bot
                                 $"{e}");
             }
 
+            Client.Log += Client_Log;
+
             var serviceProvider = ConfigureServices();
             _handler = new CommandHandler(serviceProvider);
             await _handler.ConfigureAsync();
@@ -59,6 +61,14 @@ namespace ELO_Bot
             await Task.Delay(-1);
         }
 
+        private static Task Client_Log(LogMessage arg)
+        {
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Console()
+                .CreateLogger();
+            Log.Information(arg.ToString());
+            return Task.CompletedTask;
+        }
 
         private async Task Client_Ready()
         {
@@ -102,7 +112,7 @@ namespace ELO_Bot
                 _client.GuildMemberUpdated += _client_UserUpdated;
             }
 
-            private async Task _client_UserUpdated(SocketUser userBefore, SocketUser userAfter)
+            private static async Task _client_UserUpdated(SocketUser userBefore, SocketUser userAfter)
             {
                 if (userBefore.Status != userAfter.Status)
                     if (userAfter.Status == UserStatus.Idle || userAfter.Status == UserStatus.Offline)

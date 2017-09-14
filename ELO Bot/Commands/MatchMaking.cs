@@ -287,12 +287,14 @@ namespace ELO_Bot.Commands
                     await ReplyAsync("", false, embed.Build());
                     lobby.IsPickingTeams = true;
                     ServerList.Saveserver(server);
+                    if (lobby.Users.Count == 0 || lobby.Users == null)
+                    {
+                        await Teams(server, lobby.Team1, lobby.Team2);
+                    }
+                    return;
                 }
 
-                if (lobby.Users.Count == 0 || lobby.Users == null)
-                {
-                    await Teams(server, lobby.Team1, lobby.Team2);
-                }
+                
 
                 embed.AddField("ERROR", "I dont think it's your turn to pick a player.....");
                 await ReplyAsync("", false, embed.Build());
