@@ -419,26 +419,38 @@ namespace ELO_Bot.Commands
                 {
                     //remove specified user and replace with new user.
                     oldgame.Team1.Remove(user.Id);
-                    oldgame.Team1.Add(user.Id);
+                    oldgame.Team1.Add(Context.User.Id);
 
                     await ReplyAsync($"Game #{oldgame.GameNumber} Team 1: {user.Mention} has been replaced by {Context.User.Mention}");
                 }
                 if (oldgame.Team2.Contains(user.Id))
                 {
                     oldgame.Team2.Remove(user.Id);
-                    oldgame.Team2.Add(user.Id);
+                    oldgame.Team2.Add(Context.User.Id);
 
                     await ReplyAsync($"Game #{oldgame.GameNumber} Team 2: {user.Mention} has been replaced by {Context.User.Mention}");
                 }
 
                 if (server.AnnouncementsChannel != 0)
                 {
-                    
+                    var t1Mention = new List<IUser>();
+                    var t2Mention = new List<IUser>();
+
+                    foreach (var u in oldgame.Team1)
+                    {
+                        var use = await Context.Guild.GetUserAsync(u);
+                        t1Mention.Add(use);
+                    }
+                    foreach (var u in oldgame.Team2)
+                    {
+                        var use = await Context.Guild.GetUserAsync(u);
+                        t2Mention.Add(use);
+                    }
                     var announcement = "**__Game Has Been Updated__**\n" +
                    "**Lobby:** \n" +
                    $"{Context.Channel.Name} - Match #{oldgame.GameNumber}\n" +
-                   $"**Team 1:** [{string.Join(" ", oldgame.Team1.Select(async x => (await Context.Guild.GetUserAsync(x)).Mention))}]\n" +
-                   $"**Team 2**: [{string.Join(" ", oldgame.Team2.Select(async x => (await Context.Guild.GetUserAsync(x)).Mention))}]\n" +
+                   $"**Team 1:** [{string.Join(" ", t1Mention.Select(x => x.Mention).ToList())}]\n" +
+                   $"**Team 2**: [{string.Join(" ", t2Mention.Select(x => x.Mention).ToList())}]\n" +
                    $"When the game finishes, type `=game {Context.Channel.Name} {oldgame.GameNumber} <team1 or team2>`\n" +
                    $"This will modify each team's points respectively.";
 

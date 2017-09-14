@@ -51,12 +51,13 @@ namespace ELO_Bot
                                 $"{e}");
             }
 
-            Client.Log += Client_Log;
+            
 
             var serviceProvider = ConfigureServices();
             _handler = new CommandHandler(serviceProvider);
             await _handler.ConfigureAsync();
 
+            Client.Log += Client_Log;
             Client.Ready += Client_Ready;
             await Task.Delay(-1);
         }
