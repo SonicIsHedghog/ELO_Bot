@@ -11,6 +11,43 @@ namespace ELO_Bot.Commands.Admin
     [CheckAdmin]
     public class WinLoss : ModuleBase
     {
+        [Command("Win")]
+        [Summary("Win <users>")]
+        [Remarks("Add a win + win points for the specified users")]
+        public async Task Win(params IUser[] userlist)
+        {
+            var embed = new EmbedBuilder();
+            var server = ServerList.Load(Context.Guild);
+            var points = server.Winamount;
+            if (!(server.Winamount > 0))
+            {
+                embed.AddField("ERROR", "You have not setup the server's win modifier yet");
+                await ReplyAsync("", false, embed.Build());
+                return;
+            }
+
+            await WinLossPoints(server, userlist.ToList(), true, points);
+        }
+
+        [Command("Lose")]
+        [Summary("Lose <users>")]
+        [Remarks("Add a loss to the specified users")]
+        public async Task Lose(params IUser[] userlist)
+        {
+            var embed = new EmbedBuilder();
+            var server = ServerList.Load(Context.Guild);
+            var points = server.Lossamount;
+
+            if (!(server.Lossamount > 0))
+            {
+                embed.AddField("ERROR", "You have not setup the server's loss modifier yet");
+                await ReplyAsync("", false, embed.Build());
+                return;
+            }
+
+            await WinLossPoints(server, userlist.ToList(), false, points);
+        }
+
         [Command("DelWin")]
         [Summary("DelWin <users>")]
         [Remarks("remove one win from the specified users")]
@@ -121,45 +158,8 @@ namespace ELO_Bot.Commands.Admin
             await ReplyAsync("", false, embed.Build());
         }
 
-        [Command("win")]
-        [Summary("Win <users>")]
-        [Remarks("Add a win + win points for the specified users")]
-        public async Task Win(params IUser[] userlist)
-        {
-            var embed = new EmbedBuilder();
-            var server = ServerList.Load(Context.Guild);
-            var points = server.Winamount;
-            if (!(server.Winamount > 0))
-            {
-                embed.AddField("ERROR", "You have not setup the server's win modifier yet");
-                await ReplyAsync("", false, embed.Build());
-                return;
-            }
-
-            await WinLossPoints(server, userlist.ToList(), true, points);
-        }
-
-        [Command("Lose")]
-        [Summary("Lose <users>")]
-        [Remarks("Add a loss to the specified users")]
-        public async Task Lose(params IUser[] userlist)
-        {
-            var embed = new EmbedBuilder();
-            var server = ServerList.Load(Context.Guild);
-            var points = server.Lossamount;
-
-            if (!(server.Lossamount > 0))
-            {
-                embed.AddField("ERROR", "You have not setup the server's loss modifier yet");
-                await ReplyAsync("", false, embed.Build());
-                return;
-            }
-
-            await WinLossPoints(server, userlist.ToList(), false, points);
-        }
-
-        [Command("game")]
-        [Summary("game <lobbyname> <gamenumber> <winningteam>")]
+        [Command("Game")]
+        [Summary("Game <lobbyname> <gamenumber> <winningteam>")]
         [Remarks("Automatically update wins/losses for the selected team")]
         public async Task Win(string lobbyname, int gamenumber, string team)
         {

@@ -15,7 +15,6 @@ namespace ELO_Bot.Commands.Admin
         {
             var embed = new EmbedBuilder();
 
-
             if (role == null)
             {
                 embed.AddField("ERROR", "Please specify a role for users to be added to upon registering");

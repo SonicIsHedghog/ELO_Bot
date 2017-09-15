@@ -7,7 +7,7 @@ using Discord.Commands;
 namespace ELO_Bot.Commands.Admin
 {
     [CheckAdmin]
-    public class PointsManagement : ModuleBase
+    public class Point : ModuleBase
     {
         [Command("AddPoints")]
         [Summary("AddPoints <points> <users>")]

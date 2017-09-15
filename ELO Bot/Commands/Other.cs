@@ -44,16 +44,16 @@ namespace ELO_Bot.Commands
                         if (module.Commands.Count > 0)
                             embed.AddField(x =>
                             {
-                                x.Name = module.Name;
+                                x.Name = $"{module.Name} Commands";
                                 x.Value = string.Join(", ", list);
                             });
                     }
                 embed.AddField("**NOTE**",
                     $"You can also see modules in more detail using `=help <modulename>`");
 
-                embed.AddField("Developed By PassiveModding", "Support Server: https://discord.gg/n2Vs38n \n" +
-                                                              "Patreon: https://www.patreon.com/passivebot  \n" +
-                                                              "Invite the BOT: https://goo.gl/mbfnjj");
+                embed.AddField("Developed By PassiveModding", "[Support Server](https://discord.gg/n2Vs38n)\n" +
+                                                              "[Patreon](https://www.patreon.com/passivebot)\n" +
+                                                              "[Invite the BOT](https://goo.gl/mbfnjj)");
             }
             else
             {
@@ -98,7 +98,7 @@ namespace ELO_Bot.Commands
                         if (module.Commands.Count > 0)
                             embed.AddField(x =>
                             {
-                                x.Name = module.Name;
+                                x.Name = $"{module.Name} Commands";
                                 x.Value = string.Join(", ", list);
                             });
                     }
@@ -106,9 +106,9 @@ namespace ELO_Bot.Commands
                     $"You can also see modules in more detail using `=help <modulename>`\n" +
                     $"Admins can use `=adminhelp` for admin commands");
 
-                embed.AddField("Developed By PassiveModding", "Support Server: https://discord.gg/n2Vs38n \n" +
-                                                              "Patreon: https://www.patreon.com/passivebot  \n" +
-                                                              "Invite the BOT: https://goo.gl/mbfnjj");
+                embed.AddField("Developed By PassiveModding", "[Support Server](https://discord.gg/n2Vs38n)\n" +
+                                                              "[Patreon](https://www.patreon.com/passivebot)\n" +
+                                                              "[Invite the BOT](https://goo.gl/mbfnjj)");
             }
             else
             {
