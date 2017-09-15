@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -138,25 +136,29 @@ namespace ELO_Bot.Commands
         {
             try
             {
-                    var client = Context.Client as DiscordSocketClient;
-                    var hClient = new HttpClient();
-                    string changes;
-                    hClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)");
-                    using (var response = await hClient.GetAsync("https://api.github.com/repos/PassiveModding/ELO_Bot/commits"))
+                var client = Context.Client as DiscordSocketClient;
+                var hClient = new HttpClient();
+                string changes;
+                hClient.DefaultRequestHeaders.Add("User-Agent",
+                    "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)");
+                using (var response =
+                    await hClient.GetAsync("https://api.github.com/repos/PassiveModding/ELO_Bot/commits"))
+                {
+                    if (!response.IsSuccessStatusCode)
                     {
-                        if (!response.IsSuccessStatusCode)
-                            changes = "There was an error fetching the latest changes.";
-                        else
-                        {
-                            dynamic result = JArray.Parse(await response.Content.ReadAsStringAsync());
-                            changes =
-                                $"[{((string)result[0].sha).Substring(0, 7)}]({result[0].html_url}) {result[0].commit.message}\n" +
-                                $"[{((string)result[1].sha).Substring(0, 7)}]({result[1].html_url}) {result[1].commit.message}\n" +
-                                $"[{((string)result[2].sha).Substring(0, 7)}]({result[2].html_url}) {result[2].commit.message}";
-                        }
-                        response.Dispose();
+                        changes = "There was an error fetching the latest changes.";
                     }
-                    var embed = new EmbedBuilder();
+                    else
+                    {
+                        dynamic result = JArray.Parse(await response.Content.ReadAsStringAsync());
+                        changes =
+                            $"[{((string) result[0].sha).Substring(0, 7)}]({result[0].html_url}) {result[0].commit.message}\n" +
+                            $"[{((string) result[1].sha).Substring(0, 7)}]({result[1].html_url}) {result[1].commit.message}\n" +
+                            $"[{((string) result[2].sha).Substring(0, 7)}]({result[2].html_url}) {result[2].commit.message}";
+                    }
+                    response.Dispose();
+                }
+                var embed = new EmbedBuilder();
 
                 embed.WithAuthor(x =>
                 {
@@ -165,30 +167,29 @@ namespace ELO_Bot.Commands
                     x.Url =
                         $"https://discordapp.com/oauth2/authorize?client_id={client.CurrentUser.Id}&scope=bot&permissions=2146958591";
                 });
-                    embed.AddField("Changes", changes);
-                    embed.AddField("Members",
-                        $"Bot: {client.Guilds.Sum(x => x.Users.Count(z => z.IsBot))}\n" +
-                        $"Human: {client.Guilds.Sum(x => x.Users.Count(z => !z.IsBot))}\n" +
-                        $"Total: {client.Guilds.Sum(x => x.Users.Count)}", true);
-                    embed.AddField("Channels",
-                        $"Text: {client.Guilds.Sum(x => x.TextChannels.Count)}\n" +
-                        $"Voice: {client.Guilds.Sum(x => x.VoiceChannels.Count)}\n" +
-                        $"Total: {client.Guilds.Sum(x => x.Channels.Count)}", true);
-                    embed.AddField("Guilds", $"{client.Guilds.Count}\n[Support Guild](https://discord.gg/ZKXqt2a)", true);
-                    embed.AddField(":space_invader:",
-                        $"Commands Ran: {Program.Commands}\n" +
-                        $"Messages Received: {Program.Messages}", true);
-                    embed.AddField(":hammer_pick:",
-                        $"Heap Size: {Math.Round(GC.GetTotalMemory(true) / (1024.0 * 1024.0), 2)} MB", true);
-                    embed.AddField(":beginner:", $"Written by: [PassiveModding](https://github.com/PassiveModding)\n" +
-                                                 $"Discord.Net {DiscordConfig.Version}");
-                    await ReplyAsync("", embed: embed.Build());
+                embed.AddField("Changes", changes);
+                embed.AddField("Members",
+                    $"Bot: {client.Guilds.Sum(x => x.Users.Count(z => z.IsBot))}\n" +
+                    $"Human: {client.Guilds.Sum(x => x.Users.Count(z => !z.IsBot))}\n" +
+                    $"Total: {client.Guilds.Sum(x => x.Users.Count)}", true);
+                embed.AddField("Channels",
+                    $"Text: {client.Guilds.Sum(x => x.TextChannels.Count)}\n" +
+                    $"Voice: {client.Guilds.Sum(x => x.VoiceChannels.Count)}\n" +
+                    $"Total: {client.Guilds.Sum(x => x.Channels.Count)}", true);
+                embed.AddField("Guilds", $"{client.Guilds.Count}\n[Support Guild](https://discord.gg/ZKXqt2a)", true);
+                embed.AddField(":space_invader:",
+                    $"Commands Ran: {Program.Commands}\n" +
+                    $"Messages Received: {Program.Messages}", true);
+                embed.AddField(":hammer_pick:",
+                    $"Heap Size: {Math.Round(GC.GetTotalMemory(true) / (1024.0 * 1024.0), 2)} MB", true);
+                embed.AddField(":beginner:", $"Written by: [PassiveModding](https://github.com/PassiveModding)\n" +
+                                             $"Discord.Net {DiscordConfig.Version}");
+                await ReplyAsync("", embed: embed.Build());
             }
             catch (Exception e)
             {
                 await ReplyAsync(e.ToString());
             }
-            
         }
 
         /*

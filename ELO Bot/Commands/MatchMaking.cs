@@ -10,23 +10,6 @@ namespace ELO_Bot.Commands
     [CheckRegistered]
     public class MatchMaking : ModuleBase
     {
-        [Command("Maps")]
-        [Summary("Maps")]
-        [Remarks("List Maps")]
-        public async Task Maps()
-        {
-            var embed = new EmbedBuilder();
-            var server = ServerList.Load(Context.Guild);
-            //load the current server
-            var lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
-            //try to output the current lobby
-            foreach (var map in lobby.Maps)
-                embed.Description += $"{map}\n";
-            //adds each map in the list to the embed
-
-            await ReplyAsync("", false, embed.Build());
-        }
-
         [Command("Queue")]
         [Alias("q")]
         [Summary("Queue")]
@@ -241,13 +224,10 @@ namespace ELO_Bot.Commands
                     await ReplyAsync("", false, embed.Build());
                     lobby.IsPickingTeams = true;
                     ServerList.Saveserver(server);
-                    
+
                     //if teams have both been filled finish the queue
                     if (lobby.Users.Count == 0 || lobby.Users == null)
-                    {
                         await Teams(server, lobby.Team1, lobby.Team2);
-                        
-                    }
                     return;
                 }
 
@@ -258,7 +238,6 @@ namespace ELO_Bot.Commands
                     await ReplyAsync("", false, embed.Build());
                     return;
                 }
-
 
 
                 embed.AddField("ERROR", "FUCK tell Passive to fix something...");
@@ -315,13 +294,11 @@ namespace ELO_Bot.Commands
                     ServerList.Saveserver(server);
 
                     if (lobby.Users.Count == 0 || lobby.Users == null)
-                    {
                         await Teams(server, lobby.Team1, lobby.Team2);
-                    }
                     return;
                 }
 
-                
+
                 //idk this should never happen.
                 embed.AddField("ERROR", "I dont think it's your turn to pick a player.....");
                 await ReplyAsync("", false, embed.Build());
@@ -437,31 +414,35 @@ namespace ELO_Bot.Commands
             var server = ServerList.Load(Context.Guild);
             var embed = new EmbedBuilder();
             var queue = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
-            var oldgame = server.Gamelist.FirstOrDefault(x => x.LobbyId == Context.Channel.Id && x.GameNumber == queue.Games);
+            var oldgame =
+                server.Gamelist.FirstOrDefault(x => x.LobbyId == Context.Channel.Id && x.GameNumber == queue.Games);
             if (oldgame != null)
             {
                 //check thay you are not already in the old game.
                 if (oldgame.Team1.Contains(Context.User.Id) || oldgame.Team2.Contains(Context.User.Id))
                 {
-                    await ReplyAsync("You are already in a team for the previous game. Only users that were'nt in this game can replace others.");
+                    await ReplyAsync(
+                        "You are already in a team for the previous game. Only users that were'nt in this game can replace others.");
                     return;
                 }
 
-                
+
                 if (oldgame.Team1.Contains(user.Id))
                 {
                     //remove specified user and replace with new user.
                     oldgame.Team1.Remove(user.Id);
                     oldgame.Team1.Add(Context.User.Id);
 
-                    await ReplyAsync($"Game #{oldgame.GameNumber} Team 1: {user.Mention} has been replaced by {Context.User.Mention}");
+                    await ReplyAsync(
+                        $"Game #{oldgame.GameNumber} Team 1: {user.Mention} has been replaced by {Context.User.Mention}");
                 }
                 if (oldgame.Team2.Contains(user.Id))
                 {
                     oldgame.Team2.Remove(user.Id);
                     oldgame.Team2.Add(Context.User.Id);
 
-                    await ReplyAsync($"Game #{oldgame.GameNumber} Team 2: {user.Mention} has been replaced by {Context.User.Mention}");
+                    await ReplyAsync(
+                        $"Game #{oldgame.GameNumber} Team 2: {user.Mention} has been replaced by {Context.User.Mention}");
                 }
 
                 if (server.AnnouncementsChannel != 0)
@@ -496,7 +477,6 @@ namespace ELO_Bot.Commands
                     {
                         await ReplyAsync(announcement);
                     }
-
                 }
 
                 ServerList.Saveserver(server);
@@ -541,6 +521,22 @@ namespace ELO_Bot.Commands
             }
         }
 
+        [Command("Maps")]
+        [Summary("Maps")]
+        [Remarks("List Maps")]
+        public async Task Maps()
+        {
+            var embed = new EmbedBuilder();
+            var server = ServerList.Load(Context.Guild);
+            //load the current server
+            var lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
+            //try to output the current lobby
+            foreach (var map in lobby.Maps)
+                embed.Description += $"{map}\n";
+            //adds each map in the list to the embed
+
+            await ReplyAsync("", false, embed.Build());
+        }
 
         public async Task Teams(ServerList.Server server, List<ulong> team1, List<ulong> team2)
         {
@@ -566,20 +562,20 @@ namespace ELO_Bot.Commands
 
             var host = await Context.Guild.GetUserAsync(currentqueue.T1Captain);
 
-                if (currentqueue.Maps.Count > 0 && currentqueue.Maps != null)
-                {
-                    var rnd = new Random().Next(0, currentqueue.Maps.Count);
-                    await ReplyAsync("**GAME ON**\n" +
-                                     $"Team1: {t1}\n" +
-                                     $"Team2: {t2}\n\n" +
-                                     $"Random Map: {currentqueue.Maps[rnd]}");
-                }
-                else
-                {
-                    await ReplyAsync("**GAME ON**\n" +
-                                     $"Team1: {t1}\n" +
-                                     $"Team2: {t2}");
-                }
+            if (currentqueue.Maps.Count > 0 && currentqueue.Maps != null)
+            {
+                var rnd = new Random().Next(0, currentqueue.Maps.Count);
+                await ReplyAsync("**GAME ON**\n" +
+                                 $"Team1: {t1}\n" +
+                                 $"Team2: {t2}\n\n" +
+                                 $"Random Map: {currentqueue.Maps[rnd]}");
+            }
+            else
+            {
+                await ReplyAsync("**GAME ON**\n" +
+                                 $"Team1: {t1}\n" +
+                                 $"Team2: {t2}");
+            }
 
 
             currentqueue.Users = new List<ulong>();
@@ -611,7 +607,8 @@ namespace ELO_Bot.Commands
                 var embed = new EmbedBuilder();
                 var currentqueue = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
 
-                var userlist = currentqueue.Users.Select(user => server.UserList.FirstOrDefault(x => x.UserId == user)).ToList();
+                var userlist = currentqueue.Users.Select(user => server.UserList.FirstOrDefault(x => x.UserId == user))
+                    .ToList();
 
                 //order list by User Points
                 if (currentqueue.Captains)

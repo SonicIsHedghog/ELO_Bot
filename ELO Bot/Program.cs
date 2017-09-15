@@ -15,11 +15,11 @@ namespace ELO_Bot
 {
     public class Program
     {
+        public static int Messages;
+        public static int Commands;
         private CommandHandler _handler;
         public DiscordSocketClient Client;
         public static List<string> Keys { get; set; }
-        public static int Messages = 0;
-        public static int Commands = 0;
 
         public static void Main(string[] args)
         {
@@ -53,7 +53,6 @@ namespace ELO_Bot
                                 $"{e}");
             }
 
-            
 
             var serviceProvider = ConfigureServices();
             _handler = new CommandHandler(serviceProvider);
@@ -171,7 +170,6 @@ namespace ELO_Bot
                     //
                 }
             }
-
 
 
             public async Task DoCommand(SocketMessage parameterMessage)

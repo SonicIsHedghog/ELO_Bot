@@ -231,7 +231,6 @@ namespace ELO_Bot.Commands
                 embed.Color = Color.Blue;
                 await ReplyAsync("", false, embed.Build());
             }
-
         }
 
         [Command("ranks")]

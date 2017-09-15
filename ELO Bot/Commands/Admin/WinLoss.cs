@@ -215,7 +215,6 @@ namespace ELO_Bot.Commands.Admin
             {
                 await ReplyAsync(e.ToString());
             }
-
         }
 
         public async Task WinLossPoints(ServerList.Server server, List<IUser> users, bool win, int points)

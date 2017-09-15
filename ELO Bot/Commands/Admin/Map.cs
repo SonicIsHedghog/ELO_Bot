@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Discord.Commands;
 
@@ -15,7 +16,6 @@ namespace ELO_Bot.Commands.Admin
             var server = ServerList.Load(Context.Guild);
             var lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
             foreach (var map in mapName)
-            {
                 if (!lobby.Maps.Contains(map))
                 {
                     lobby.Maps.Add(map);
@@ -25,7 +25,6 @@ namespace ELO_Bot.Commands.Admin
                 {
                     await ReplyAsync($"Map Already Exists {map}");
                 }
-            }
 
 
             ServerList.Saveserver(server);
@@ -57,7 +56,7 @@ namespace ELO_Bot.Commands.Admin
         {
             var server = ServerList.Load(Context.Guild);
             var lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
-            lobby.Maps = new System.Collections.Generic.List<string>();
+            lobby.Maps = new List<string>();
             ServerList.Saveserver(server);
             await ReplyAsync("Maps Cleared.");
         }
