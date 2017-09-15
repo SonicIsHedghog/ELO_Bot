@@ -8,7 +8,7 @@ using Discord.Commands;
 namespace ELO_Bot.Commands.Admin
 {
     [CheckAdmin]
-    public class LobbyManagement : ModuleBase
+    public class Lobby : ModuleBase
     {
         [Command("CreateLobby")]
         [Summary("CreateLobby <userlimit> <lobby message>")]

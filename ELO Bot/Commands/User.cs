@@ -7,7 +7,7 @@ namespace ELO_Bot.Commands
 {
     [RequireTopic]
     [RequireContext(ContextType.Guild)]
-    public class UserCommands : ModuleBase
+    public class User : ModuleBase
     {
         [Command("Register")]
         [Summary("Register <username>")]

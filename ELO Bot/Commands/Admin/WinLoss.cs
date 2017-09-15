@@ -9,8 +9,118 @@ using Discord.WebSocket;
 namespace ELO_Bot.Commands.Admin
 {
     [CheckAdmin]
-    public class WinLossManagement : ModuleBase
+    public class WinLoss : ModuleBase
     {
+        [Command("DelWin")]
+        [Summary("DelWin <users>")]
+        [Remarks("remove one win from the specified users")]
+        public async Task DelWin(params IUser[] userlist)
+        {
+            var embed = new EmbedBuilder();
+
+            var server = ServerList.Load(Context.Guild);
+            foreach (var user in userlist)
+            {
+                var success = false;
+                var userval = 0;
+                foreach (var subject in server.UserList)
+                    if (subject.UserId == user.Id)
+                    {
+                        subject.Wins = subject.Wins - 1;
+                        if (subject.Wins < 0)
+                            subject.Wins = 0;
+                        success = true;
+                        userval = subject.Wins;
+                    }
+                if (!success)
+                    embed.AddField($"{user.Username} ERROR", "Not Registered");
+                else
+                    embed.AddField($"{user.Username} MODIFIED", $"Removed: -1\n" +
+                                                                $"Current wins: {userval}");
+            }
+            ServerList.Saveserver(server);
+            embed.Color = Color.Green;
+            await ReplyAsync("", false, embed.Build());
+        }
+
+        [Command("DelLose")]
+        [Summary("DelLose <users>")]
+        [Remarks("remove a single loss from the specified users")]
+        public async Task DelLose(params IUser[] userlist)
+        {
+            var embed = new EmbedBuilder();
+
+            var server = ServerList.Load(Context.Guild);
+            foreach (var user in userlist)
+            {
+                var success = false;
+                var userval = 0;
+                foreach (var subject in server.UserList)
+                    if (subject.UserId == user.Id)
+                    {
+                        subject.Losses = subject.Losses - 1;
+                        if (subject.Losses < 0)
+                            subject.Losses = 0;
+                        success = true;
+                        userval = subject.Losses;
+                    }
+                if (!success)
+                    embed.AddField($"{user.Username} ERROR", "Not Registered");
+                else
+                    embed.AddField($"{user.Username} MODIFIED", $"Removed: -1\n" +
+                                                                $"Current Losses: {userval}");
+            }
+            ServerList.Saveserver(server);
+            embed.Color = Color.Green;
+            await ReplyAsync("", false, embed.Build());
+        }
+
+        [Command("ModifyLoss")]
+        [Summary("ModifyLoss <points>")]
+        [Remarks("Sets the servers Loss amount")]
+        public async Task Lose(int points)
+        {
+            var embed = new EmbedBuilder();
+            var server = ServerList.Load(Context.Guild);
+            if (points == 0)
+            {
+                embed.AddField("ERROR", "Please supply a number that isnt 0");
+                embed.Color = Color.Red;
+                await ReplyAsync("", false, embed.Build());
+                return;
+            }
+            if (points <= 0)
+                points = Math.Abs(points);
+            server.Lossamount = points;
+            ServerList.Saveserver(server);
+            embed.AddField("Success", $"Upon losing, users will now lose {points} points");
+            embed.Color = Color.Green;
+            await ReplyAsync("", false, embed.Build());
+        }
+
+        [Command("ModifyWin")]
+        [Summary("ModifyWin <points>")]
+        [Remarks("Sets the servers Win amount")]
+        public async Task Win(int points)
+        {
+            var embed = new EmbedBuilder();
+            var server = ServerList.Load(Context.Guild);
+            if (points == 0)
+            {
+                embed.AddField("ERROR", "Please supply a number that isnt 0");
+                embed.Color = Color.Red;
+                await ReplyAsync("", false, embed.Build());
+                return;
+            }
+            if (points <= 0)
+                points = Math.Abs(points);
+            server.Winamount = points;
+            ServerList.Saveserver(server);
+            embed.AddField("Success", $"Upon Winning, users will now gain {points} points");
+            embed.Color = Color.Green;
+            await ReplyAsync("", false, embed.Build());
+        }
+
         [Command("win")]
         [Summary("Win <users>")]
         [Remarks("Add a win + win points for the specified users")]

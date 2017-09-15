@@ -72,18 +72,9 @@ namespace ELO_Bot
             public int Lossamount { get; set; } = 5;
 
 
-            public List<Gamemode> Gamemodes { get; set; } = new List<Gamemode>();
-
-
             public List<Q> Queue { get; set; } = new List<Q>();
 
             public List<PreviouMatches> Gamelist { get; set; } = new List<PreviouMatches>();
-
-            public class Gamemode
-            {
-                public string Name { get; set; }
-                public int PlayerLimit { get; set; }
-            }
 
             public class Q
             {

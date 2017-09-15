@@ -6,8 +6,32 @@ using Discord.Commands;
 namespace ELO_Bot.Commands.Admin
 {
     [CheckAdmin]
-    public class UserManagement : ModuleBase
+    public class User : ModuleBase
     {
+        [Command("SetRegisterRole")]
+        [Summary("SetRegisterRole <@role>")]
+        [Remarks("Sets the role users will join when registering")]
+        public async Task SetReg(IRole role = null)
+        {
+            var embed = new EmbedBuilder();
+
+
+            if (role == null)
+            {
+                embed.AddField("ERROR", "Please specify a role for users to be added to upon registering");
+                embed.WithColor(Color.Red);
+                await ReplyAsync("", false, embed.Build());
+                return;
+            }
+
+            var server = ServerList.Load(Context.Guild);
+            server.RegisterRole = role.Id;
+            ServerList.Saveserver(server);
+            embed.AddField("Complete!", $"Upon registering, users will now be added to the role: {role.Name}");
+            embed.WithColor(Color.Blue);
+            await ReplyAsync("", false, embed.Build());
+        }
+
         [Command("Deluser")]
         [Summary("DelUser <@user>")]
         [Remarks("deletes a user from the server's registered list")]

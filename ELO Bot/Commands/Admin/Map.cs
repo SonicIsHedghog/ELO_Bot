@@ -5,7 +5,7 @@ using Discord.Commands;
 namespace ELO_Bot.Commands.Admin
 {
     [CheckAdmin]
-    public class MapManagement : ModuleBase
+    public class Map : ModuleBase
     {
         [Command("AddMap")]
         [Summary("AddMap <Map_0> <Map_1>")]

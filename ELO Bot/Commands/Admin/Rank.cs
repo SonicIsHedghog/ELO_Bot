@@ -6,7 +6,7 @@ using Discord.Commands;
 namespace ELO_Bot.Commands.Admin
 {
     [CheckAdmin]
-    public class RankManagement : ModuleBase
+    public class Rank : ModuleBase
     {
         [Command("addrank")]
         [Summary("addrank <points> <@role>")]

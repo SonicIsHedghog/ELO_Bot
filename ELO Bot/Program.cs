@@ -18,6 +18,8 @@ namespace ELO_Bot
         private CommandHandler _handler;
         public DiscordSocketClient Client;
         public static List<string> Keys { get; set; }
+        public static int Messages = 0;
+        public static int Commands = 0;
 
         public static void Main(string[] args)
         {
@@ -170,8 +172,11 @@ namespace ELO_Bot
                 }
             }
 
+
+
             public async Task DoCommand(SocketMessage parameterMessage)
             {
+                Messages++;
                 var message = parameterMessage as SocketUserMessage;
                 if (message == null) return;
                 var argPos = 0;
@@ -205,6 +210,7 @@ namespace ELO_Bot
                         .WriteTo.Console()
                         .CreateLogger();
                     Log.Information($"{message.Content} || {message.Author}");
+                    Commands++;
                 }
             }
 
