@@ -55,8 +55,8 @@ namespace ELO_Bot.Commands.Admin
             }
         }
 
-        [Command("re")]
-        [Summary("re")]
+        [Command("botrename")]
+        [Summary("botrename")]
         public async Task Help([Remainder] string name)
         {
             await Context.Client.CurrentUser.ModifyAsync(x => { x.Username = name; });
