@@ -190,6 +190,13 @@ namespace ELO_Bot.Commands
                     lobby.Team1.Add(user.Id);
                     lobby.Users.Remove(user.Id);
 
+                    if (lobby.Users.Count == 1)
+                    {
+                        var u = lobby.Users.First();
+                        lobby.Team2.Add(u);
+                        lobby.Users.Remove(u);
+                    }
+
                     var t1List = "";
                     var t2List = "";
                     var users = "";
@@ -615,10 +622,34 @@ namespace ELO_Bot.Commands
                 {
                     //randomly select the captains on each team.
                     var rnd = new Random();
-                    var captains = Enumerable.Range(0, currentqueue.Users.Count).OrderBy(x => rnd.Next()).Take(2)
+
+                    IUser cap1;
+                    IUser cap2;
+                    var capranks = new List<ulong>();
+                    foreach (var user in currentqueue.Users)
+                    {
+                        var u = userlist.FirstOrDefault(x => x.UserId == user);
+                        if (u.Points > 5)
+                        {
+                            capranks.Add(user);
+                        }
+                    }
+
+                    if (capranks.Count >= 2)
+                    {
+                        var cap = Enumerable.Range(0, capranks.Count).OrderBy(x => rnd.Next()).Take(2)
+                            .ToList();
+                        cap1 = await Context.Guild.GetUserAsync(capranks[cap[0]]);
+                        cap2 = await Context.Guild.GetUserAsync(capranks[cap[1]]);
+                    }
+                    else
+                    {
+                        var captains = Enumerable.Range(0, currentqueue.Users.Count).OrderBy(x => rnd.Next()).Take(2)
                         .ToList();
-                    var cap1 = await Context.Guild.GetUserAsync(currentqueue.Users[captains[0]]);
-                    var cap2 = await Context.Guild.GetUserAsync(currentqueue.Users[captains[1]]);
+                        cap1 = await Context.Guild.GetUserAsync(currentqueue.Users[captains[0]]);
+                        cap2 = await Context.Guild.GetUserAsync(currentqueue.Users[captains[1]]);
+                    }
+                    
 
                     var players = "";
                     foreach (var user in currentqueue.Users)

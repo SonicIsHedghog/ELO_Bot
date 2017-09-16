@@ -196,11 +196,7 @@ namespace ELO_Bot
                     embed.AddField("ERROR", $"Command: {context.Message}\n" +
                                             $"Error: {result.ErrorReason}");
                     embed.Color = Color.Red;
-                    var x = await context.Channel.SendMessageAsync("", false, embed.Build());
-
-                    await Task.Delay(5000);
-                    await x.DeleteAsync();
-                    await context.Message.DeleteAsync();
+                    await context.Channel.SendMessageAsync("", false, embed.Build());
                 }
                 else
                 {
