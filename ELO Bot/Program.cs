@@ -201,7 +201,7 @@ namespace ELO_Bot
                     Log.Logger = new LoggerConfiguration()
                         .WriteTo.Console()
                         .CreateLogger();
-                    Log.Information($"{message.Content} || {message.Author}");
+                    Log.Error($"{message.Content} || {message.Author}");
                 }
                 else
                 {

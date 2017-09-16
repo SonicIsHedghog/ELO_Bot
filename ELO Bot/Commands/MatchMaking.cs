@@ -333,6 +333,7 @@ namespace ELO_Bot.Commands
         [Remarks("Join the current queue")]
         public async Task Join()
         {
+
             var server = ServerList.Load(Context.Guild);
             var embed = new EmbedBuilder();
             ServerList.Server.Q lobby;
