@@ -40,8 +40,6 @@ namespace ELO_Bot.Commands
             if (server.UserList.Any(member => member.UserId == Context.User.Id))
             {
                 var userprofile = server.UserList.FirstOrDefault(x => x.UserId == Context.User.Id);
-                embed.AddField("ERROR",
-                    "You are already registered, if you wish to be renamed talk to an administrator");
 
                 if (!(Context.User as IGuildUser).RoleIds.Contains(server.RegisterRole) && server.RegisterRole != 0)
                     try
@@ -72,6 +70,10 @@ namespace ELO_Bot.Commands
                 {
                     embed.AddField("ERROR", "Username Unable to be modified (Permissions are above the bot)");
                 }
+
+
+
+                embed.AddField("ERROR", "User is already registered, role and name have been updated accordingly");
 
                 embed.WithColor(Color.Red);
 
