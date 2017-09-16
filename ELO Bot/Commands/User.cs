@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using ELO_Bot.PreConditions;
 
 namespace ELO_Bot.Commands
 {
@@ -9,6 +10,8 @@ namespace ELO_Bot.Commands
     [RequireContext(ContextType.Guild)]
     public class User : ModuleBase
     {
+
+        [Ratelimit(3, 30d, Measure.Seconds)]
         [Command("Register")]
         [Summary("Register <username>")]
         [Remarks("registers the user in the server")]

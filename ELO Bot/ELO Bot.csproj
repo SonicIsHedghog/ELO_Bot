@@ -141,6 +141,7 @@
     <Compile Include="Commands\Admin\User.cs" />
     <Compile Include="Commands\Admin\WinLoss.cs" />
     <Compile Include="Commands\MatchMaking.cs" />
+    <Compile Include="PreConditions\RatelimitAttribute.cs" />
     <Compile Include="PreConditions\RequireTopic.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Commands\Admin\Owner.cs" />

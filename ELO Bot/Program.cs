@@ -189,14 +189,19 @@ namespace ELO_Bot
                 var result = await _commands.ExecuteAsync(context, argPos, Provider);
 
                 var commandsuccess = result.IsSuccess;
+                
 
                 if (!commandsuccess)
                 {
                     var embed = new EmbedBuilder();
-                    embed.AddField("ERROR", $"Command: {context.Message}\n" +
+                    embed.AddField($"ERROR {result.Error.ToString().ToUpper()}", $"Command: {context.Message}\n" +
                                             $"Error: {result.ErrorReason}");
                     embed.Color = Color.Red;
                     await context.Channel.SendMessageAsync("", false, embed.Build());
+                    Log.Logger = new LoggerConfiguration()
+                        .WriteTo.Console()
+                        .CreateLogger();
+                    Log.Information($"{message.Content} || {message.Author}");
                 }
                 else
                 {

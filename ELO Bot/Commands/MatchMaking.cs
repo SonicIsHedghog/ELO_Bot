@@ -4,12 +4,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using ELO_Bot.PreConditions;
 
 namespace ELO_Bot.Commands
 {
     [CheckRegistered]
     public class MatchMaking : ModuleBase
     {
+
+        [Ratelimit(1, 10d, Measure.Seconds)]
         [Command("Queue")]
         [Alias("q")]
         [Summary("Queue")]
@@ -29,8 +32,8 @@ namespace ELO_Bot.Commands
                     var t2List = "";
                     var users = "";
 
-                    var cap1 = await Context.Guild.GetUserAsync(lobby.T2Captain);
-                    var cap2 = await Context.Guild.GetUserAsync(lobby.T1Captain);
+                    var cap1 = await Context.Guild.GetUserAsync(lobby.T1Captain);
+                    var cap2 = await Context.Guild.GetUserAsync(lobby.T2Captain);
 
                     //create a list of users in team 1 2 and users left
                     foreach (var us in lobby.Team1)
@@ -91,6 +94,8 @@ namespace ELO_Bot.Commands
             await ReplyAsync("", false, embed.Build());
         }
 
+
+        [Ratelimit(1, 10d, Measure.Seconds)]
         [Command("Lobby")]
         [Summary("Lobby")]
         [Remarks("Gamemode Info")]
@@ -123,6 +128,8 @@ namespace ELO_Bot.Commands
             await ReplyAsync("", false, embed.Build());
         }
 
+
+        [Ratelimit(1, 5d, Measure.Seconds)]
         [Command("pick")]
         [Summary("pick <@user>")]
         [Alias("p")]
@@ -318,6 +325,8 @@ namespace ELO_Bot.Commands
             }
         }
 
+
+        [Ratelimit(1, 10d, Measure.Seconds)]
         [Command("Join")]
         [Summary("Join")]
         [Alias("j")]
@@ -372,6 +381,8 @@ namespace ELO_Bot.Commands
             }
         }
 
+
+        [Ratelimit(1, 10d, Measure.Seconds)]
         [Command("subfor")]
         [Summary("subfor <@user>")]
         [Remarks("replace the given user in the queue")]
@@ -413,6 +424,7 @@ namespace ELO_Bot.Commands
         }
 
 
+        [Ratelimit(1, 10d, Measure.Seconds)]
         [Command("replace")]
         [Summary("replace <@user>")]
         [Remarks("replace the specified user in the previously chosen game")]
@@ -495,6 +507,8 @@ namespace ELO_Bot.Commands
             }
         }
 
+
+        [Ratelimit(1, 10d, Measure.Seconds)]
         [Command("Leave")]
         [Summary("Leave")]
         [Remarks("Leave the current queue")]
@@ -528,6 +542,8 @@ namespace ELO_Bot.Commands
             }
         }
 
+
+        [Ratelimit(1, 10d, Measure.Seconds)]
         [Command("Maps")]
         [Summary("Maps")]
         [Remarks("List Maps")]

@@ -4,12 +4,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using ELO_Bot.PreConditions;
 
 namespace ELO_Bot.Commands.Admin
 {
     [CheckAdmin]
     public class Lobby : ModuleBase
     {
+
+        [Ratelimit(1, 30d, Measure.Seconds)]
         [Command("CreateLobby")]
         [Summary("CreateLobby <userlimit> <lobby message>")]
         [Remarks("Turn The current channel into a lobby")]
@@ -80,6 +83,8 @@ namespace ELO_Bot.Commands.Admin
             }
         }
 
+
+        [Ratelimit(1, 30d, Measure.Seconds)]
         [Command("RemoveLobby")]
         [Summary("RemoveLobby")]
         [Remarks("Remove A Lobby")]
@@ -99,6 +104,8 @@ namespace ELO_Bot.Commands.Admin
                              $"Previous games that took place in this lobby have been cleared from history.");
         }
 
+
+        [Ratelimit(1, 30d, Measure.Seconds)]
         [Command("Clear")]
         [Summary("Clear")]
         [Remarks("Clear The Queue")]
