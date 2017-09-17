@@ -432,7 +432,6 @@ namespace ELO_Bot.Commands
         public async Task Replace(IUser user)
         {
             var server = ServerList.Load(Context.Guild);
-            var embed = new EmbedBuilder();
             var queue = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
             var oldgame =
                 server.Gamelist.FirstOrDefault(x => x.LobbyId == Context.Channel.Id && x.GameNumber == queue.Games);
@@ -500,7 +499,6 @@ namespace ELO_Bot.Commands
                 }
 
                 ServerList.Saveserver(server);
-                await ReplyAsync("", false, embed.Build());
             }
             else
             {

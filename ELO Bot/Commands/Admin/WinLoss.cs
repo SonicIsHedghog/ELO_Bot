@@ -223,39 +223,37 @@ namespace ELO_Bot.Commands.Admin
             foreach (var user in users)
             {
                 var usr = server.UserList.FirstOrDefault(x => x.UserId == user.Id);
-                    if (user.Id == usr.UserId)
+                if (user.Id == usr.UserId)
+                {
+                    if (win)
                     {
-                        if (win)
-                        {
-                            usr.Points = usr.Points + points;
-                            usr.Wins++;
-                            embed.AddField($"{usr.Username} WON", $"Points: **{usr.Points}**\n" +
-                                                                  $"W/L: **[{usr.Wins}/{usr.Losses}]**");
-                            embed.Color = Color.Green;
-                        }
-                        else
-                        {
-                            points = Math.Abs(points);
-                            usr.Points = usr.Points - points;
-                            usr.Losses++;
-                            if (usr.Points < 0)
-                                usr.Points = 0;
-                            embed.AddField($"{usr.Username} LOST", $"Points: **{usr.Points}**\n" +
-                                                                   $"W/L: **[{usr.Wins}/{usr.Losses}]**");
-                            embed.Color = Color.Red;
-                        }
-                        try
-                        {
-                            await (user as IGuildUser).ModifyAsync(x => { x.Nickname = $"{usr.Points} ~ {usr.Username}"; });
-                        }
-                        catch
-                        {
-                            //
-                        }
-                        await CheckRank(server, user, usr);
-                    break;
-
-                    }                
+                        usr.Points = usr.Points + points;
+                        usr.Wins++;
+                        embed.AddField($"{usr.Username} WON", $"Points: **{usr.Points}**\n" +
+                                                                $"W/L: **[{usr.Wins}/{usr.Losses}]**");
+                        embed.Color = Color.Green;
+                    }
+                    else
+                    {
+                        points = Math.Abs(points);
+                        usr.Points = usr.Points - points;
+                        usr.Losses++;
+                        if (usr.Points < 0)
+                            usr.Points = 0;
+                        embed.AddField($"{usr.Username} LOST", $"Points: **{usr.Points}**\n" +
+                                                                $"W/L: **[{usr.Wins}/{usr.Losses}]**");
+                        embed.Color = Color.Red;
+                    }
+                    try
+                    {
+                        await (user as IGuildUser).ModifyAsync(x => { x.Nickname = $"{usr.Points} ~ {usr.Username}"; });
+                    }
+                    catch
+                    {
+                        //
+                    }
+                    await CheckRank(server, user, usr);
+                }
             }
 
             ServerList.Saveserver(server);
