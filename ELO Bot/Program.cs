@@ -36,6 +36,7 @@ namespace ELO_Bot
             Config.CheckExistence();
             var token = Config.Load().Token;
 
+            
 
             Client = new DiscordSocketClient(new DiscordSocketConfig
             {
@@ -194,6 +195,21 @@ namespace ELO_Bot
                 if (!commandsuccess)
                 {
                     var embed = new EmbedBuilder();
+
+                    foreach (var module in _commands.Modules)
+                    {
+                        foreach (var command in module.Commands)
+                        {
+                            if (context.Message.Content.ToLower().StartsWith($"{Config.Load().Prefix}{command.Name} ".ToLower()))
+                            {
+                                embed.AddField($"COMMAND INFO", $"Name: {command.Name}\n" +
+                                                                $"Summary: {command.Summary}\n" +
+                                                                $"Info: {command.Remarks}");
+                                break;
+                            }
+                        }
+                    }
+
                     embed.AddField($"ERROR {result.Error.ToString().ToUpper()}", $"Command: {context.Message}\n" +
                                             $"Error: {result.ErrorReason}");
                     embed.Color = Color.Red;

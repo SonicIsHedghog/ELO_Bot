@@ -14,7 +14,7 @@ namespace ELO_Bot.Commands.Admin
 
         [Ratelimit(1, 30d, Measure.Seconds)]
         [Command("CreateLobby")]
-        [Summary("CreateLobby <userlimit> <lobby message>")]
+        [Summary("CreateLobby <userlimit> <true = captains, false = automatic teams> <lobby message>")]
         [Remarks("Turn The current channel into a lobby")]
         public async Task LobbyCreate(int userlimit, bool captains, [Remainder] string lobbyMessage = null)
         {
