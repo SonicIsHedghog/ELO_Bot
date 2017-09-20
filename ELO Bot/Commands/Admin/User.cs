@@ -33,7 +33,7 @@ namespace ELO_Bot.Commands.Admin
             await ReplyAsync("", false, embed.Build());
         }
 
-        [Command("RegisterAll")]
+        [Command("RegisterAll", RunMode = RunMode.Async)]
         [Summary("RegisterAll <role>")]
         [Remarks("Register All Users in the server or all users in the specified role")]
         public async Task RegisterAll(SocketRole specifiedRole = null)
@@ -66,7 +66,6 @@ namespace ELO_Bot.Commands.Admin
                         {
                             //
                         }
-                        
                     }
                 if (userlist.Any(x => x.UserId == user.Id)) continue;
                 {
@@ -90,7 +89,7 @@ namespace ELO_Bot.Commands.Admin
                         Wins = 0
                     };
                     newusers.Add(newuser);
-                    await Task.Delay(500);
+                    await Task.Delay(1000);
                 }
             }
 
