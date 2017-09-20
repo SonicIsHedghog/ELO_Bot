@@ -379,6 +379,12 @@ namespace ELO_Bot.Commands
                 try
                 {
                     lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
+                    if (lobby == null)
+                    {
+                        embed.AddField("ERROR", "Current Channel is not a lobby!");
+                        await ReplyAsync("", false, embed.Build());
+                        return;
+                    }
                 }
                 catch
                 {
@@ -519,38 +525,35 @@ namespace ELO_Bot.Commands
                             $"Game #{oldgame.GameNumber} Team 2: {user.Mention} has been replaced by {Context.User.Mention}");
                     }
 
-                    if (server.AnnouncementsChannel != 0)
+                    var t1Mention = new List<IUser>();
+                    var t2Mention = new List<IUser>();
+
+                    foreach (var u in oldgame.Team1)
                     {
-                        var t1Mention = new List<IUser>();
-                        var t2Mention = new List<IUser>();
+                        var use = await Context.Guild.GetUserAsync(u);
+                        t1Mention.Add(use);
+                    }
+                    foreach (var u in oldgame.Team2)
+                    {
+                        var use = await Context.Guild.GetUserAsync(u);
+                        t2Mention.Add(use);
+                    }
+                    var announcement = "**__Game Has Been Updated__**\n" +
+                                       "**Lobby:** \n" +
+                                       $"{Context.Channel.Name} - Match #{oldgame.GameNumber}\n" +
+                                       $"**Team 1:** [{string.Join(" ", t1Mention.Select(x => x.Mention).ToList())}]\n" +
+                                       $"**Team 2**: [{string.Join(" ", t2Mention.Select(x => x.Mention).ToList())}]\n" +
+                                       $"When the game finishes, type `=game {Context.Channel.Name} {oldgame.GameNumber} <team1 or team2>`\n" +
+                                       "This will modify each team's points respectively.";
 
-                        foreach (var u in oldgame.Team1)
-                        {
-                            var use = await Context.Guild.GetUserAsync(u);
-                            t1Mention.Add(use);
-                        }
-                        foreach (var u in oldgame.Team2)
-                        {
-                            var use = await Context.Guild.GetUserAsync(u);
-                            t2Mention.Add(use);
-                        }
-                        var announcement = "**__Game Has Been Updated__**\n" +
-                                           "**Lobby:** \n" +
-                                           $"{Context.Channel.Name} - Match #{oldgame.GameNumber}\n" +
-                                           $"**Team 1:** [{string.Join(" ", t1Mention.Select(x => x.Mention).ToList())}]\n" +
-                                           $"**Team 2**: [{string.Join(" ", t2Mention.Select(x => x.Mention).ToList())}]\n" +
-                                           $"When the game finishes, type `=game {Context.Channel.Name} {oldgame.GameNumber} <team1 or team2>`\n" +
-                                           "This will modify each team's points respectively.";
-
-                        try
-                        {
-                            var channel = await Context.Guild.GetChannelAsync(server.AnnouncementsChannel);
-                            await (channel as IMessageChannel).SendMessageAsync(announcement);
-                        }
-                        catch
-                        {
-                            await ReplyAsync(announcement);
-                        }
+                    try
+                    {
+                        var channel = await Context.Guild.GetChannelAsync(server.AnnouncementsChannel);
+                        await (channel as IMessageChannel).SendMessageAsync(announcement);
+                    }
+                    catch
+                    {
+                        await ReplyAsync(announcement);
                     }
 
                     ServerList.Saveserver(server);
@@ -570,6 +573,7 @@ namespace ELO_Bot.Commands
 
         [Ratelimit(1, 10d, Measure.Seconds)]
         [Command("Leave")]
+        [Alias("l")]
         [Summary("Leave")]
         [Remarks("Leave the current queue")]
         public async Task Leave()
@@ -878,7 +882,15 @@ namespace ELO_Bot.Commands
                                    $"When the game finishes, type `=game {lobbychannel.Name} {lobby.Games} <team1 or team2>`\n" +
                                    $"This will modify each team's points respectively.";
 
-                await channel.SendMessageAsync(announcement);
+                try
+                {
+                    await channel.SendMessageAsync(announcement);
+                }
+                catch
+                {
+                    await Context.Channel.SendMessageAsync(announcement);
+                }
+
             }
             catch (Exception e)
             {
