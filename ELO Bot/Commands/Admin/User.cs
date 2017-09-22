@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using System;
 
 namespace ELO_Bot.Commands.Admin
 {
@@ -259,6 +260,72 @@ namespace ELO_Bot.Commands.Admin
                 embed.WithColor(Color.Red);
                 await ReplyAsync("", false, embed.Build());
             }
+        }
+
+        [Command("ban")]
+        [Summary("ban <@user> <hours>")]
+        [Remarks("stop a user from interacting with the queue for the specified amount of time")]
+        public async Task Ban(SocketGuildUser user, int i)
+        {
+            var server = ServerList.Load(Context.Guild);
+            var b = new ServerList.Server.Ban()
+            {
+                UserId = user.Id,
+                Time = DateTime.UtcNow.AddHours(i)
+            };
+
+            if (server.Bans.Select(x => x.UserId == user.Id).Any())
+            {
+                server.Bans.Remove(server.Bans.FirstOrDefault(x => x.UserId == user.Id));
+            }
+
+            server.Bans.Add(b);
+
+            foreach (var queue in server.Queue)
+            {
+                if (queue.Users.Contains(user.Id) && !queue.IsPickingTeams)
+                {
+                    queue.Users.Remove(user.Id);
+                }
+            }
+
+            await ReplyAsync($"{user.Mention} has been banned for {i} hours from matchmaking.");
+
+            ServerList.Saveserver(server);
+        }
+
+        [Command("unban")]
+        [Summary("unban <@user>")]
+        [Remarks("Unban the specified user")]
+        public async Task Unban(SocketGuildUser user)
+        {
+            var server = ServerList.Load(Context.Guild);
+
+            if (server.Bans.Select(x => x.UserId == user.Id).Any())
+            {
+                server.Bans.Remove(server.Bans.FirstOrDefault(x => x.UserId == user.Id));
+            }
+
+            await ReplyAsync($"{user.Mention} has been unbanned");
+
+            ServerList.Saveserver(server);
+        }
+
+        [Command("bans")]
+        [Summary("bans")]
+        [Remarks("List all bans in the server.")]
+        public async Task Bans()
+        {
+            var server = ServerList.Load(Context.Guild);
+            var embed = new EmbedBuilder();
+            foreach (var user in server.Bans)
+            {
+                var u = Context.Guild.GetUser(user.UserId);
+                embed.Description += $"{u.Mention} {Math.Round((user.Time - DateTime.UtcNow).TotalMinutes, 0)} Minutes Left\n";
+            }
+            embed.Description +=
+                $"\nNOTE: If a user's remaining minutes is negative, their ban will automatically be removed the next time they join the queue";
+            await ReplyAsync($"", false, embed.Build());
         }
     }
 }

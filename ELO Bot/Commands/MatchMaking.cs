@@ -393,11 +393,29 @@ namespace ELO_Bot.Commands
                     return;
                 }
 
+                if (server.Bans.Any(x => x.UserId == Context.User.Id))
+                {
+                    var uban = server.Bans.FirstOrDefault(x => x.UserId == Context.User.Id);
+                    if (DateTime.UtcNow >= uban.Time)
+                    {
+                        server.Bans.Remove(uban);
+                    }
+                    else
+                    {
+                        embed.AddField("ERROR", $"You are currently banned from joining the queue for another {Math.Round((uban.Time - DateTime.UtcNow).TotalMinutes, 0)} minutes");
+                        await ReplyAsync("", false, embed.Build());
+                        return;
+                    }
+                }
+
                 //users can only join the queue when teams are not being picked.
                 if (lobby.IsPickingTeams)
                 {
                     embed.AddField("ERROR", "Teams are being picked, you cannot join the queue");
-                    await ReplyAsync("", false, embed.Build());
+                    var emb = await ReplyAsync("", false, embed.Build());
+                    await Task.Delay(500);
+                    await Context.Message.DeleteAsync();
+                    await emb.DeleteAsync();
                     return;
                 }
 
@@ -448,12 +466,28 @@ namespace ELO_Bot.Commands
                 //get the current lobbies queue.
                 if (queue != null)
                 {
+                    if (server.Bans.Any(x => x.UserId == Context.User.Id))
+                    {
+                        var uban = server.Bans.FirstOrDefault(x => x.UserId == Context.User.Id);
+                        if (DateTime.UtcNow >= uban.Time)
+                        {
+                            server.Bans.Remove(uban);
+                        }
+                        else
+                        {
+                            embed.AddField("ERROR", $"You are currently banned from joining the queue for another {Math.Round((uban.Time - DateTime.UtcNow).TotalMinutes, 0)} minutes");
+                            await ReplyAsync("", false, embed.Build());
+                            return;
+                        }
+                    }
+
                     if (queue.Users.Contains(Context.User.Id))
                     {
-                        //ensure that you cannot replace a player if you are already in the queue.
-                        await ReplyAsync("Hey... youre already queued you coon.");
+                        embed.AddField("ERROR", $"You are already queued");
+                        await ReplyAsync("", false, embed.Build());
                         return;
                     }
+
                     if (queue.Users.Contains(user.Id))
                     {
                         queue.Users.Remove(user.Id);
@@ -614,6 +648,30 @@ namespace ELO_Bot.Commands
             }
         }
 
+
+        [Command("Map")]
+        [Summary("Map")]
+        [Remarks("select a random map")]
+        public async Task Map()
+        {
+            try
+            {
+                var embed = new EmbedBuilder();
+                var server = ServerList.Load(Context.Guild);
+                //load the current server
+                var lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
+
+                var r = new Random().Next(0, lobby.Maps.Count);
+                embed.AddField("Random Map", $"{lobby.Maps[r]}");
+
+                await ReplyAsync("", false, embed.Build());
+            }
+            catch (Exception e)
+            {
+                await ReplyAsync($"Contact Passive with the following message:\n" +
+                                 $"{e}");
+            }
+        }
 
         [Ratelimit(1, 10d, Measure.Seconds)]
         [Command("Maps")]

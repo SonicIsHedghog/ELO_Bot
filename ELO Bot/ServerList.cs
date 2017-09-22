@@ -67,14 +67,21 @@ namespace ELO_Bot
             public string Registermessage { get; set; } = "Thankyou for Registering";
             public List<User> UserList { get; set; } = new List<User>();
             public ulong AnnouncementsChannel { get; set; } = 0;
-
             public int Winamount { get; set; } = 10;
             public int Lossamount { get; set; } = 5;
 
-
             public List<Q> Queue { get; set; } = new List<Q>();
-
             public List<PreviouMatches> Gamelist { get; set; } = new List<PreviouMatches>();
+
+
+
+            public List<Ban> Bans { get; set; } = new List<Ban>();
+
+            public class Ban
+            {
+                public ulong UserId;
+                public DateTime Time;
+            }
 
             public class Q
             {
