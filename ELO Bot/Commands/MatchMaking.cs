@@ -858,7 +858,7 @@ namespace ELO_Bot.Commands
                 }
 
                 var t2Desc = "";
-                var t2Sum = team1.Sum(x => x.Points);
+                var t2Sum = team2.Sum(x => x.Points);
                 var t2Users = new List<IUser>();
                 foreach (var user in team2)
                 {
