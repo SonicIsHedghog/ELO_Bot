@@ -64,6 +64,7 @@ namespace ELO_Bot
             public ulong RegisterRole { get; set; }
             public List<Ranking> Ranks { get; set; } = new List<Ranking>();
             public ulong AdminRole { get; set; } = 0;
+            public ulong ModRole { get; set; } = 0;
             public string Registermessage { get; set; } = "Thankyou for Registering";
             public List<User> UserList { get; set; } = new List<User>();
             public ulong AnnouncementsChannel { get; set; } = 0;

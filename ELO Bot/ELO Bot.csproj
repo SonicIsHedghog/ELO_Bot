@@ -131,14 +131,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\Admin\Moderator.cs" />
     <Compile Include="PreConditions\CheckAdmin.cs" />
     <Compile Include="Commands\Admin\Admin.cs" />
     <Compile Include="Commands\Admin\Lobby.cs" />
-    <Compile Include="Commands\Admin\Map.cs" />
     <Compile Include="Commands\Admin\Point.cs" />
-    <Compile Include="Commands\Admin\Premium.cs" />
-    <Compile Include="Commands\Admin\Rank.cs" />
-    <Compile Include="Commands\Admin\User.cs" />
+    <Compile Include="Commands\Admin\Management.cs" />
     <Compile Include="Commands\Admin\WinLoss.cs" />
     <Compile Include="Commands\MatchMaking.cs" />
     <Compile Include="PreConditions\RatelimitAttribute.cs" />

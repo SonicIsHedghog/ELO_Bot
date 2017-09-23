@@ -180,5 +180,51 @@ namespace ELO_Bot.Commands.Admin
                 // No available roles
             }
         }
+
+        [Command("ModifyLoss")]
+        [Summary("ModifyLoss <points>")]
+        [Remarks("Sets the servers Loss amount")]
+        public async Task Lose(int points)
+        {
+            var embed = new EmbedBuilder();
+            var server = ServerList.Load(Context.Guild);
+            if (points == 0)
+            {
+                embed.AddField("ERROR", "Please supply a number that isnt 0");
+                embed.Color = Color.Red;
+                await ReplyAsync("", false, embed.Build());
+                return;
+            }
+            if (points <= 0)
+                points = Math.Abs(points);
+            server.Lossamount = points;
+            ServerList.Saveserver(server);
+            embed.AddField("Success", $"Upon losing, users will now lose {points} points");
+            embed.Color = Color.Green;
+            await ReplyAsync("", false, embed.Build());
+        }
+
+        [Command("ModifyWin")]
+        [Summary("ModifyWin <points>")]
+        [Remarks("Sets the servers Win amount")]
+        public async Task Win(int points)
+        {
+            var embed = new EmbedBuilder();
+            var server = ServerList.Load(Context.Guild);
+            if (points == 0)
+            {
+                embed.AddField("ERROR", "Please supply a number that isnt 0");
+                embed.Color = Color.Red;
+                await ReplyAsync("", false, embed.Build());
+                return;
+            }
+            if (points <= 0)
+                points = Math.Abs(points);
+            server.Winamount = points;
+            ServerList.Saveserver(server);
+            embed.AddField("Success", $"Upon Winning, users will now gain {points} points");
+            embed.Color = Color.Green;
+            await ReplyAsync("", false, embed.Build());
+        }
     }
 }

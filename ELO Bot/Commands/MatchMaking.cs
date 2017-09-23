@@ -661,6 +661,13 @@ namespace ELO_Bot.Commands
                 //load the current server
                 var lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
 
+                if (lobby.Maps.Count == 0 || lobby.Maps == null)
+                {
+                    await ReplyAsync("There are no maps setup for this lobby");
+                    return;
+                }
+                    
+
                 var r = new Random().Next(0, lobby.Maps.Count);
                 embed.AddField("Random Map", $"{lobby.Maps[r]}");
 

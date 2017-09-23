@@ -266,5 +266,16 @@ namespace ELO_Bot.Commands
             embed.WithColor(Color.Blue);
             await ReplyAsync("", false, embed.Build());
         }
+
+        [Command("Invite")]
+        [Summary("Invite")]
+        [Remarks("Invite the Bot")]
+        public async Task Invite()
+        {
+
+            await ReplyAsync($"Invite ELO Bot Here: <https://discordapp.com/oauth2/authorize?client_id={Context.Client.CurrentUser.Id}&scope=bot&permissions=2146958591>\n" +
+                             $"Support Server: <https://discord.gg/ZKXqt2a>\n" +
+                             $"Developed By: PassiveModding");
+        }
     }
 }
