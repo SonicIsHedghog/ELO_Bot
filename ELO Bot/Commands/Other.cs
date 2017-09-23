@@ -191,52 +191,5 @@ namespace ELO_Bot.Commands
                 await ReplyAsync(e.ToString());
             }
         }
-
-        /*
-        [Command("Stats")]
-        [Remarks("Stats and info about the bot & current server")]
-        [Summary("Stats")]
-        [CheckRegistered]
-        public async Task Stats()
-        {
-            var server = ServerList.Load(Context.Guild);
-
-
-            var announce = await Context.Guild.GetChannelAsync(server.AnnouncementsChannel);
-            var admin = Context.Guild.GetRole(server.AdminRole);
-            var winloss = $"{server.Winamount}/{server.Lossamount}";
-            //var status = server.IsPremium;
-            var register = $"{server.Registermessage}";
-            var registerrole = Context.Guild.GetRole(server.RegisterRole);
-            var games = server.Gamelist.Count;
-            var lobbies = server.Queue.Count;
-            var users = server.UserList.Count;
-            var ranks = server.Ranks.Count;
-
-
-            var embed = new EmbedBuilder();
-            embed.AddField("Server Stats",
-                $"Announcements Channel: {announce.Name}\n" +
-                $"Admin Role: {admin.Name}\n" +
-                $"Win/Loss Point Count: {winloss}\n" +
-                $"Server Status:" + (server.IsPremium ? "Premium" : "Free") + "\n" +
-                $"Register Message: {register}\n" +
-                $"Register Role: {registerrole.Name}\n" +
-                $"User Count: {users}" +
-                $"Games Played: {games}\n" +
-                $"Lobby Count: {lobbies}\n" +
-                $"Ranks: {ranks}");
-
-            embed.AddField("-----BOT STATS-----", "ELO BOT STATISTICS");
-            embed.AddField("Total Servers", (Context.Client as DiscordSocketClient).Guilds.Count);
-            embed.AddField("Total Users", (Context.Client as DiscordSocketClient).Guilds.Sum(x => x.MemberCount));
-            embed.AddField("Total Channels", (Context.Client as DiscordSocketClient).Guilds.Sum(x => x.Channels.Count));
-            embed.AddField("Total Registered", ServerList.LoadFull().Serverlist.Sum(x => x.UserList.Count));
-            embed.AddField("Uptime",
-                (DateTime.Now - Process.GetCurrentProcess().StartTime).ToString(@"dd\.hh\:mm\:ss"));
-            embed.AddField("Heap Size",
-                Math.Round(GC.GetTotalMemory(true) / (1024.0 * 1024.0), 2).ToString(CultureInfo.InvariantCulture));
-            await ReplyAsync("", false, embed.Build());
-        }*/
     }
 }

@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Discord.WebSocket;
 using Newtonsoft.Json;
 
 namespace ELO_Bot.Commands.Admin
@@ -132,6 +136,74 @@ namespace ELO_Bot.Commands.Admin
             embed.AddField("Complete!", $"Registration Message will now include the following:\n" +
                                         $"{message}");
             embed.WithColor(Color.Blue);
+            await ReplyAsync("", false, embed.Build());
+        }
+
+        [Command("Server")]
+        [Remarks("Stats and info about the bot & current server")]
+        [Summary("Server")]
+        [CheckRegistered]
+        public async Task Stats()
+        {
+            var embed = new EmbedBuilder();
+            var server = ServerList.Load(Context.Guild);
+
+            try
+            {
+                var admin = Context.Guild.GetRole(server.AdminRole);
+                embed.AddField("Admin Role", $"{admin.Name}");
+            }
+            catch
+            {
+                embed.AddField("Admin Role", $"N/A");
+            }
+
+            try
+            {
+                var admin = Context.Guild.GetRole(server.ModRole);
+                embed.AddField("Mod Role", $"{admin.Name}");
+            }
+            catch
+            {
+                embed.AddField("Mod Role", $"N/A");
+            }
+
+            try
+            {
+                var ann = await Context.Guild.GetChannelAsync(server.AnnouncementsChannel);
+                embed.AddField("Announcements Channel", $"{ann.Name}");
+            }
+            catch
+            {
+                embed.AddField("Announcements Channel", $"N/A");
+            }
+
+            embed.AddField("Is Premium?", $"{server.IsPremium}");
+            embed.AddField("Points Per Win/Loss", $"{server.Winamount}/{server.Lossamount}");
+
+            try
+            {
+                embed.AddField("Counts", $"Lobbies: {server.Queue.Count}\n" +
+                                          $"Ranks: {server.Ranks.Count}\n" +
+                                          $"Registered Users: {server.UserList.Count}");
+            }
+            catch
+            {
+                embed.AddField("Counts", $"Error");
+            }
+
+                embed.AddField("Registration Message", $"{server.Registermessage}");
+
+            try
+            {
+                var ann = Context.Guild.GetRole(server.RegisterRole);
+                embed.AddField("Registration Role", $"{ann.Name}");
+            }
+            catch
+            {
+                embed.AddField("Registration Role", $"N/A");
+            }
+
             await ReplyAsync("", false, embed.Build());
         }
     }

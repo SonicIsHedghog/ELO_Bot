@@ -226,5 +226,60 @@ namespace ELO_Bot.Commands.Admin
             embed.Color = Color.Green;
             await ReplyAsync("", false, embed.Build());
         }
+
+        [Command("ScoreboardReset", RunMode = RunMode.Async)]
+        [Summary("ScoreboardReset")]
+        [Remarks("Reset Points, Wins and Losses for all users in the server")]
+        public async Task Reset()
+        {
+            var server = ServerList.Load(Context.Guild);
+            await ReplyAsync("Working...\n" +
+                             $"Estimated Reset time = {server.UserList.Count * 3} seconds");
+            foreach (var user in server.UserList)
+            {
+                user.Points = 0;
+                user.Wins = 0;
+                user.Losses = 0;
+                try
+                {
+                    var delay = 0;
+                    var u = await Context.Guild.GetUserAsync(user.UserId);
+                    if (!u.Nickname.StartsWith("0 ~ "))
+                    {
+                        try
+                        {
+                            await u.ModifyAsync(x =>
+                            {
+                                x.Nickname = $"0 ~ {user.Username}";
+                            });
+                            delay = 1000;
+                        }
+                        catch
+                        {
+                            //
+                        }
+                        
+                    }
+                    try
+                    {
+                        await u.RemoveRolesAsync(server.Ranks.Select(x => Context.Guild.GetRole(x.RoleId)));
+                        delay = 1000;
+                    }
+                    catch
+                    {
+                        //
+                    }
+                    await Task.Delay(delay);
+                }
+                catch
+                {
+                    //
+                }
+            }
+
+
+            ServerList.Saveserver(server);
+            await ReplyAsync("Leaderboard Reset Complete!");
+        }
     }
 }
