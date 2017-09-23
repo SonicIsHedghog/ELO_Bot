@@ -106,8 +106,8 @@ namespace ELO_Bot.Commands.Admin
             ServerList.Saveserver(s1);
             embed.AddField("Complete!", $"People with the role {ModRole.Mention} can now use the following commands:\n" +
                                         $"```\n" +
-                                        $"=win <@uaer1> <@user2>...\n" +
-                                        $"=lose <@uaer1> <@user2>...\n" +
+                                        $"=win <@user1> <@user2>...\n" +
+                                        $"=lose <@user1> <@user2>...\n" +
                                         $"=game <lobby> <match-no.> <team1/team2>\n" +
                                         $"```");
             embed.WithColor(Color.Blue);
