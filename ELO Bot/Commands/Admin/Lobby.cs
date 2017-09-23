@@ -129,20 +129,21 @@ namespace ELO_Bot.Commands.Admin
         [Remarks("Add A Map")]
         public async Task AddMap(params string[] mapName)
         {
+            var embed = new EmbedBuilder();
             var server = ServerList.Load(Context.Guild);
             var lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
             foreach (var map in mapName)
                 if (!lobby.Maps.Contains(map))
                 {
                     lobby.Maps.Add(map);
-                    await ReplyAsync($"Map added {map}");
+                    embed.Description+= $"Map added {map}\n";
                 }
                 else
                 {
-                    await ReplyAsync($"Map Already Exists {map}");
+                    embed.Description += $"Map Already Exists {map}\n";
                 }
 
-
+            await ReplyAsync("", false, embed.Build());
             ServerList.Saveserver(server);
         }
 
