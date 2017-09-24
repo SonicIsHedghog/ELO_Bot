@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using ELO_Bot.PreConditions;
 
 namespace ELO_Bot.Commands.Admin
 {

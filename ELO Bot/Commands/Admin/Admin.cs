@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using ELO_Bot.PreConditions;
 using Newtonsoft.Json;
 
 namespace ELO_Bot.Commands.Admin

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 
-namespace ELO_Bot
+namespace ELO_Bot.PreConditions
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public sealed class CheckAdmin : PreconditionAttribute
@@ -13,6 +13,9 @@ namespace ELO_Bot
             IServiceProvider prov)
         {
             var s1 = ServerList.Load(context.Guild);
+
+            if ((await context.Client.GetApplicationInfoAsync()).Owner == context.User)
+                return await Task.FromResult(PreconditionResult.FromSuccess());
 
             if (s1.AdminRole != 0)
                 if ((context.User as IGuildUser).RoleIds.Contains(s1.AdminRole))
@@ -35,6 +38,10 @@ namespace ELO_Bot
             IServiceProvider prov)
         {
             var s1 = ServerList.Load(context.Guild);
+
+            if ((await context.Client.GetApplicationInfoAsync()).Owner == context.User)
+                return await Task.FromResult(PreconditionResult.FromSuccess());
+
             if (s1.ModRole != 0)
                 if ((context.User as IGuildUser).RoleIds.Contains(s1.ModRole))
                     return await Task.FromResult(PreconditionResult.FromSuccess());

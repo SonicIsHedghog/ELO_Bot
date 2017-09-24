@@ -5,6 +5,7 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using System;
+using ELO_Bot.PreConditions;
 
 namespace ELO_Bot.Commands.Admin
 {
@@ -34,7 +35,7 @@ namespace ELO_Bot.Commands.Admin
             await ReplyAsync("", false, embed.Build());
         }
 
-        [Command("RegisterAll", RunMode = RunMode.Async)]
+        /*[Command("RegisterAll", RunMode = RunMode.Async)]
         [Summary("RegisterAll <role>")]
         [Remarks("Register All Users in the server or all users in the specified role")]
         public async Task RegisterAll(SocketRole specifiedRole = null)
@@ -103,7 +104,7 @@ namespace ELO_Bot.Commands.Admin
             }
             await ReplyAsync($"All users have been registered.");
             ServerList.Saveserver(serv);
-        }
+        }*/
 
         [Command("Deluser")]
         [Summary("DelUser <@user>")]
