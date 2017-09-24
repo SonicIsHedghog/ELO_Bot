@@ -28,6 +28,24 @@ namespace ELO_Bot.Commands.Admin
             await ReplyAsync("GameAnnouncements will now be posted in this channel");
         }
 
+        [Command("RemoveIdle")]
+        [Summary("RemoveIdle")]
+        [Remarks("Set if users are removed from the queue when going idle")]
+        public async Task IdleRemove()
+        {
+            var server = ServerList.Load(Context.Guild);
+            server.Autoremove = !server.Autoremove;
+            ServerList.Saveserver(server);
+            if (server.Autoremove)
+            {
+                await ReplyAsync("Users will be removed from queues if they go idle or if they go offline");
+            }
+            else
+            {
+                await ReplyAsync("Users will be removed from queues only if they go offline");
+            }
+        }
+
         [Command("Premium")]
         [Summary("Premium <key>")]
         [Remarks("Upgrade the server to premium and increase the userlimit to unlimited")]

@@ -70,6 +70,7 @@ namespace ELO_Bot
             public ulong AnnouncementsChannel { get; set; } = 0;
             public int Winamount { get; set; } = 10;
             public int Lossamount { get; set; } = 5;
+            public bool Autoremove { get; set; } = true;
 
             public List<Q> Queue { get; set; } = new List<Q>();
             public List<PreviouMatches> Gamelist { get; set; } = new List<PreviouMatches>();

@@ -119,10 +119,12 @@ namespace ELO_Bot
             {
                 if (userBefore.Status != userAfter.Status)
                     if (userAfter.Status == UserStatus.Idle || userAfter.Status == UserStatus.Offline)
-                        try
+                    {
+                        var guild = (userBefore as IGuildUser).Guild;
+                        var server = ServerList.Load(guild);
+                        if (server.Autoremove && userAfter.Status == UserStatus.Idle)
                         {
-                            var guild = (userBefore as IGuildUser).Guild;
-                            var server = ServerList.Load(guild);
+                            //Autoremove & User went Idle
                             foreach (var userqueue in server.Queue.Where(x => x.Users.Contains(userAfter.Id)))
                                 try
                                 {
@@ -130,28 +132,51 @@ namespace ELO_Bot
                                     {
                                         var channel = await guild.GetChannelAsync(userqueue.ChannelId);
                                         await (channel as ITextChannel).SendMessageAsync(
-                                            $"{userAfter.Mention} has gone idle or offline, as this channel is currently picking teams they were unable to be replaced in the queue\n" +
+                                            $"{userAfter.Mention} has gone idle, as this channel is currently picking teams they were unable to be replaced in the queue\n" +
                                             $"if they are inactive it is recommended that someone use the command `=subfor <@user>` to replace them\n" +
-                                            $"if they were already chosen for a team then make sure to tell an admin before scores are updated.");
+                                            $"if they were already chosen for a team then you can use `=replace <@user>` after both teams are finished being picked.");
                                     }
                                     else
                                     {
                                         userqueue.Users.Remove(userAfter.Id);
                                         var channel = await guild.GetChannelAsync(userqueue.ChannelId);
                                         await (channel as ITextChannel).SendMessageAsync(
-                                            $"{userAfter.Mention} has gone idle or offline and has been removed from this channel's queue");
+                                            $"{userAfter.Mention} has gone idle and has been removed from this channel's queue");
                                     }
                                 }
                                 catch
                                 {
                                     //
                                 }
-                            ServerList.Saveserver(server);
                         }
-                        catch
+                        else if (userAfter.Status == UserStatus.Offline)
                         {
-                            //
+                            foreach (var userqueue in server.Queue.Where(x => x.Users.Contains(userAfter.Id)))
+                                try
+                                {
+                                    if (userqueue.IsPickingTeams)
+                                    {
+                                        var channel = await guild.GetChannelAsync(userqueue.ChannelId);
+                                        await (channel as ITextChannel).SendMessageAsync(
+                                            $"{userAfter.Mention} has gone offline, as this channel is currently picking teams they were unable to be replaced in the queue\n" +
+                                            $"if they are inactive it is recommended that someone use the command `=subfor <@user>` to replace them\n" +
+                                            $"if they were already chosen for a team then you can use `=replace <@user>` after both teams are finished being picked.");
+                                    }
+                                    else
+                                    {
+                                        userqueue.Users.Remove(userAfter.Id);
+                                        var channel = await guild.GetChannelAsync(userqueue.ChannelId);
+                                        await (channel as ITextChannel).SendMessageAsync(
+                                            $"{userAfter.Mention} has gone offline and has been removed from this channel's queue");
+                                    }
+                                }
+                                catch
+                                {
+                                    //
+                                }
                         }
+                        ServerList.Saveserver(server);
+                    }
             }
 
             private static async Task _client_JoinedGuild(SocketGuild guild)
