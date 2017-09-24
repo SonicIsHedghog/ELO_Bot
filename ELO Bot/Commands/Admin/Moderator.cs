@@ -1,10 +1,9 @@
-﻿using Discord.Commands;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Discord;
+using Discord.Commands;
 using Discord.WebSocket;
 using ELO_Bot.PreConditions;
 
@@ -150,7 +149,6 @@ namespace ELO_Bot.Commands.Admin
 
             ServerList.Saveserver(server);
             await ReplyAsync("", false, embed.Build());
-
         }
 
         public async Task CheckRank(ServerList.Server server, IUser user, ServerList.Server.User subject)

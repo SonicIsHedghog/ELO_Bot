@@ -36,7 +36,6 @@ namespace ELO_Bot
             Config.CheckExistence();
             var token = Config.Load().Token;
 
-            
 
             Client = new DiscordSocketClient(new DiscordSocketConfig
             {
@@ -123,8 +122,6 @@ namespace ELO_Bot
                         var guild = (userBefore as IGuildUser).Guild;
                         var server = ServerList.Load(guild);
                         if (server.Autoremove && userAfter.Status == UserStatus.Idle)
-                        {
-                            //Autoremove & User went Idle
                             foreach (var userqueue in server.Queue.Where(x => x.Users.Contains(userAfter.Id)))
                                 try
                                 {
@@ -148,9 +145,7 @@ namespace ELO_Bot
                                 {
                                     //
                                 }
-                        }
                         else if (userAfter.Status == UserStatus.Offline)
-                        {
                             foreach (var userqueue in server.Queue.Where(x => x.Users.Contains(userAfter.Id)))
                                 try
                                 {
@@ -174,7 +169,6 @@ namespace ELO_Bot
                                 {
                                     //
                                 }
-                        }
                         ServerList.Saveserver(server);
                     }
             }
@@ -215,28 +209,25 @@ namespace ELO_Bot
                 var result = await _commands.ExecuteAsync(context, argPos, Provider);
 
                 var commandsuccess = result.IsSuccess;
-                
+
 
                 if (!commandsuccess)
                 {
                     var embed = new EmbedBuilder();
 
                     foreach (var module in _commands.Modules)
-                    {
-                        foreach (var command in module.Commands)
+                    foreach (var command in module.Commands)
+                        if (context.Message.Content.ToLower()
+                            .StartsWith($"{Config.Load().Prefix}{command.Name} ".ToLower()))
                         {
-                            if (context.Message.Content.ToLower().StartsWith($"{Config.Load().Prefix}{command.Name} ".ToLower()))
-                            {
-                                embed.AddField($"COMMAND INFO", $"Name: {command.Name}\n" +
-                                                                $"Summary: {command.Summary}\n" +
-                                                                $"Info: {command.Remarks}");
-                                break;
-                            }
+                            embed.AddField($"COMMAND INFO", $"Name: {command.Name}\n" +
+                                                            $"Summary: {command.Summary}\n" +
+                                                            $"Info: {command.Remarks}");
+                            break;
                         }
-                    }
 
                     embed.AddField($"ERROR {result.Error.ToString().ToUpper()}", $"Command: {context.Message}\n" +
-                                            $"Error: {result.ErrorReason}");
+                                                                                 $"Error: {result.ErrorReason}");
                     embed.Color = Color.Red;
                     await context.Channel.SendMessageAsync("", false, embed.Build());
                     Log.Logger = new LoggerConfiguration()

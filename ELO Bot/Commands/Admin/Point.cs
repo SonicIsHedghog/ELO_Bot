@@ -246,21 +246,15 @@ namespace ELO_Bot.Commands.Admin
                     var delay = 0;
                     var u = await Context.Guild.GetUserAsync(user.UserId);
                     if (!u.Nickname.StartsWith("0 ~ "))
-                    {
                         try
                         {
-                            await u.ModifyAsync(x =>
-                            {
-                                x.Nickname = $"0 ~ {user.Username}";
-                            });
+                            await u.ModifyAsync(x => { x.Nickname = $"0 ~ {user.Username}"; });
                             delay = 1000;
                         }
                         catch
                         {
                             //
                         }
-                        
-                    }
                     try
                     {
                         await u.RemoveRolesAsync(server.Ranks.Select(x => Context.Guild.GetRole(x.RoleId)));

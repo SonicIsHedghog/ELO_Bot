@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using System;
 using ELO_Bot.PreConditions;
 
 namespace ELO_Bot.Commands.Admin
@@ -269,26 +268,20 @@ namespace ELO_Bot.Commands.Admin
         public async Task Ban(SocketGuildUser user, int i)
         {
             var server = ServerList.Load(Context.Guild);
-            var b = new ServerList.Server.Ban()
+            var b = new ServerList.Server.Ban
             {
                 UserId = user.Id,
                 Time = DateTime.UtcNow.AddHours(i)
             };
 
             if (server.Bans.Select(x => x.UserId == user.Id).Any())
-            {
                 server.Bans.Remove(server.Bans.FirstOrDefault(x => x.UserId == user.Id));
-            }
 
             server.Bans.Add(b);
 
             foreach (var queue in server.Queue)
-            {
                 if (queue.Users.Contains(user.Id) && !queue.IsPickingTeams)
-                {
                     queue.Users.Remove(user.Id);
-                }
-            }
 
             await ReplyAsync($"{user.Mention} has been banned for {i} hours from matchmaking.");
 
@@ -303,9 +296,7 @@ namespace ELO_Bot.Commands.Admin
             var server = ServerList.Load(Context.Guild);
 
             if (server.Bans.Select(x => x.UserId == user.Id).Any())
-            {
                 server.Bans.Remove(server.Bans.FirstOrDefault(x => x.UserId == user.Id));
-            }
 
             await ReplyAsync($"{user.Mention} has been unbanned");
 
@@ -322,7 +313,8 @@ namespace ELO_Bot.Commands.Admin
             foreach (var user in server.Bans)
             {
                 var u = Context.Guild.GetUser(user.UserId);
-                embed.Description += $"{u.Mention} {Math.Round((user.Time - DateTime.UtcNow).TotalMinutes, 0)} Minutes Left\n";
+                embed.Description +=
+                    $"{u.Mention} {Math.Round((user.Time - DateTime.UtcNow).TotalMinutes, 0)} Minutes Left\n";
             }
             embed.Description +=
                 $"\nNOTE: If a user's remaining minutes is negative, their ban will automatically be removed the next time they join the queue";

@@ -76,13 +76,12 @@ namespace ELO_Bot
             public List<PreviouMatches> Gamelist { get; set; } = new List<PreviouMatches>();
 
 
-
             public List<Ban> Bans { get; set; } = new List<Ban>();
 
             public class Ban
             {
-                public ulong UserId;
                 public DateTime Time;
+                public ulong UserId;
             }
 
             public class Q

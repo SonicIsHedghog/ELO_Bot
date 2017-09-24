@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using Discord.WebSocket;
 using ELO_Bot.PreConditions;
 using Newtonsoft.Json;
 
@@ -38,13 +34,9 @@ namespace ELO_Bot.Commands.Admin
             server.Autoremove = !server.Autoremove;
             ServerList.Saveserver(server);
             if (server.Autoremove)
-            {
                 await ReplyAsync("Users will be removed from queues if they go idle or if they go offline");
-            }
             else
-            {
                 await ReplyAsync("Users will be removed from queues only if they go offline");
-            }
         }
 
         [Command("Premium")]
@@ -115,20 +107,21 @@ namespace ELO_Bot.Commands.Admin
         [Command("SetMod")]
         [Summary("SetMod <@role>")]
         [Remarks("Sets the moderator role (point updating access)")]
-        public async Task SetMod(IRole ModRole)
+        public async Task SetMod(IRole modRole)
         {
             var embed = new EmbedBuilder();
 
             var s1 = ServerList.Load(Context.Guild);
 
-            s1.ModRole = ModRole.Id;
+            s1.ModRole = modRole.Id;
             ServerList.Saveserver(s1);
-            embed.AddField("Complete!", $"People with the role {ModRole.Mention} can now use the following commands:\n" +
-                                        $"```\n" +
-                                        $"=win <@user1> <@user2>...\n" +
-                                        $"=lose <@user1> <@user2>...\n" +
-                                        $"=game <lobby> <match-no.> <team1/team2>\n" +
-                                        $"```");
+            embed.AddField("Complete!",
+                $"People with the role {modRole.Mention} can now use the following commands:\n" +
+                $"```\n" +
+                $"=win <@user1> <@user2>...\n" +
+                $"=lose <@user1> <@user2>...\n" +
+                $"=game <lobby> <match-no.> <team1/team2>\n" +
+                $"```");
             embed.WithColor(Color.Blue);
             await ReplyAsync("", false, embed.Build());
         }
@@ -203,15 +196,15 @@ namespace ELO_Bot.Commands.Admin
             try
             {
                 embed.AddField("Counts", $"Lobbies: {server.Queue.Count}\n" +
-                                          $"Ranks: {server.Ranks.Count}\n" +
-                                          $"Registered Users: {server.UserList.Count}");
+                                         $"Ranks: {server.Ranks.Count}\n" +
+                                         $"Registered Users: {server.UserList.Count}");
             }
             catch
             {
                 embed.AddField("Counts", $"Error");
             }
 
-                embed.AddField("Registration Message", $"{server.Registermessage}");
+            embed.AddField("Registration Message", $"{server.Registermessage}");
 
             try
             {

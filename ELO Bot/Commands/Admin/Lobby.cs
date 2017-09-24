@@ -11,7 +11,6 @@ namespace ELO_Bot.Commands.Admin
     [CheckAdmin]
     public class Lobby : ModuleBase
     {
-
         [Ratelimit(1, 30d, Measure.Seconds)]
         [Command("CreateLobby")]
         [Summary("CreateLobby <userlimit> <true = captains, false = automatic teams> <lobby message>")]
@@ -136,7 +135,7 @@ namespace ELO_Bot.Commands.Admin
                 if (!lobby.Maps.Contains(map))
                 {
                     lobby.Maps.Add(map);
-                    embed.Description+= $"Map added {map}\n";
+                    embed.Description += $"Map added {map}\n";
                 }
                 else
                 {

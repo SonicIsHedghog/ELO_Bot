@@ -64,7 +64,10 @@ namespace ELO_Bot.PreConditions
 
             timeout.TimesInvoked++;
 
-            if (timeout.TimesInvoked > _invokeLimit) return Task.FromResult(PreconditionResult.FromError($"Command is RateLimited to {_invokeLimit} use(s) in {_invokeLimitPeriod.Seconds} seconds"));
+            if (timeout.TimesInvoked > _invokeLimit)
+                return Task.FromResult(
+                    PreconditionResult.FromError(
+                        $"Command is RateLimited to {_invokeLimit} use(s) in {_invokeLimitPeriod.Seconds} seconds"));
             _invokeTracker[context.User.Id] = timeout;
             return Task.FromResult(PreconditionResult.FromSuccess());
         }

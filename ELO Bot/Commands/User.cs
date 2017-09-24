@@ -10,7 +10,6 @@ namespace ELO_Bot.Commands
     [RequireContext(ContextType.Guild)]
     public class User : ModuleBase
     {
-
         [Ratelimit(3, 30d, Measure.Seconds)]
         [Command("Register")]
         [Summary("Register <username>")]
@@ -70,7 +69,6 @@ namespace ELO_Bot.Commands
                 {
                     embed.AddField("ERROR", "Username Unable to be modified (Permissions are above the bot)");
                 }
-
 
 
                 embed.AddField("ERROR", "User is already registered, role and name have been updated accordingly");
@@ -272,10 +270,10 @@ namespace ELO_Bot.Commands
         [Remarks("Invite the Bot")]
         public async Task Invite()
         {
-
-            await ReplyAsync($"Invite ELO Bot Here: <https://discordapp.com/oauth2/authorize?client_id={Context.Client.CurrentUser.Id}&scope=bot&permissions=2146958591>\n" +
-                             $"Support Server: <https://discord.gg/ZKXqt2a>\n" +
-                             $"Developed By: PassiveModding");
+            await ReplyAsync(
+                $"Invite ELO Bot Here: <https://discordapp.com/oauth2/authorize?client_id={Context.Client.CurrentUser.Id}&scope=bot&permissions=2146958591>\n" +
+                $"Support Server: <https://discord.gg/ZKXqt2a>\n" +
+                $"Developed By: PassiveModding");
         }
     }
 }

@@ -402,7 +402,8 @@ namespace ELO_Bot.Commands
                     }
                     else
                     {
-                        embed.AddField("ERROR", $"You are currently banned from joining the queue for another {Math.Round((uban.Time - DateTime.UtcNow).TotalMinutes, 0)} minutes");
+                        embed.AddField("ERROR",
+                            $"You are currently banned from joining the queue for another {Math.Round((uban.Time - DateTime.UtcNow).TotalMinutes, 0)} minutes");
                         await ReplyAsync("", false, embed.Build());
                         return;
                     }
@@ -475,7 +476,8 @@ namespace ELO_Bot.Commands
                         }
                         else
                         {
-                            embed.AddField("ERROR", $"You are currently banned from joining the queue for another {Math.Round((uban.Time - DateTime.UtcNow).TotalMinutes, 0)} minutes");
+                            embed.AddField("ERROR",
+                                $"You are currently banned from joining the queue for another {Math.Round((uban.Time - DateTime.UtcNow).TotalMinutes, 0)} minutes");
                             await ReplyAsync("", false, embed.Build());
                             return;
                         }
@@ -666,7 +668,7 @@ namespace ELO_Bot.Commands
                     await ReplyAsync("There are no maps setup for this lobby");
                     return;
                 }
-                    
+
 
                 var r = new Random().Next(0, lobby.Maps.Count);
                 embed.AddField("Random Map", $"{lobby.Maps[r]}");
@@ -955,7 +957,6 @@ namespace ELO_Bot.Commands
                 {
                     await Context.Channel.SendMessageAsync(announcement);
                 }
-
             }
             catch (Exception e)
             {
