@@ -50,7 +50,6 @@ namespace ELO_Bot.PreConditions
                 return await Task.FromResult(PreconditionResult.FromSuccess());
             }
 
-
             if (s1.ModRole != 0)
                 if ((context.User as IGuildUser).RoleIds.Contains(s1.ModRole))
                     return await Task.FromResult(PreconditionResult.FromSuccess());
@@ -64,6 +63,7 @@ namespace ELO_Bot.PreConditions
                 return await Task.FromResult(
                     PreconditionResult.FromError(
                         $"This Command requires Moderator OR Admin permissions."));
+
             return await Task.FromResult(PreconditionResult.FromSuccess());
         }
     }

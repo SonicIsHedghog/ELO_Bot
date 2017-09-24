@@ -8,9 +8,7 @@ using Newtonsoft.Json;
 
 namespace ELO_Bot.Commands.Admin
 {
-    [RequireTopic]
     [RequireContext(ContextType.Guild)]
-    [CheckRegistered]
     [CheckAdmin]
     public class Admin : ModuleBase
     {
