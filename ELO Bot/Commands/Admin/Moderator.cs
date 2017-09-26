@@ -81,10 +81,27 @@ namespace ELO_Bot.Commands.Admin
                 var team1 = new List<IUser>();
                 var team2 = new List<IUser>();
                 foreach (var user in game.Team1)
-                    team1.Add(await Context.Guild.GetUserAsync(user));
+                    try
+                    {
+                        team1.Add(await Context.Guild.GetUserAsync(user));
+                    }
+                    catch
+                    {
+                        await ReplyAsync(
+                            $"{server.UserList.FirstOrDefault(x => x.UserId == user).Username} was unavailable");
+                    }
+                    
 
                 foreach (var user in game.Team2)
-                    team2.Add(await Context.Guild.GetUserAsync(user));
+                    try
+                    {
+                        team2.Add(await Context.Guild.GetUserAsync(user));
+                    }
+                    catch
+                    {
+                        await ReplyAsync(
+                            $"{server.UserList.FirstOrDefault(x => x.UserId == user).Username} was unavailable");
+                    }
 
                 switch (team.ToLower())
                 {

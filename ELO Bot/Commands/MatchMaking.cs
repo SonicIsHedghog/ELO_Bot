@@ -232,17 +232,39 @@ namespace ELO_Bot.Commands
                         foreach (var us in lobby.Team1)
                         {
                             var u = await Context.Client.GetUserAsync(us);
-                            t1List += $"{u.Mention} ";
+                            try
+                            {
+                                t1List += $"{u.Mention} ";
+                            }
+                            catch
+                            {
+                                t1List += $"{server.UserList.FirstOrDefault(x => x.UserId == us).Username} ";
+                            }
                         }
                         foreach (var us in lobby.Team2)
                         {
                             var u = await Context.Client.GetUserAsync(us);
-                            t2List += $"{u.Mention} ";
+                            try
+                            {
+                                t2List += $"{u.Mention} ";
+                            }
+                            catch
+                            {
+                                t2List += $"{server.UserList.FirstOrDefault(x => x.UserId == us).Username} ";
+                            }
+                            
                         }
                         foreach (var us in lobby.Users)
                         {
                             var u = await Context.Client.GetUserAsync(us);
-                            users += $"{u.Mention} ";
+                            try
+                            {
+                                users += $"{u.Mention} ";
+                            }
+                            catch
+                            {
+                                users += $"{server.UserList.FirstOrDefault(x => x.UserId == us).Username} ";
+                            }
                         }
                         embed.AddField($"{(user as IGuildUser).Nickname} Added",
                             $"[{lobby.Team1.Count}/{lobby.UserLimit / 2}]\n" +
