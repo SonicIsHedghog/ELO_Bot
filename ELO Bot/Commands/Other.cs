@@ -113,17 +113,14 @@ namespace ELO_Bot.Commands
                 foreach (var module in _service.Modules)
                     if (string.Equals(module.Name, modulearg, StringComparison.CurrentCultureIgnoreCase))
                     {
-                        var list = module.Commands.Select(command => $"{Config.Load().Prefix}{command.Summary} - {command.Remarks}").ToList();
+                        var list = module.Commands
+                            .Select(command => $"{Config.Load().Prefix}{command.Summary} - {command.Remarks}").ToList();
                         embed.AddField(module.Name, string.Join("\n", list));
                     }
                 foreach (var command in _service.Commands)
-                {
                     if (string.Equals(command.Name, modulearg, StringComparison.CurrentCultureIgnoreCase))
-                    {
                         embed.AddField(command.Name, $"`{Config.Load().Prefix}{command.Summary}`\n" +
                                                      $"{command.Remarks}");
-                    }
-                }
                 if (embed.Fields.Count == 0)
                 {
                     embed.AddField("Error", $"{modulearg} is not a module or a command");

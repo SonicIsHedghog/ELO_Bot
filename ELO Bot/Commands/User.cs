@@ -14,7 +14,7 @@ namespace ELO_Bot.Commands
         [Command("Register")]
         [Summary("Register <username>")]
         [Remarks("registers the user in the server")]
-        public async Task Register([Remainder]string username = null)
+        public async Task Register([Remainder] string username = null)
         {
             var embed = new EmbedBuilder();
 

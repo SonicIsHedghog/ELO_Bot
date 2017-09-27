@@ -252,7 +252,6 @@ namespace ELO_Bot.Commands
                             {
                                 t2List += $"{server.UserList.FirstOrDefault(x => x.UserId == us).Username} ";
                             }
-                            
                         }
                         foreach (var us in lobby.Users)
                         {

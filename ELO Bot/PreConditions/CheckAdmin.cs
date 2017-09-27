@@ -16,22 +16,18 @@ namespace ELO_Bot.PreConditions
 
             var own = await context.Client.GetApplicationInfoAsync();
             if (own.Owner.Id == context.User.Id)
-            {
                 return await Task.FromResult(PreconditionResult.FromSuccess());
-            }
 
             if (s1.AdminRole != 0)
                 if ((context.User as IGuildUser).RoleIds.Contains(s1.AdminRole))
-                {
                     return await Task.FromResult(PreconditionResult.FromSuccess());
-                }
 
             if (!((context.User as IGuildUser).GuildPermissions.Administrator ||
                   context.User.Id == context.Guild.OwnerId))
                 return await Task.FromResult(
                     PreconditionResult.FromError(
                         $"This Command requires admin permissions."));
-            
+
             return await Task.FromResult(PreconditionResult.FromSuccess());
         }
     }
@@ -46,9 +42,7 @@ namespace ELO_Bot.PreConditions
 
             var own = await context.Client.GetApplicationInfoAsync();
             if (own.Owner.Id == context.User.Id)
-            {
                 return await Task.FromResult(PreconditionResult.FromSuccess());
-            }
 
             if (s1.ModRole != 0)
                 if ((context.User as IGuildUser).RoleIds.Contains(s1.ModRole))

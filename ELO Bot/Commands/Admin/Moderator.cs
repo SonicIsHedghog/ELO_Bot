@@ -90,7 +90,7 @@ namespace ELO_Bot.Commands.Admin
                         await ReplyAsync(
                             $"{server.UserList.FirstOrDefault(x => x.UserId == user).Username} was unavailable");
                     }
-                    
+
 
                 foreach (var user in game.Team2)
                     try

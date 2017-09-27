@@ -140,7 +140,7 @@ namespace ELO_Bot.Commands.Admin
         [Command("Registeruser")]
         [Summary("Registeruser <@user> <username>")]
         [Remarks("registers the user in the server")]
-        public async Task Register(IUser user, [Remainder]string username = null)
+        public async Task Register(IUser user, [Remainder] string username = null)
         {
             var embed = new EmbedBuilder();
 
@@ -212,7 +212,7 @@ namespace ELO_Bot.Commands.Admin
         [Command("Rename")]
         [Summary("Rename <@user>")]
         [Remarks("Sets the role users will join when registering")]
-        public async Task Rename(IUser user, [Remainder]string newname = null)
+        public async Task Rename(IUser user, [Remainder] string newname = null)
         {
             var embed = new EmbedBuilder();
 
