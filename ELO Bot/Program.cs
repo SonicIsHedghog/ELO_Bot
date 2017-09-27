@@ -28,7 +28,7 @@ namespace ELO_Bot
 
         public async Task Start()
         {
-            Console.Title = "BlackBOT";
+            Console.Title = "ELO Bot";
 
             if (!Directory.Exists(Path.Combine(AppContext.BaseDirectory, "setup/")))
                 Directory.CreateDirectory(Path.Combine(AppContext.BaseDirectory, "setup/"));
