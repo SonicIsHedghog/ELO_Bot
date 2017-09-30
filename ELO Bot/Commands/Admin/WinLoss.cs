@@ -32,7 +32,7 @@ namespace ELO_Bot.Commands.Admin
                 if (!success)
                     embed.AddField($"{user.Username} ERROR", "Not Registered");
                 else
-                    embed.AddField($"{user.Username} MODIFIED", $"Removed: -1\n" +
+                    embed.AddField($"{user.Username} MODIFIED", "Removed: -1\n" +
                                                                 $"Current wins: {userval}");
             }
             ServerList.Saveserver(server);
@@ -64,7 +64,7 @@ namespace ELO_Bot.Commands.Admin
                 if (!success)
                     embed.AddField($"{user.Username} ERROR", "Not Registered");
                 else
-                    embed.AddField($"{user.Username} MODIFIED", $"Removed: -1\n" +
+                    embed.AddField($"{user.Username} MODIFIED", "Removed: -1\n" +
                                                                 $"Current Losses: {userval}");
             }
             ServerList.Saveserver(server);

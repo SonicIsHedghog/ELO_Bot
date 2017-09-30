@@ -62,7 +62,7 @@ namespace ELO_Bot.Commands.Admin
                             embed.AddField("LOBBY CREATED", $"**Lobby Name:** \n{Context.Channel.Name}\n" +
                                                             $"**PlayerLimit:** \n{i}\n" +
                                                             $"**Captains:** \n{captains}\n" +
-                                                            $"**GameMode Info:**\n" +
+                                                            "**GameMode Info:**\n" +
                                                             $"{n3.Content}");
                             await ReplyAsync("", false, embed.Build());
                         }
@@ -103,7 +103,7 @@ namespace ELO_Bot.Commands.Admin
 
             ServerList.Saveserver(server);
             await ReplyAsync($"{Context.Channel.Name} is no longer a lobby!\n" +
-                             $"Previous games that took place in this lobby have been cleared from history.");
+                             "Previous games that took place in this lobby have been cleared from history.");
         }
 
         

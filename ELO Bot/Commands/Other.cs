@@ -47,7 +47,7 @@ namespace ELO_Bot.Commands
                             });
                     }
                 embed.AddField("**NOTE**",
-                    $"You can also see modules in more detail using `=help <modulename>`");
+                    "You can also see modules in more detail using `=help <modulename>`");
 
                 embed.AddField("Developed By PassiveModding", "[Support Server](https://discord.gg/n2Vs38n)\n" +
                                                               "[Patreon](https://www.patreon.com/passivebot)\n" +
@@ -101,8 +101,8 @@ namespace ELO_Bot.Commands
                             });
                     }
                 embed.AddField("**NOTE**",
-                    $"You can also see modules in more detail using `=help <modulename>`\n" +
-                    $"Admins can use `=adminhelp` for admin commands");
+                    "You can also see modules in more detail using `=help <modulename>`\n" +
+                    "Admins can use `=adminhelp` for admin commands");
 
                 embed.AddField("Developed By PassiveModding", "[Support Server](https://discord.gg/n2Vs38n)\n" +
                                                               "[Patreon](https://www.patreon.com/passivebot)\n" +
@@ -189,7 +189,7 @@ namespace ELO_Bot.Commands
                     $"Messages Received: {Program.Messages}", true);
                 embed.AddField(":hammer_pick:",
                     $"Heap Size: {Math.Round(GC.GetTotalMemory(true) / (1024.0 * 1024.0), 2)} MB", true);
-                embed.AddField(":beginner:", $"Written by: [PassiveModding](https://github.com/PassiveModding)\n" +
+                embed.AddField(":beginner:", "Written by: [PassiveModding](https://github.com/PassiveModding)\n" +
                                              $"Discord.Net {DiscordConfig.Version}");
                 await ReplyAsync("", embed: embed.Build());
             }

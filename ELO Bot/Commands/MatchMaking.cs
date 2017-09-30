@@ -73,7 +73,7 @@ namespace ELO_Bot.Commands
                     {
                         //empty lobby
                         embed.AddField($"{Context.Channel.Name} Queue **[0/{lobby.UserLimit}]** #{lobby.Games + 1}",
-                            $"Empty");
+                            "Empty");
                     }
                     else
                     {
@@ -108,7 +108,7 @@ namespace ELO_Bot.Commands
             }
             catch (Exception e)
             {
-                await ReplyAsync($"Contact Passive with the following message:\n" +
+                await ReplyAsync("Contact Passive with the following message:\n" +
                                  $"{e}");
             }
         }
@@ -292,7 +292,7 @@ namespace ELO_Bot.Commands
                             $"[{lobby.Team1.Count}/{lobby.UserLimit / 2}]\n" +
                             $"Team1: {t1List}\n" +
                             $"Team2: {t2List}\n" +
-                            $"\nCaptains: \n" +
+                            "\nCaptains: \n" +
                             $"1: {cap1.Mention}\n" +
                             $"2: {cap2.Mention}\n" +
                             $"Players Left: {users}");
@@ -531,7 +531,7 @@ namespace ELO_Bot.Commands
 
                     if (queue.Users.Contains(Context.User.Id))
                     {
-                        embed.AddField("ERROR", $"You are already queued");
+                        embed.AddField("ERROR", "You are already queued");
                         await ReplyAsync("", false, embed.Build());
                         return;
                     }
@@ -560,7 +560,7 @@ namespace ELO_Bot.Commands
             }
             catch (Exception e)
             {
-                await ReplyAsync($"Contact Passive with the following message:\n" +
+                await ReplyAsync("Contact Passive with the following message:\n" +
                                  $"{e}");
             }
         }
@@ -654,7 +654,7 @@ namespace ELO_Bot.Commands
             }
             catch (Exception e)
             {
-                await ReplyAsync($"Contact Passive with the following message:\n" +
+                await ReplyAsync("Contact Passive with the following message:\n" +
                                  $"{e}");
             }
         }
@@ -704,7 +704,7 @@ namespace ELO_Bot.Commands
             }
             catch (Exception e)
             {
-                await ReplyAsync($"Contact Passive with the following message:\n" +
+                await ReplyAsync("Contact Passive with the following message:\n" +
                                  $"{e}");
             }
         }
@@ -742,7 +742,7 @@ namespace ELO_Bot.Commands
             }
             catch (Exception e)
             {
-                await ReplyAsync($"Contact Passive with the following message:\n" +
+                await ReplyAsync("Contact Passive with the following message:\n" +
                                  $"{e}");
             }
         }
@@ -774,7 +774,7 @@ namespace ELO_Bot.Commands
             }
             catch (Exception e)
             {
-                await ReplyAsync($"Contact Passive with the following message:\n" +
+                await ReplyAsync("Contact Passive with the following message:\n" +
                                  $"{e}");
             }
         }
@@ -850,7 +850,7 @@ namespace ELO_Bot.Commands
             }
             catch (Exception e)
             {
-                await ReplyAsync($"Contact Passive with the following message:\n" +
+                await ReplyAsync("Contact Passive with the following message:\n" +
                                  $"{e}");
             }
         }
@@ -965,7 +965,7 @@ namespace ELO_Bot.Commands
 
                 if (currentqueue.ChannelGametype == null)
                     currentqueue.ChannelGametype = "Unknown";
-                embed.AddField($"Match Info", $"{currentqueue.ChannelGametype}");
+                embed.AddField("Match Info", $"{currentqueue.ChannelGametype}");
 
                 try
                 {
@@ -997,7 +997,7 @@ namespace ELO_Bot.Commands
             }
             catch (Exception e)
             {
-                await ReplyAsync($"Contact Passive with the following message:\n" +
+                await ReplyAsync("Contact Passive with the following message:\n" +
                                  $"{e}");
             }
         }
@@ -1023,14 +1023,14 @@ namespace ELO_Bot.Commands
                 var announcement = "**__Game Has Started__**\n" +
                                    "**Lobby:** \n" +
                                    $"{lobbychannel.Name} - Match #{lobby.Games}\n" +
-                                   $"**Selected Host:** \n" +
+                                   "**Selected Host:** \n" +
                                    $"{gamehost.Mention}\n" +
-                                   $"**Match Settings:**\n" +
+                                   "**Match Settings:**\n" +
                                    $"{matchdescription}\n" +
                                    $"**Team 1:** [{string.Join(" ", team1.Select(x => x.Mention))}]\n" +
                                    $"**Team 2**: [{string.Join(" ", team2.Select(x => x.Mention))}]\n" +
                                    $"When the game finishes, type `=game {lobbychannel.Name} {lobby.Games} <team1 or team2>`\n" +
-                                   $"This will modify each team's points respectively.";
+                                   "This will modify each team's points respectively.";
 
                 try
                 {
@@ -1043,7 +1043,7 @@ namespace ELO_Bot.Commands
             }
             catch (Exception e)
             {
-                await ReplyAsync($"Contact Passive with the following message:\n" +
+                await ReplyAsync("Contact Passive with the following message:\n" +
                                  $"{e}");
             }
         }

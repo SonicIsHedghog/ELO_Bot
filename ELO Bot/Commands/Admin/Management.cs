@@ -256,7 +256,7 @@ namespace ELO_Bot.Commands.Admin
             }
             else
             {
-                embed.AddField("ERROR", $"User Not Registered");
+                embed.AddField("ERROR", "User Not Registered");
                 embed.WithColor(Color.Red);
                 await ReplyAsync("", false, embed.Build());
             }
@@ -317,8 +317,8 @@ namespace ELO_Bot.Commands.Admin
                     $"{u.Mention} {Math.Round((user.Time - DateTime.UtcNow).TotalMinutes, 0)} Minutes Left\n";
             }
             embed.Description +=
-                $"\nNOTE: If a user's remaining minutes is negative, their ban will automatically be removed the next time they join the queue";
-            await ReplyAsync($"", false, embed.Build());
+                "\nNOTE: If a user's remaining minutes is negative, their ban will automatically be removed the next time they join the queue";
+            await ReplyAsync("", false, embed.Build());
         }
 
         [Command("addrank")]

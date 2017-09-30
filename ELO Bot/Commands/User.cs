@@ -278,8 +278,8 @@ namespace ELO_Bot.Commands
         {
             await ReplyAsync(
                 $"Invite ELO Bot Here: <https://discordapp.com/oauth2/authorize?client_id={Context.Client.CurrentUser.Id}&scope=bot&permissions=2146958591>\n" +
-                $"Support Server: <https://discord.gg/ZKXqt2a>\n" +
-                $"Developed By: PassiveModding");
+                "Support Server: <https://discord.gg/ZKXqt2a>\n" +
+                "Developed By: PassiveModding");
         }
     }
 }

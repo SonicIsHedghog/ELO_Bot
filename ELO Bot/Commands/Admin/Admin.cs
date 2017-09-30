@@ -115,11 +115,11 @@ namespace ELO_Bot.Commands.Admin
             ServerList.Saveserver(s1);
             embed.AddField("Complete!",
                 $"People with the role {modRole.Mention} can now use the following commands:\n" +
-                $"```\n" +
-                $"=win <@user1> <@user2>...\n" +
-                $"=lose <@user1> <@user2>...\n" +
-                $"=game <lobby> <match-no.> <team1/team2>\n" +
-                $"```");
+                "```\n" +
+                "=win <@user1> <@user2>...\n" +
+                "=lose <@user1> <@user2>...\n" +
+                "=game <lobby> <match-no.> <team1/team2>\n" +
+                "```");
             embed.WithColor(Color.Blue);
             await ReplyAsync("", false, embed.Build());
         }
@@ -143,7 +143,7 @@ namespace ELO_Bot.Commands.Admin
 
             s1.Registermessage = message;
             ServerList.Saveserver(s1);
-            embed.AddField("Complete!", $"Registration Message will now include the following:\n" +
+            embed.AddField("Complete!", "Registration Message will now include the following:\n" +
                                         $"{message}");
             embed.WithColor(Color.Blue);
             await ReplyAsync("", false, embed.Build());
@@ -165,7 +165,7 @@ namespace ELO_Bot.Commands.Admin
             }
             catch
             {
-                embed.AddField("Admin Role", $"N/A");
+                embed.AddField("Admin Role", "N/A");
             }
 
             try
@@ -175,7 +175,7 @@ namespace ELO_Bot.Commands.Admin
             }
             catch
             {
-                embed.AddField("Mod Role", $"N/A");
+                embed.AddField("Mod Role", "N/A");
             }
 
             try
@@ -185,7 +185,7 @@ namespace ELO_Bot.Commands.Admin
             }
             catch
             {
-                embed.AddField("Announcements Channel", $"N/A");
+                embed.AddField("Announcements Channel", "N/A");
             }
 
             embed.AddField("Is Premium?", $"{server.IsPremium}");
@@ -199,7 +199,7 @@ namespace ELO_Bot.Commands.Admin
             }
             catch
             {
-                embed.AddField("Counts", $"Error");
+                embed.AddField("Counts", "Error");
             }
 
             embed.AddField("Registration Message", $"{server.Registermessage}");
@@ -211,7 +211,7 @@ namespace ELO_Bot.Commands.Admin
             }
             catch
             {
-                embed.AddField("Registration Role", $"N/A");
+                embed.AddField("Registration Role", "N/A");
             }
 
             await ReplyAsync("", false, embed.Build());

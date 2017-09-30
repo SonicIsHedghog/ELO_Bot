@@ -4,7 +4,7 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 
-namespace ELO_Bot
+namespace ELO_Bot.PreConditions
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public sealed class RequireTopic : PreconditionAttribute
@@ -13,13 +13,13 @@ namespace ELO_Bot
             IServiceProvider prov)
         {
             var istopisused = false;
-            foreach (var channel in (context.Guild as SocketGuild).Channels)
+            foreach (var channel in ((SocketGuild) context.Guild).Channels)
             {
                 var t = channel as ITextChannel;
                 var topic = "topic";
                 try
                 {
-                    if (t.Topic != null)
+                    if (t != null && t.Topic != null)
                         topic = t.Topic;
                 }
                 catch
@@ -30,16 +30,13 @@ namespace ELO_Bot
                     istopisused = true;
             }
 
-            if (istopisused)
-            {
-                var textchannel = context.Channel as ITextChannel;
-                if (textchannel.Topic.ToLower().Contains($"[{command.Name.ToLower()}]"))
-                    return Task.FromResult(PreconditionResult.FromSuccess());
-                return Task.FromResult(
-                    PreconditionResult.FromError(
-                        $"Command is only available in channels containing `[{command.Name}]` in their topic"));
-            }
-            return Task.FromResult(PreconditionResult.FromSuccess());
+            if (!istopisused) return Task.FromResult(PreconditionResult.FromSuccess());
+
+            if (context.Channel is ITextChannel textchannel && textchannel.Topic.ToLower().Contains($"[{command.Name.ToLower()}]"))
+                return Task.FromResult(PreconditionResult.FromSuccess());
+            return Task.FromResult(
+                PreconditionResult.FromError(
+                    $"Command is only available in channels containing `[{command.Name}]` in their topic"));
         }
     }
 }

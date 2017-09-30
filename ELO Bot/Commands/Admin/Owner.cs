@@ -22,7 +22,7 @@ namespace ELO_Bot.Commands.Admin
                 if (Program.Keys == null)
                 {
                     Program.Keys = keys.ToList();
-                    await ReplyAsync($"list replaced.");
+                    await ReplyAsync("list replaced.");
                     var obj1 = JsonConvert.SerializeObject(Program.Keys, Formatting.Indented);
                     File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "setup/keys.json"), obj1);
                     return;
