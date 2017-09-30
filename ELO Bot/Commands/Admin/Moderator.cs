@@ -58,7 +58,7 @@ namespace ELO_Bot.Commands.Admin
             {
                 var server = ServerList.Load(Context.Guild);
                 IMessageChannel channel = null;
-                foreach (var chan in (Context.Guild as SocketGuild).Channels)
+                foreach (var chan in ((SocketGuild) Context.Guild).Channels)
                     if (string.Equals(chan.Name, lobbyname, StringComparison.CurrentCultureIgnoreCase))
                         channel = chan as IMessageChannel;
 
@@ -78,6 +78,13 @@ namespace ELO_Bot.Commands.Admin
 
                 var game = server.Gamelist.FirstOrDefault(x => x.LobbyId == channel.Id
                                                                && x.GameNumber == gamenumber);
+
+                if (game == null)
+                {
+                    await ReplyAsync("ERROR: Invalid Game number/channel");
+                    return;
+                }
+
                 var team1 = new List<IUser>();
                 var team2 = new List<IUser>();
                 foreach (var user in game.Team1)
@@ -88,7 +95,7 @@ namespace ELO_Bot.Commands.Admin
                     catch
                     {
                         await ReplyAsync(
-                            $"{server.UserList.FirstOrDefault(x => x.UserId == user).Username} was unavailable");
+                            $"{server.UserList.FirstOrDefault(x => x.UserId == user)?.Username} was unavailable");
                     }
 
 
@@ -100,7 +107,7 @@ namespace ELO_Bot.Commands.Admin
                     catch
                     {
                         await ReplyAsync(
-                            $"{server.UserList.FirstOrDefault(x => x.UserId == user).Username} was unavailable");
+                            $"{server.UserList.FirstOrDefault(x => x.UserId == user)?.Username} was unavailable");
                     }
 
                 switch (team.ToLower())
@@ -131,7 +138,9 @@ namespace ELO_Bot.Commands.Admin
             foreach (var user in users)
             {
                 var usr = server.UserList.FirstOrDefault(x => x.UserId == user.Id);
-                if (user.Id == usr.UserId)
+
+
+                if (usr != null && user.Id == usr.UserId)
                 {
                     if (win)
                     {
@@ -154,7 +163,7 @@ namespace ELO_Bot.Commands.Admin
                     }
                     try
                     {
-                        await (user as IGuildUser).ModifyAsync(x => { x.Nickname = $"{usr.Points} ~ {usr.Username}"; });
+                        await ((IGuildUser) user).ModifyAsync(x => { x.Nickname = $"{usr.Points} ~ {usr.Username}"; });
                     }
                     catch
                     {
@@ -170,21 +179,25 @@ namespace ELO_Bot.Commands.Admin
 
         public async Task CheckRank(ServerList.Server server, IUser user, ServerList.Server.User subject)
         {
+            if (server.Ranks.Count == 0)
+                return;
+
             foreach (var role in server.Ranks)
             {
                 var u = user as IGuildUser;
                 var r = Context.Guild.GetRole(role.RoleId);
-                if (u.RoleIds.Contains(role.RoleId))
+                if (u != null && u.RoleIds.Contains(role.RoleId))
                     await u.RemoveRoleAsync(r);
             }
             try
             {
                 var toprole = server.Ranks.Where(x => x.Points <= subject.Points).Max(x => x.Points);
                 var top = server.Ranks.Where(x => x.Points == toprole);
+
                 try
                 {
-                    var newrole = Context.Guild.GetRole(top.FirstOrDefault().RoleId);
-                    await (user as IGuildUser).AddRoleAsync(newrole);
+                    var newrole = Context.Guild.GetRole(top.First().RoleId);
+                    await ((IGuildUser) user).AddRoleAsync(newrole);
                 }
                 catch
                 {

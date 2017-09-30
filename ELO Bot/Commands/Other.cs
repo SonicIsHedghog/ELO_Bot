@@ -165,20 +165,25 @@ namespace ELO_Bot.Commands
                 embed.WithAuthor(x =>
                 {
                     x.IconUrl = Context.Client.CurrentUser.GetAvatarUrl();
-                    x.Name = $"{client.CurrentUser.Username}'s Official Invite";
-                    x.Url =
-                        $"https://discordapp.com/oauth2/authorize?client_id={client.CurrentUser.Id}&scope=bot&permissions=2146958591";
+                    x.Name = $"{client?.CurrentUser.Username}'s Official Invite";
+                    if (client != null)
+                        x.Url =
+                            $"https://discordapp.com/oauth2/authorize?client_id={client.CurrentUser.Id}&scope=bot&permissions=2146958591";
                 });
                 embed.AddField("Changes", changes);
-                embed.AddField("Members",
-                    $"Bot: {client.Guilds.Sum(x => x.Users.Count(z => z.IsBot))}\n" +
-                    $"Human: {client.Guilds.Sum(x => x.Users.Count(z => !z.IsBot))}\n" +
-                    $"Total: {client.Guilds.Sum(x => x.Users.Count)}", true);
-                embed.AddField("Channels",
-                    $"Text: {client.Guilds.Sum(x => x.TextChannels.Count)}\n" +
-                    $"Voice: {client.Guilds.Sum(x => x.VoiceChannels.Count)}\n" +
-                    $"Total: {client.Guilds.Sum(x => x.Channels.Count)}", true);
-                embed.AddField("Guilds", $"{client.Guilds.Count}\n[Support Guild](https://discord.gg/ZKXqt2a)", true);
+                if (client != null)
+                {
+                    embed.AddField("Members",
+                        $"Bot: {client.Guilds.Sum(x => x.Users.Count(z => z.IsBot))}\n" +
+                        $"Human: {client.Guilds.Sum(x => x.Users.Count(z => !z.IsBot))}\n" +
+                        $"Total: {client.Guilds.Sum(x => x.Users.Count)}", true);
+                    embed.AddField("Channels",
+                        $"Text: {client.Guilds.Sum(x => x.TextChannels.Count)}\n" +
+                        $"Voice: {client.Guilds.Sum(x => x.VoiceChannels.Count)}\n" +
+                        $"Total: {client.Guilds.Sum(x => x.Channels.Count)}", true);
+                    embed.AddField("Guilds", $"{client.Guilds.Count}\n[Support Guild](https://discord.gg/ZKXqt2a)",
+                        true);
+                }
                 embed.AddField(":space_invader:",
                     $"Commands Ran: {Program.Commands}\n" +
                     $"Messages Received: {Program.Messages}", true);

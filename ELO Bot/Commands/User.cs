@@ -40,13 +40,19 @@ namespace ELO_Bot.Commands
             {
                 var userprofile = server.UserList.FirstOrDefault(x => x.UserId == Context.User.Id);
 
-                if (!(Context.User as IGuildUser).RoleIds.Contains(server.RegisterRole) && server.RegisterRole != 0)
+                if (userprofile == null)
+                {
+                    await ReplyAsync("ERROR: User not registered!");
+                    return;
+                }
+
+                if (!((IGuildUser) Context.User).RoleIds.Contains(server.RegisterRole) && server.RegisterRole != 0)
                     try
                     {
                         var serverrole = Context.Guild.GetRole(server.RegisterRole);
                         try
                         {
-                            await (Context.User as IGuildUser).AddRoleAsync(serverrole);
+                            await ((IGuildUser) Context.User).AddRoleAsync(serverrole);
                         }
                         catch
                         {
@@ -60,7 +66,7 @@ namespace ELO_Bot.Commands
 
                 try
                 {
-                    await (Context.User as IGuildUser).ModifyAsync(x =>
+                    await ((IGuildUser) Context.User).ModifyAsync(x =>
                     {
                         x.Nickname = $"{userprofile.Points} ~ {username}";
                     });
@@ -92,7 +98,7 @@ namespace ELO_Bot.Commands
             embed.WithColor(Color.Blue);
             try
             {
-                await (Context.User as IGuildUser).ModifyAsync(x => { x.Nickname = $"0 ~ {username}"; });
+                await ((IGuildUser) Context.User).ModifyAsync(x => { x.Nickname = $"0 ~ {username}"; });
             }
             catch
             {
@@ -104,7 +110,7 @@ namespace ELO_Bot.Commands
                     var serverrole = Context.Guild.GetRole(server.RegisterRole);
                     try
                     {
-                        await (Context.User as IGuildUser).AddRoleAsync(serverrole);
+                        await ((IGuildUser) Context.User).AddRoleAsync(serverrole);
                     }
                     catch
                     {
@@ -153,7 +159,7 @@ namespace ELO_Bot.Commands
             var desc = "";
             try
             {
-                if (arg.Contains("win"))
+                if (arg != null && arg.Contains("win"))
                 {
                     var orderlist = server.UserList.OrderBy(x => x.Wins).Reverse().ToList();
 
@@ -173,7 +179,7 @@ namespace ELO_Bot.Commands
                     embed.Color = Color.Blue;
                     await ReplyAsync("", false, embed.Build());
                 }
-                else if (arg.Contains("los"))
+                else if (arg != null && arg.Contains("los"))
                 {
                     var orderlist = server.UserList.OrderBy(x => x.Losses).Reverse().ToList();
 

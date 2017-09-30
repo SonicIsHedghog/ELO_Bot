@@ -26,6 +26,13 @@ namespace ELO_Bot.Commands
                 {
                     var lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
                     //get the current queue
+
+                    if (lobby == null)
+                    {
+                        await ReplyAsync("Current channel is not a lobby!");
+                        return;
+                    }
+
                     if (lobby.IsPickingTeams)
                     {
                         //if teams are currently being picked, display teams in the queue rather than just the queue.
@@ -75,6 +82,11 @@ namespace ELO_Bot.Commands
                         foreach (var user in lobby.Users)
                         {
                             var subject = server.UserList.FirstOrDefault(x => x.UserId == user);
+                            if (subject == null)
+                            {
+                                await ReplyAsync($"error with {user} profile");
+                                return;
+                            }
                             list += $"{subject.Username} - {subject.Points}\n";
                             //create a list of usernames and their points
                         }
@@ -117,16 +129,22 @@ namespace ELO_Bot.Commands
                 {
                     var lobbyexists = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
 
+                    if (lobbyexists == null)
+                    {
+                        await ReplyAsync("Current channel is not a lobby!");
+                        return;
+                    }
+
                     if (lobbyexists.ChannelGametype == null)
                         lobbyexists.ChannelGametype = "Unknown";
 
-                    embed.AddField("Lobby Info", $"**Player Limit:**\n" +
+                    embed.AddField("Lobby Info", "**Player Limit:**\n" +
                                                  $"{lobbyexists.UserLimit}\n" +
-                                                 $"**Game Number:**\n" +
+                                                 "**Game Number:**\n" +
                                                  $"{lobbyexists.Games + 1}\n" +
-                                                 $"**Automatic Teams:**\n" +
+                                                 "**Automatic Teams:**\n" +
                                                  $"{!lobbyexists.Captains}\n" +
-                                                 $"**Gamemode Description:**\n" +
+                                                 "**Gamemode Description:**\n" +
                                                  $"{lobbyexists.ChannelGametype}");
                 }
                 catch
@@ -138,7 +156,7 @@ namespace ELO_Bot.Commands
             }
             catch (Exception e)
             {
-                await ReplyAsync($"Contact Passive with the following message:\n" +
+                await ReplyAsync("Contact Passive with the following message:\n" +
                                  $"{e}");
             }
         }
@@ -160,6 +178,11 @@ namespace ELO_Bot.Commands
                 try
                 {
                     lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
+                    if (lobby == null)
+                    {
+                        await ReplyAsync("Current channel is not a lobby!");
+                        return;
+                    }
                 }
                 catch
                 {
@@ -238,7 +261,7 @@ namespace ELO_Bot.Commands
                             }
                             catch
                             {
-                                t1List += $"{server.UserList.FirstOrDefault(x => x.UserId == us).Username} ";
+                                t1List += $"{server.UserList.FirstOrDefault(x => x.UserId == us)?.Username} ";
                             }
                         }
                         foreach (var us in lobby.Team2)
@@ -250,7 +273,7 @@ namespace ELO_Bot.Commands
                             }
                             catch
                             {
-                                t2List += $"{server.UserList.FirstOrDefault(x => x.UserId == us).Username} ";
+                                t2List += $"{server.UserList.FirstOrDefault(x => x.UserId == us)?.Username} ";
                             }
                         }
                         foreach (var us in lobby.Users)
@@ -262,10 +285,10 @@ namespace ELO_Bot.Commands
                             }
                             catch
                             {
-                                users += $"{server.UserList.FirstOrDefault(x => x.UserId == us).Username} ";
+                                users += $"{server.UserList.FirstOrDefault(x => x.UserId == us)?.Username} ";
                             }
                         }
-                        embed.AddField($"{(user as IGuildUser).Nickname} Added",
+                        embed.AddField($"{((IGuildUser) user).Nickname} Added",
                             $"[{lobby.Team1.Count}/{lobby.UserLimit / 2}]\n" +
                             $"Team1: {t1List}\n" +
                             $"Team2: {t2List}\n" +
@@ -346,7 +369,7 @@ namespace ELO_Bot.Commands
                             {
                                 users += $"{us} ";
                             }
-                        embed.AddField($"{(user as IGuildUser).Nickname} Added",
+                        embed.AddField($"{(user as IGuildUser)?.Nickname} Added",
                             $"[{lobby.Team2.Count}/{lobby.UserLimit / 2}]\n" +
                             $"Team1: {t1List}\n" +
                             $"Team2: {t2List}\n" +
@@ -379,7 +402,7 @@ namespace ELO_Bot.Commands
             }
             catch (Exception e)
             {
-                await ReplyAsync($"Contact Passive with the following message:\n" +
+                await ReplyAsync("Contact Passive with the following message:\n" +
                                  $"{e}");
             }
         }
@@ -417,14 +440,16 @@ namespace ELO_Bot.Commands
                 if (server.Bans.Any(x => x.UserId == Context.User.Id))
                 {
                     var uban = server.Bans.FirstOrDefault(x => x.UserId == Context.User.Id);
-                    if (DateTime.UtcNow >= uban.Time)
+
+                    if (uban != null && DateTime.UtcNow >= uban.Time)
                     {
                         server.Bans.Remove(uban);
                     }
                     else
                     {
-                        embed.AddField("ERROR",
-                            $"You are currently banned from joining the queue for another {Math.Round((uban.Time - DateTime.UtcNow).TotalMinutes, 0)} minutes");
+                        if (uban != null)
+                            embed.AddField("ERROR",
+                                $"You are currently banned from joining the queue for another {Math.Round((uban.Time - DateTime.UtcNow).TotalMinutes, 0)} minutes");
                         await ReplyAsync("", false, embed.Build());
                         return;
                     }
@@ -468,11 +493,10 @@ namespace ELO_Bot.Commands
             }
             catch (Exception e)
             {
-                await ReplyAsync($"Contact Passive with the following message:\n" +
+                await ReplyAsync("Contact Passive with the following message:\n" +
                                  $"{e}");
             }
         }
-
 
         [Ratelimit(1, 10d, Measure.Seconds)]
         [Command("subfor")]
@@ -491,14 +515,15 @@ namespace ELO_Bot.Commands
                     if (server.Bans.Any(x => x.UserId == Context.User.Id))
                     {
                         var uban = server.Bans.FirstOrDefault(x => x.UserId == Context.User.Id);
-                        if (DateTime.UtcNow >= uban.Time)
+                        if (uban != null && DateTime.UtcNow >= uban.Time)
                         {
                             server.Bans.Remove(uban);
                         }
                         else
                         {
-                            embed.AddField("ERROR",
-                                $"You are currently banned from joining the queue for another {Math.Round((uban.Time - DateTime.UtcNow).TotalMinutes, 0)} minutes");
+                            if (uban != null)
+                                embed.AddField("ERROR",
+                                    $"You are currently banned from joining the queue for another {Math.Round((uban.Time - DateTime.UtcNow).TotalMinutes, 0)} minutes");
                             await ReplyAsync("", false, embed.Build());
                             return;
                         }
@@ -551,6 +576,13 @@ namespace ELO_Bot.Commands
             {
                 var server = ServerList.Load(Context.Guild);
                 var queue = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
+
+                if (queue == null)
+                {
+                    await ReplyAsync("ERROR: Current Channel is not a lobby!");
+                    return;
+                }
+
                 var oldgame =
                     server.Gamelist.FirstOrDefault(x => x.LobbyId == Context.Channel.Id && x.GameNumber == queue.Games);
                 if (oldgame != null)
@@ -606,7 +638,7 @@ namespace ELO_Bot.Commands
                     try
                     {
                         var channel = await Context.Guild.GetChannelAsync(server.AnnouncementsChannel);
-                        await (channel as IMessageChannel).SendMessageAsync(announcement);
+                        await ((IMessageChannel) channel).SendMessageAsync(announcement);
                     }
                     catch
                     {
@@ -642,6 +674,12 @@ namespace ELO_Bot.Commands
                 try
                 {
                     var queue = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
+
+                    if (queue == null)
+                    {
+                        await ReplyAsync("ERROR: Current Channel is not a lobby!");
+                        return;
+                    }
 
                     if (queue.IsPickingTeams)
                     {
@@ -684,6 +722,12 @@ namespace ELO_Bot.Commands
                 //load the current server
                 var lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
 
+                if (lobby == null)
+                {
+                    await ReplyAsync("ERROR: Current Channel is not a lobby!");
+                    return;
+                }
+
                 if (lobby.Maps.Count == 0 || lobby.Maps == null)
                 {
                     await ReplyAsync("There are no maps setup for this lobby");
@@ -716,6 +760,12 @@ namespace ELO_Bot.Commands
                 //load the current server
                 var lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
                 //try to output the current lobby
+                if (lobby == null)
+                {
+                    await ReplyAsync("ERROR: Current Channel is not a lobby!");
+                    return;
+                }
+
                 foreach (var map in lobby.Maps)
                     embed.Description += $"{map}\n";
                 //adds each map in the list to the embed
@@ -752,6 +802,12 @@ namespace ELO_Bot.Commands
                 }
 
                 var currentqueue = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
+
+                if (currentqueue == null)
+                {
+                    await ReplyAsync("ERROR: Current Channel is not a lobby!");
+                    return;
+                }
 
                 var host = await Context.Guild.GetUserAsync(currentqueue.T1Captain);
 
@@ -806,6 +862,12 @@ namespace ELO_Bot.Commands
                 var embed = new EmbedBuilder();
                 var currentqueue = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
 
+                if (currentqueue == null)
+                {
+                    await ReplyAsync("ERROR: Current Channel is not a lobby!");
+                    return;
+                }
+
                 var userlist = currentqueue.Users.Select(user => server.UserList.FirstOrDefault(x => x.UserId == user))
                     .ToList();
 
@@ -821,7 +883,7 @@ namespace ELO_Bot.Commands
                     foreach (var user in currentqueue.Users)
                     {
                         var u = userlist.FirstOrDefault(x => x.UserId == user);
-                        if (u.Points > 5)
+                        if (u != null && u.Points > 5)
                             capranks.Add(user);
                     }
 
@@ -972,7 +1034,7 @@ namespace ELO_Bot.Commands
 
                 try
                 {
-                    await channel.SendMessageAsync(announcement);
+                    if (channel != null) await channel.SendMessageAsync(announcement);
                 }
                 catch
                 {

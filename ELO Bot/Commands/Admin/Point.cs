@@ -37,7 +37,7 @@ namespace ELO_Bot.Commands.Admin
                             userval = subject.Points;
                             try
                             {
-                                await (user as IGuildUser).ModifyAsync(x =>
+                                await ((IGuildUser) user).ModifyAsync(x =>
                                 {
                                     x.Nickname = $"{subject.Points} ~ {subject.Username}";
                                 });
@@ -86,7 +86,7 @@ namespace ELO_Bot.Commands.Admin
                         userval = subject.Points;
                         try
                         {
-                            await (user as IGuildUser).ModifyAsync(x =>
+                            await ((IGuildUser) user).ModifyAsync(x =>
                             {
                                 x.Nickname = $"{subject.Points} ~ {subject.Username}";
                             });
@@ -132,7 +132,7 @@ namespace ELO_Bot.Commands.Admin
                     userval = subject.Points;
                     try
                     {
-                        await (user as IGuildUser).ModifyAsync(x =>
+                        await ((IGuildUser) user).ModifyAsync(x =>
                         {
                             x.Nickname = $"{subject.Points} ~ {subject.Username}";
                         });
@@ -159,7 +159,7 @@ namespace ELO_Bot.Commands.Admin
             {
                 var u = user as IGuildUser;
                 var r = Context.Guild.GetRole(role.RoleId);
-                if (u.RoleIds.Contains(role.RoleId))
+                if (u != null && u.RoleIds.Contains(role.RoleId))
                     await u.RemoveRoleAsync(r);
             }
             try
@@ -168,8 +168,12 @@ namespace ELO_Bot.Commands.Admin
                 var top = server.Ranks.Where(x => x.Points == toprole);
                 try
                 {
-                    var newrole = Context.Guild.GetRole(top.FirstOrDefault().RoleId);
-                    await (user as IGuildUser).AddRoleAsync(newrole);
+                    var first = top.FirstOrDefault();
+                    if (first != null)
+                    {
+                        var newrole = Context.Guild.GetRole(first.RoleId);
+                        await ((IGuildUser) user).AddRoleAsync(newrole);
+                    }
                 }
                 catch
                 {

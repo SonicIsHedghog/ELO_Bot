@@ -114,6 +114,13 @@ namespace ELO_Bot.Commands.Admin
         {
             var server = ServerList.Load(Context.Guild);
             var q = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
+
+            if (q == null)
+            {
+                await ReplyAsync("ERROR: Current Channel is not a lobby!");
+                return;
+            }
+
             q.Users = new List<ulong>();
             q.IsPickingTeams = false;
             q.Team1 = new List<ulong>();
