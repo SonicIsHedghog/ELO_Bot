@@ -235,6 +235,7 @@ namespace ELO_Bot.Commands.Admin
         [Command("ScoreboardReset", RunMode = RunMode.Async)]
         [Summary("ScoreboardReset")]
         [Remarks("Reset Points, Wins and Losses for all users in the server")]
+        [ServerOwner]
         public async Task Reset()
         {
             var server = ServerList.Load(Context.Guild);

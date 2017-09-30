@@ -19,10 +19,10 @@ namespace ELO_Bot.PreConditions
                 return await Task.FromResult(PreconditionResult.FromSuccess());
 
             if (s1.AdminRole != 0)
-                if ((context.User as IGuildUser).RoleIds.Contains(s1.AdminRole))
+                if (((IGuildUser) context.User).RoleIds.Contains(s1.AdminRole))
                     return await Task.FromResult(PreconditionResult.FromSuccess());
 
-            if (!((context.User as IGuildUser).GuildPermissions.Administrator ||
+            if (!(((IGuildUser) context.User).GuildPermissions.Administrator ||
                   context.User.Id == context.Guild.OwnerId))
                 return await Task.FromResult(
                     PreconditionResult.FromError(
@@ -45,20 +45,36 @@ namespace ELO_Bot.PreConditions
                 return await Task.FromResult(PreconditionResult.FromSuccess());
 
             if (s1.ModRole != 0)
-                if ((context.User as IGuildUser).RoleIds.Contains(s1.ModRole))
+                if (((IGuildUser) context.User).RoleIds.Contains(s1.ModRole))
                     return await Task.FromResult(PreconditionResult.FromSuccess());
 
             if (s1.AdminRole != 0)
-                if ((context.User as IGuildUser).RoleIds.Contains(s1.AdminRole))
+                if (((IGuildUser) context.User).RoleIds.Contains(s1.AdminRole))
                     return await Task.FromResult(PreconditionResult.FromSuccess());
 
-            if (!((context.User as IGuildUser).GuildPermissions.Administrator ||
+            if (!(((IGuildUser) context.User).GuildPermissions.Administrator ||
                   context.User.Id == context.Guild.OwnerId))
                 return await Task.FromResult(
                     PreconditionResult.FromError(
                         $"This Command requires Moderator OR Admin permissions."));
 
             return await Task.FromResult(PreconditionResult.FromSuccess());
+        }
+    }
+
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
+    public sealed class ServerOwner : PreconditionAttribute
+    {
+        public override async Task<PreconditionResult> CheckPermissions(ICommandContext context, CommandInfo command,
+            IServiceProvider prov)
+        {
+
+            if (context.Guild.OwnerId == context.User.Id)
+                return await Task.FromResult(PreconditionResult.FromSuccess());
+
+            return await Task.FromResult(
+                PreconditionResult.FromError(
+                    $"This Command can only be performed by the server owner"));
         }
     }
 
