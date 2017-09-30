@@ -28,7 +28,6 @@ namespace ELO_Bot.Commands.Admin
                     "Please reply with a number for the amount of players you want for the lobby, ie. 10 gives two teams of 5");
                 var n1 = await NextMessageAsync(timeout: TimeSpan.FromMinutes(1d));
                 if (int.TryParse(n1.Content, out var i))
-                {
                     if (i % 2 != 0 || i < 4)
                     {
                         await ReplyAsync("ERROR: Number must be even and greater than 4 (minimum 2v2)");
@@ -44,7 +43,6 @@ namespace ELO_Bot.Commands.Admin
                             await ReplyAsync("Please specify a description for this lobby:\n" +
                                              "ie. \"Ranked Gamemode, 5v5 ELITE Players Only!\"");
                             var n3 = await NextMessageAsync(timeout: TimeSpan.FromMinutes(1d));
-                            
 
 
                             var ser = ServerList.Load(Context.Guild);
@@ -70,14 +68,9 @@ namespace ELO_Bot.Commands.Admin
                         {
                             await ReplyAsync("ERROR: Invalid type specified.");
                         }
-
-
                     }
-                }
                 else
-                {
                     await ReplyAsync("ERROR: Not an integer");
-                }
             }
             else
             {
@@ -86,7 +79,7 @@ namespace ELO_Bot.Commands.Admin
             }
         }
 
-        
+
         [Command("RemoveLobby")]
         [Summary("RemoveLobby")]
         [Remarks("Remove A Lobby")]
@@ -106,7 +99,7 @@ namespace ELO_Bot.Commands.Admin
                              "Previous games that took place in this lobby have been cleared from history.");
         }
 
-        
+
         [Command("Clear")]
         [Summary("Clear")]
         [Remarks("Clear The Queue")]
@@ -145,7 +138,7 @@ namespace ELO_Bot.Commands.Admin
                 await ReplyAsync("Current channel is not a lobby!");
                 return;
             }
-                
+
             foreach (var map in mapName)
                 if (!lobby.Maps.Contains(map))
                 {

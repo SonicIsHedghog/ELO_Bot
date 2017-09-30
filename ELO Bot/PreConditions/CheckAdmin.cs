@@ -68,7 +68,6 @@ namespace ELO_Bot.PreConditions
         public override async Task<PreconditionResult> CheckPermissions(ICommandContext context, CommandInfo command,
             IServiceProvider prov)
         {
-
             if (context.Guild.OwnerId == context.User.Id)
                 return await Task.FromResult(PreconditionResult.FromSuccess());
 

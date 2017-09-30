@@ -32,7 +32,8 @@ namespace ELO_Bot.PreConditions
 
             if (!istopisused) return Task.FromResult(PreconditionResult.FromSuccess());
 
-            if (context.Channel is ITextChannel textchannel && textchannel.Topic.ToLower().Contains($"[{command.Name.ToLower()}]"))
+            if (context.Channel is ITextChannel textchannel &&
+                textchannel.Topic.ToLower().Contains($"[{command.Name.ToLower()}]"))
                 return Task.FromResult(PreconditionResult.FromSuccess());
             return Task.FromResult(
                 PreconditionResult.FromError(
