@@ -3,87 +3,90 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
+using Discord.Addons.Interactive;
 using Discord.Commands;
 using ELO_Bot.PreConditions;
 
 namespace ELO_Bot.Commands.Admin
 {
     [CheckAdmin]
-    public class Lobby : ModuleBase
+    public class Lobby : InteractiveBase
     {
-        [Ratelimit(1, 30d, Measure.Seconds)]
-        [Command("CreateLobby")]
-        [Summary("CreateLobby <userlimit> <true = captains, false = automatic teams> <lobby message>")]
-        [Remarks("Turn The current channel into a lobby")]
-        public async Task LobbyCreate(int userlimit, bool captains, [Remainder] string lobbyMessage = null)
+        [Command("Createlobby", RunMode = RunMode.Async)]
+        [Summary("Ctreatelobby")]
+        [Remarks("Initialise a lobby in the current channel")]
+        public async Task Createlobby()
         {
-            try
+            var server = ServerList.Load(Context.Guild);
+
+            var embed = new EmbedBuilder();
+
+            var lobbyexists = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
+            if (lobbyexists == null)
             {
-                var server = ServerList.Load(Context.Guild);
-                var embed = new EmbedBuilder();
-                try
+                await ReplyAsync(
+                    "Please reply with a number for the amount of players you want for the lobby, ie. 10 gives two teams of 5");
+                var n1 = await NextMessageAsync(timeout: TimeSpan.FromMinutes(1d));
+                if (int.TryParse(n1.Content, out var i))
                 {
-                    if (userlimit % 2 != 0)
+                    if (i % 2 != 0 || i < 4)
                     {
-                        embed.AddField("ERROR", "Userlimit must be even ie. 10 for two teams of 5");
-                        await ReplyAsync("", false, embed.Build());
-                        return;
-                    }
-
-                    var lobbyexists = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
-                    if (lobbyexists == null)
-                    {
-                        server.Queue.Add(new ServerList.Server.Q
-                        {
-                            ChannelId = Context.Channel.Id,
-                            Users = new List<ulong>(),
-                            UserLimit = userlimit,
-                            ChannelGametype = lobbyMessage,
-                            Captains = captains
-                        });
-
-                        if (lobbyMessage == null)
-                            lobbyMessage = "Unknown";
-                        embed.AddField("LOBBY CREATED", $"**Lobby Name:** \n{Context.Channel.Name}\n" +
-                                                        $"**PlayerLimit:** \n{userlimit}\n" +
-                                                        $"**Captains:** \n{captains}\n" +
-                                                        $"**GameMode Info:**\n" +
-                                                        $"{lobbyMessage}");
+                        await ReplyAsync("ERROR: Number must be even and greater than 4 (minimum 2v2)");
                     }
                     else
                     {
-                        embed.AddField("ERROR", "This channel is already a lobby!");
-                    }
-                }
-                catch
-                {
-                    var newlobby = new ServerList.Server.Q
-                    {
-                        ChannelId = Context.Channel.Id,
-                        Users = new List<ulong>()
-                    };
-                    try
-                    {
-                        server.Queue.Add(newlobby);
-                    }
-                    catch
-                    {
-                        server.Queue = new List<ServerList.Server.Q> {newlobby};
-                    }
+                        await ReplyAsync("Please reply:\n" +
+                                         "`true` for captains to choose the players for each team\n" +
+                                         "`false` for teams to automatically be chosen");
+                        var n2 = await NextMessageAsync(timeout: TimeSpan.FromMinutes(1d));
+                        if (bool.TryParse(n2.Content, out var captains))
+                        {
+                            await ReplyAsync("Please specify a description for this lobby:\n" +
+                                             "ie. \"Ranked Gamemode, 5v5 ELITE Players Only!\"");
+                            var n3 = await NextMessageAsync(timeout: TimeSpan.FromMinutes(1d));
+                            
 
-                    embed.AddField("LOBBY CREATED", $"Lobby Name: {Context.Channel.Name}");
+
+                            var ser = ServerList.Load(Context.Guild);
+                            ser.Queue.Add(new ServerList.Server.Q
+                            {
+                                ChannelId = Context.Channel.Id,
+                                Users = new List<ulong>(),
+                                UserLimit = i,
+                                ChannelGametype = n3.Content,
+                                Captains = captains
+                            });
+
+                            ServerList.Saveserver(ser);
+
+                            embed.AddField("LOBBY CREATED", $"**Lobby Name:** \n{Context.Channel.Name}\n" +
+                                                            $"**PlayerLimit:** \n{i}\n" +
+                                                            $"**Captains:** \n{captains}\n" +
+                                                            $"**GameMode Info:**\n" +
+                                                            $"{n3.Content}");
+                            await ReplyAsync("", false, embed.Build());
+                        }
+                        else
+                        {
+                            await ReplyAsync("ERROR: Invalid type specified.");
+                        }
+
+
+                    }
                 }
-                ServerList.Saveserver(server);
-                await ReplyAsync("", false, embed.Build());
+                else
+                {
+                    await ReplyAsync("ERROR: Not an integer");
+                }
             }
-            catch (Exception e)
+            else
             {
-                await ReplyAsync(e.ToString());
+                await ReplyAsync(
+                    $"ERROR: Current channel is already a lobby OR Command timed out. {Context.User.Mention}");
             }
         }
 
-
-        [Ratelimit(1, 30d, Measure.Seconds)]
+        
         [Command("RemoveLobby")]
         [Summary("RemoveLobby")]
         [Remarks("Remove A Lobby")]
@@ -103,8 +106,7 @@ namespace ELO_Bot.Commands.Admin
                              $"Previous games that took place in this lobby have been cleared from history.");
         }
 
-
-        [Ratelimit(1, 30d, Measure.Seconds)]
+        
         [Command("Clear")]
         [Summary("Clear")]
         [Remarks("Clear The Queue")]
@@ -131,6 +133,12 @@ namespace ELO_Bot.Commands.Admin
             var embed = new EmbedBuilder();
             var server = ServerList.Load(Context.Guild);
             var lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
+            if (lobby == null)
+            {
+                await ReplyAsync("Current channel is not a lobby!");
+                return;
+            }
+                
             foreach (var map in mapName)
                 if (!lobby.Maps.Contains(map))
                 {
@@ -153,6 +161,13 @@ namespace ELO_Bot.Commands.Admin
         {
             var server = ServerList.Load(Context.Guild);
             var lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
+
+            if (lobby == null)
+            {
+                await ReplyAsync("Current channel is not a lobby!");
+                return;
+            }
+
             if (lobby.Maps.Contains(mapName))
             {
                 lobby.Maps.Remove(mapName);
@@ -172,6 +187,13 @@ namespace ELO_Bot.Commands.Admin
         {
             var server = ServerList.Load(Context.Guild);
             var lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
+
+            if (lobby == null)
+            {
+                await ReplyAsync("Current channel is not a lobby!");
+                return;
+            }
+
             lobby.Maps = new List<string>();
             ServerList.Saveserver(server);
             await ReplyAsync("Maps Cleared.");

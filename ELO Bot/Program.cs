@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Discord;
+using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
@@ -89,6 +90,7 @@ namespace ELO_Bot
         {
             var services = new ServiceCollection()
                 .AddSingleton(Client)
+                .AddSingleton(new InteractiveService(Client))
                 .AddSingleton(new CommandService(
                     new CommandServiceConfig {CaseSensitiveCommands = false, ThrowOnError = false}));
 

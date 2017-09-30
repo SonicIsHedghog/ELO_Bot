@@ -125,7 +125,7 @@ namespace ELO_Bot.Commands.Admin
 
             try
             {
-                await (user as IGuildUser).ModifyAsync(x => { x.Nickname = $"{user.Username}"; });
+                await ((IGuildUser) user).ModifyAsync(x => { x.Nickname = $"{user.Username}"; });
             }
             catch
             {
@@ -182,7 +182,7 @@ namespace ELO_Bot.Commands.Admin
                 embed.WithColor(Color.Blue);
                 try
                 {
-                    await (user as IGuildUser).ModifyAsync(x => { x.Nickname = $"0 ~ {username}"; });
+                    await ((IGuildUser) user).ModifyAsync(x => { x.Nickname = $"0 ~ {username}"; });
                 }
                 catch
                 {
@@ -194,7 +194,7 @@ namespace ELO_Bot.Commands.Admin
                         var serverrole = Context.Guild.GetRole(server.RegisterRole);
                         try
                         {
-                            await (user as IGuildUser).AddRoleAsync(serverrole);
+                            await ((IGuildUser) user).AddRoleAsync(serverrole);
                         }
                         catch
                         {
@@ -235,7 +235,7 @@ namespace ELO_Bot.Commands.Admin
                     success = true;
                     try
                     {
-                        await (user as IGuildUser).ModifyAsync(x =>
+                        await ((IGuildUser) user).ModifyAsync(x =>
                         {
                             x.Nickname = $"{member.Points} ~ {member.Username}";
                         });
@@ -396,6 +396,32 @@ namespace ELO_Bot.Commands.Admin
             {
                 server.Ranks.Remove(containedrole);
                 embed.AddField("SUCCESS", $"{role.Name} is no longer ranked");
+            }
+            else
+            {
+                embed.AddField("ERROR", "This role is not Ranked");
+            }
+
+            ServerList.Saveserver(server);
+            embed.WithColor(Color.Blue);
+            await ReplyAsync("", false, embed.Build());
+        }
+
+        [Command("removerank")]
+        [Summary("removerank <RoleID>")]
+        [Remarks("remove a role from the Ranks list by ID")]
+        public async Task Remove(ulong role)
+        {
+            var embed = new EmbedBuilder();
+
+
+            var server = ServerList.Load(Context.Guild);
+
+            var containedrole = server.Ranks.SingleOrDefault(x => x.RoleId == role);
+            if (containedrole != null)
+            {
+                server.Ranks.Remove(containedrole);
+                embed.AddField("SUCCESS", $"{role} is no longer ranked");
             }
             else
             {
