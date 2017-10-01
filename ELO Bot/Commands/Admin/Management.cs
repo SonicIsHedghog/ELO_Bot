@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
@@ -431,6 +432,49 @@ namespace ELO_Bot.Commands.Admin
             ServerList.Saveserver(server);
             embed.WithColor(Color.Blue);
             await ReplyAsync("", false, embed.Build());
+        }
+
+
+        [Command("ClearUsers")]
+        [Summary("ClearUsers")]
+        [Remarks("Deletes ALL user profiles in the server.")]
+        [ServerOwner]
+        public async Task ClearUsers(ulong role)
+        {
+            var server = ServerList.Load(Context.Guild);
+            var modified = 0;
+            var unmodified = 0;
+            await ReplyAsync($"Users Being Pruned. Estimated time: {server.UserList.Count * 2} seconds");
+            foreach (var user in server.UserList)
+            {
+                try
+                {
+                    var u = Context.Guild.GetUser(user.UserId);
+                    await u.ModifyAsync(x =>
+                    {
+                        x.Nickname = null;
+                    });
+                    modified++;
+                    await Task.Delay(2000);
+                }
+                catch
+                {
+                    //User unavailable
+                    unmodified++;
+                }
+            }
+
+            server.UserList = new List<ServerList.Server.User>();
+            server.Queue = new List<ServerList.Server.Q>();
+            server.Gamelist = new List<ServerList.Server.PreviouMatches>();
+            server.Bans = new List<ServerList.Server.Ban>();
+            ServerList.Saveserver(server);
+
+            await ReplyAsync($"User prune completed.\n" +
+                             $"Users Reset: {modified}\n" +
+                             $"Users Unavailable: {unmodified}\n" +
+                             $"[NOTE]\n" +
+                             $"Server queues, game logs and lobbies have also been cleared.");
         }
     }
 }
