@@ -445,8 +445,14 @@ namespace ELO_Bot.Commands.Admin
             var modified = 0;
             var unmodified = 0;
             await ReplyAsync($"Users Being Pruned. Estimated time: {server.UserList.Count * 2} seconds");
+            var iiterations = 0;
             foreach (var user in server.UserList)
             {
+                iiterations++;
+                if (iiterations % 5 == 0)
+                {
+                    await ReplyAsync($"{Math.Ceiling((double)(iiterations * 100) / server.UserList.Count)}% complete");
+                }
                 try
                 {
                     var u = Context.Guild.GetUser(user.UserId);
