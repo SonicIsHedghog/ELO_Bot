@@ -435,11 +435,11 @@ namespace ELO_Bot.Commands.Admin
         }
 
 
-        [Command("ClearUsers")]
+        [Command("ClearUsers", RunMode = RunMode.Async)]
         [Summary("ClearUsers")]
         [Remarks("Deletes ALL user profiles in the server.")]
         [ServerOwner]
-        public async Task ClearUsers(ulong role)
+        public async Task ClearUsers()
         {
             var server = ServerList.Load(Context.Guild);
             var modified = 0;
