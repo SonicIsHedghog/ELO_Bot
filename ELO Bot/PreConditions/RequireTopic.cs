@@ -19,7 +19,7 @@ namespace ELO_Bot.PreConditions
                 var topic = "topic";
                 try
                 {
-                    if (t != null && t.Topic != null)
+                    if (t?.Topic != null)
                         topic = t.Topic;
                 }
                 catch

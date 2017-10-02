@@ -79,11 +79,8 @@ namespace ELO_Bot
                 cfg.Token = Console.ReadLine();
 
                 Log.Information("Would you like to AutoRun the bot from now on? Y/N");
-                var type2 = Console.ReadLine();
-                if (type2.StartsWith("y") || type2.StartsWith("Y"))
-                    cfg.AutoRun = true;
-                else
-                    cfg.AutoRun = false;
+                var type2 = Console.ReadKey();
+                cfg.AutoRun = type2.KeyChar.ToString().ToLower() == "y";
 
                 cfg.Save();
             }

@@ -56,7 +56,7 @@ namespace ELO_Bot.PreConditions
                   context.User.Id == context.Guild.OwnerId))
                 return await Task.FromResult(
                     PreconditionResult.FromError(
-                        $"This Command requires Moderator OR Admin permissions."));
+                        "This Command requires Moderator OR Admin permissions."));
 
             return await Task.FromResult(PreconditionResult.FromSuccess());
         }
@@ -73,7 +73,7 @@ namespace ELO_Bot.PreConditions
 
             return await Task.FromResult(
                 PreconditionResult.FromError(
-                    $"This Command can only be performed by the server owner"));
+                    "This Command can only be performed by the server owner"));
         }
     }
 
@@ -92,13 +92,13 @@ namespace ELO_Bot.PreConditions
 
                 return await Task.FromResult(
                     PreconditionResult.FromError(
-                        $"You are not registered, type `=register <name>` to begin"));
+                        "You are not registered, type `=register <name>` to begin"));
             }
             catch
             {
                 return await Task.FromResult(
                     PreconditionResult.FromError(
-                        $"You are not registered, type `=register <name>` to begin"));
+                        "You are not registered, type `=register <name>` to begin"));
             }
         }
     }

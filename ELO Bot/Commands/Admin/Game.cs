@@ -10,7 +10,7 @@ using ELO_Bot.PreConditions;
 namespace ELO_Bot.Commands.Admin
 {
     [CheckModerator]
-    public class Moderator : ModuleBase
+    public class Game : ModuleBase
     {
         [Command("Win")]
         [Summary("Win <users>")]

@@ -12,29 +12,6 @@ namespace ELO_Bot.Commands.Admin
     [CheckAdmin]
     public class Management : ModuleBase<SocketCommandContext>
     {
-        [Command("SetRegisterRole")]
-        [Summary("SetRegisterRole <@role>")]
-        [Remarks("Sets the role users will join when registering")]
-        public async Task SetReg(IRole role = null)
-        {
-            var embed = new EmbedBuilder();
-
-            if (role == null)
-            {
-                embed.AddField("ERROR", "Please specify a role for users to be added to upon registering");
-                embed.WithColor(Color.Red);
-                await ReplyAsync("", false, embed.Build());
-                return;
-            }
-
-            var server = ServerList.Load(Context.Guild);
-            server.RegisterRole = role.Id;
-            ServerList.Saveserver(server);
-            embed.AddField("Complete!", $"Upon registering, users will now be added to the role: {role.Name}");
-            embed.WithColor(Color.Blue);
-            await ReplyAsync("", false, embed.Build());
-        }
-
         /*[Command("RegisterAll", RunMode = RunMode.Async)]
         [Summary("RegisterAll <role>")]
         [Remarks("Register All Users in the server or all users in the specified role")]
@@ -265,7 +242,7 @@ namespace ELO_Bot.Commands.Admin
 
         [Command("ban")]
         [Summary("ban <@user> <hours>")]
-        [Remarks("stop a user from interacting with the queue for the specified amount of time")]
+        [Remarks("ban user from using Lobbies for specified time")]
         public async Task Ban(SocketGuildUser user, int i)
         {
             var server = ServerList.Load(Context.Guild);
@@ -450,16 +427,11 @@ namespace ELO_Bot.Commands.Admin
             {
                 iiterations++;
                 if (iiterations % 5 == 0)
-                {
-                    await ReplyAsync($"{Math.Ceiling((double)(iiterations * 100) / server.UserList.Count)}% complete");
-                }
+                    await ReplyAsync($"{Math.Ceiling((double) (iiterations * 100) / server.UserList.Count)}% complete");
                 try
                 {
                     var u = Context.Guild.GetUser(user.UserId);
-                    await u.ModifyAsync(x =>
-                    {
-                        x.Nickname = null;
-                    });
+                    await u.ModifyAsync(x => { x.Nickname = null; });
                     modified++;
                     await Task.Delay(2000);
                 }
@@ -476,11 +448,11 @@ namespace ELO_Bot.Commands.Admin
             server.Bans = new List<ServerList.Server.Ban>();
             ServerList.Saveserver(server);
 
-            await ReplyAsync($"User prune completed.\n" +
+            await ReplyAsync("User prune completed.\n" +
                              $"Users Reset: {modified}\n" +
                              $"Users Unavailable: {unmodified}\n" +
-                             $"[NOTE]\n" +
-                             $"Server queues, game logs and lobbies have also been cleared.");
+                             "[NOTE]\n" +
+                             "Server queues, game logs and lobbies have also been cleared.");
         }
     }
 }

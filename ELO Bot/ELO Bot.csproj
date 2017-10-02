@@ -131,9 +131,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Commands\Admin\Moderator.cs" />
+    <Compile Include="Commands\Admin\Game.cs" />
     <Compile Include="PreConditions\CheckAdmin.cs" />
-    <Compile Include="Commands\Admin\Admin.cs" />
+    <Compile Include="Commands\Admin\Setup.cs" />
     <Compile Include="Commands\Admin\Lobby.cs" />
     <Compile Include="Commands\Admin\Point.cs" />
     <Compile Include="Commands\Admin\Management.cs" />

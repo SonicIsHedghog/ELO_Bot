@@ -13,9 +13,9 @@ namespace ELO_Bot.Commands.Admin
     public class Lobby : InteractiveBase
     {
         [Command("Createlobby", RunMode = RunMode.Async)]
-        [Summary("Ctreatelobby")]
+        [Summary("Createlobby")]
         [Remarks("Initialise a lobby in the current channel")]
-        public async Task Createlobby()
+        public async Task Createlobby([Remainder] string lolsdvdv = null)
         {
             var server = ServerList.Load(Context.Guild);
 
@@ -102,7 +102,7 @@ namespace ELO_Bot.Commands.Admin
 
         [Command("Clear")]
         [Summary("Clear")]
-        [Remarks("Clear The Queue")]
+        [Remarks("Clear All Players from The Queue")]
         public async Task ClearQueue()
         {
             var server = ServerList.Load(Context.Guild);
@@ -168,7 +168,7 @@ namespace ELO_Bot.Commands.Admin
                 return;
             }
 
-            if (lobby.Maps.Contains(mapName))
+            if (lobby.Maps.Select(x => x.ToLower()).Contains(mapName.ToLower()))
             {
                 lobby.Maps.Remove(mapName);
                 await ReplyAsync($"Map Removed {mapName}");
@@ -178,6 +178,31 @@ namespace ELO_Bot.Commands.Admin
             {
                 await ReplyAsync($"Map doesnt exist {mapName}");
             }
+        }
+
+        [Command("SetMaps")]
+        [Summary("SetMaps <Map_0> <Map_1>")]
+        [Remarks("Set all maps for the current lobby")]
+        public async Task SetMaps(params string[] mapName)
+        {
+            var embed = new EmbedBuilder();
+            var server = ServerList.Load(Context.Guild);
+            var lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
+            if (lobby == null)
+            {
+                await ReplyAsync("Current channel is not a lobby!");
+                return;
+            }
+
+            embed.Title = $"{Context.Channel.Name}";
+
+            foreach (var map in mapName)
+                embed.Description += $"{map}\n";
+
+            lobby.Maps = mapName.ToList();
+
+            await ReplyAsync("", false, embed.Build());
+            ServerList.Saveserver(server);
         }
 
         [Command("ClearMaps")]

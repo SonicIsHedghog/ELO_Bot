@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
@@ -10,7 +11,7 @@ namespace ELO_Bot.Commands.Admin
 {
     [RequireContext(ContextType.Guild)]
     [CheckAdmin]
-    public class Admin : ModuleBase
+    public class Setup : ModuleBase
     {
         [Command("SetAnnouncements")]
         [Summary("SetAnnouncements")]
@@ -21,6 +22,29 @@ namespace ELO_Bot.Commands.Admin
             server.AnnouncementsChannel = Context.Channel.Id;
             ServerList.Saveserver(server);
             await ReplyAsync("GameAnnouncements will now be posted in this channel");
+        }
+
+        [Command("SetRegisterRole")]
+        [Summary("SetRegisterRole <@role>")]
+        [Remarks("Sets the role users will join when registering")]
+        public async Task SetReg(IRole role = null)
+        {
+            var embed = new EmbedBuilder();
+
+            if (role == null)
+            {
+                embed.AddField("ERROR", "Please specify a role for users to be added to upon registering");
+                embed.WithColor(Color.Red);
+                await ReplyAsync("", false, embed.Build());
+                return;
+            }
+
+            var server = ServerList.Load(Context.Guild);
+            server.RegisterRole = role.Id;
+            ServerList.Saveserver(server);
+            embed.AddField("Complete!", $"Upon registering, users will now be added to the role: {role.Name}");
+            embed.WithColor(Color.Blue);
+            await ReplyAsync("", false, embed.Build());
         }
 
         [Command("RemoveIdle")]
@@ -147,6 +171,102 @@ namespace ELO_Bot.Commands.Admin
                                         $"{message}");
             embed.WithColor(Color.Blue);
             await ReplyAsync("", false, embed.Build());
+        }
+
+        [Command("ModifyLoss")]
+        [Summary("ModifyLoss <points>")]
+        [Remarks("Sets the servers Loss amount")]
+        public async Task Lose(int points)
+        {
+            var embed = new EmbedBuilder();
+            var server = ServerList.Load(Context.Guild);
+            if (points == 0)
+            {
+                embed.AddField("ERROR", "Please supply a number that isnt 0");
+                embed.Color = Color.Red;
+                await ReplyAsync("", false, embed.Build());
+                return;
+            }
+            if (points <= 0)
+                points = Math.Abs(points);
+            server.Lossamount = points;
+            ServerList.Saveserver(server);
+            embed.AddField("Success", $"Upon losing, users will now lose {points} points");
+            embed.Color = Color.Green;
+            await ReplyAsync("", false, embed.Build());
+        }
+
+        [Command("ModifyWin")]
+        [Summary("ModifyWin <points>")]
+        [Remarks("Sets the servers Win amount")]
+        public async Task Win(int points)
+        {
+            var embed = new EmbedBuilder();
+            var server = ServerList.Load(Context.Guild);
+            if (points == 0)
+            {
+                embed.AddField("ERROR", "Please supply a number that isnt 0");
+                embed.Color = Color.Red;
+                await ReplyAsync("", false, embed.Build());
+                return;
+            }
+            if (points <= 0)
+                points = Math.Abs(points);
+            server.Winamount = points;
+            ServerList.Saveserver(server);
+            embed.AddField("Success", $"Upon Winning, users will now gain {points} points");
+            embed.Color = Color.Green;
+            await ReplyAsync("", false, embed.Build());
+        }
+
+        [Command("ScoreboardReset", RunMode = RunMode.Async)]
+        [Summary("ScoreboardReset")]
+        [Remarks("Reset Points, Wins and Losses for all users in the server")]
+        [ServerOwner]
+        public async Task Reset()
+        {
+            var server = ServerList.Load(Context.Guild);
+            await ReplyAsync("Working...\n" +
+                             $"Estimated Reset time = {server.UserList.Count * 3} seconds");
+            foreach (var user in server.UserList)
+            {
+                user.Points = 0;
+                user.Wins = 0;
+                user.Losses = 0;
+                try
+                {
+                    var delay = 0;
+                    var u = await Context.Guild.GetUserAsync(user.UserId);
+                    if (!u.Nickname.StartsWith("0 ~ "))
+                        try
+                        {
+                            await u.ModifyAsync(x => { x.Nickname = $"0 ~ {user.Username}"; });
+                            delay = 1000;
+                        }
+                        catch
+                        {
+                            //
+                        }
+                    try
+                    {
+                        await u.RemoveRolesAsync(server.Ranks.Select(x => Context.Guild.GetRole(x.RoleId)));
+                        delay = 1000;
+                    }
+                    catch
+                    {
+                        //
+                    }
+                    await Task.Delay(delay);
+                }
+                catch
+                {
+                    //
+                }
+            }
+
+
+            ServerList.Saveserver(server);
+            await ReplyAsync("Leaderboard Reset Complete!");
         }
 
         [Command("Server")]

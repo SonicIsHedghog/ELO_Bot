@@ -150,7 +150,7 @@ namespace ELO_Bot.Commands
 
         [Command("Leaderboard")]
         [Summary("Leaderboard <wins, losses, points>")]
-        [Remarks("Displays Rank Leaderboard (Top 20 if too large)")]
+        [Remarks("Displays Rank Leaderboard (Top 20 )")]
         [CheckRegistered]
         public async Task LeaderBoard(string arg = null)
         {

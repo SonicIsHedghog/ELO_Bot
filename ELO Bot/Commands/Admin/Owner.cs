@@ -11,8 +11,8 @@ namespace ELO_Bot.Commands.Admin
     public class Owner : ModuleBase
     {
         [Command("addpremium")]
-        [Summary("addpremium <KEYS>")]
-        [Remarks("Add a fucking load of premium keys")]
+        [Summary("addpremium")]
+        [Remarks("Bot Creator Command")]
         public async Task Addpremium(params string[] keys)
         {
             try
@@ -57,6 +57,7 @@ namespace ELO_Bot.Commands.Admin
 
         [Command("botrename")]
         [Summary("botrename")]
+        [Remarks("Bot Creator Command")]
         public async Task Help([Remainder] string name)
         {
             await Context.Client.CurrentUser.ModifyAsync(x => { x.Username = name; });

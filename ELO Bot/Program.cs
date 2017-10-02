@@ -121,7 +121,7 @@ namespace ELO_Bot
                 if (userBefore.Status != userAfter.Status)
                     if (userAfter.Status == UserStatus.Idle || userAfter.Status == UserStatus.Offline)
                     {
-                        var guild = (userBefore as IGuildUser).Guild;
+                        var guild = ((IGuildUser) userBefore).Guild;
                         var server = ServerList.Load(guild);
                         if (server.Autoremove && userAfter.Status == UserStatus.Idle)
                             foreach (var userqueue in server.Queue.Where(x => x.Users.Contains(userAfter.Id)))
@@ -130,16 +130,16 @@ namespace ELO_Bot
                                     if (userqueue.IsPickingTeams)
                                     {
                                         var channel = await guild.GetChannelAsync(userqueue.ChannelId);
-                                        await (channel as ITextChannel).SendMessageAsync(
+                                        await ((ITextChannel) channel).SendMessageAsync(
                                             $"{userAfter.Mention} has gone idle, as this channel is currently picking teams they were unable to be replaced in the queue\n" +
-                                            $"if they are inactive it is recommended that someone use the command `=subfor <@user>` to replace them\n" +
-                                            $"if they were already chosen for a team then you can use `=replace <@user>` after both teams are finished being picked.");
+                                            "if they are inactive it is recommended that someone use the command `=subfor <@user>` to replace them\n" +
+                                            "if they were already chosen for a team then you can use `=replace <@user>` after both teams are finished being picked.");
                                     }
                                     else
                                     {
                                         userqueue.Users.Remove(userAfter.Id);
                                         var channel = await guild.GetChannelAsync(userqueue.ChannelId);
-                                        await (channel as ITextChannel).SendMessageAsync(
+                                        await ((ITextChannel) channel).SendMessageAsync(
                                             $"{userAfter.Mention} has gone idle and has been removed from this channel's queue");
                                     }
                                 }
@@ -154,16 +154,16 @@ namespace ELO_Bot
                                     if (userqueue.IsPickingTeams)
                                     {
                                         var channel = await guild.GetChannelAsync(userqueue.ChannelId);
-                                        await (channel as ITextChannel).SendMessageAsync(
+                                        await ((ITextChannel) channel).SendMessageAsync(
                                             $"{userAfter.Mention} has gone offline, as this channel is currently picking teams they were unable to be replaced in the queue\n" +
-                                            $"if they are inactive it is recommended that someone use the command `=subfor <@user>` to replace them\n" +
-                                            $"if they were already chosen for a team then you can use `=replace <@user>` after both teams are finished being picked.");
+                                            "if they are inactive it is recommended that someone use the command `=subfor <@user>` to replace them\n" +
+                                            "if they were already chosen for a team then you can use `=replace <@user>` after both teams are finished being picked.");
                                     }
                                     else
                                     {
                                         userqueue.Users.Remove(userAfter.Id);
                                         var channel = await guild.GetChannelAsync(userqueue.ChannelId);
-                                        await (channel as ITextChannel).SendMessageAsync(
+                                        await ((ITextChannel) channel).SendMessageAsync(
                                             $"{userAfter.Mention} has gone offline and has been removed from this channel's queue");
                                     }
                                 }
@@ -197,8 +197,7 @@ namespace ELO_Bot
             public async Task DoCommand(SocketMessage parameterMessage)
             {
                 Messages++;
-                var message = parameterMessage as SocketUserMessage;
-                if (message == null) return;
+                if (!(parameterMessage is SocketUserMessage message)) return;
                 var argPos = 0;
                 var context = new SocketCommandContext(_client, message); //new CommandContext(_client, message);
 
@@ -222,14 +221,16 @@ namespace ELO_Bot
                         if (context.Message.Content.ToLower()
                             .StartsWith($"{Config.Load().Prefix}{command.Name} ".ToLower()))
                         {
-                            embed.AddField($"COMMAND INFO", $"Name: {command.Name}\n" +
-                                                            $"Summary: {command.Summary}\n" +
-                                                            $"Info: {command.Remarks}");
+                            embed.AddField("COMMAND INFO", $"Name: {command.Name}\n" +
+                                                           $"Summary: {command.Summary}\n" +
+                                                           $"Info: {command.Remarks}");
                             break;
                         }
 
                     embed.AddField($"ERROR {result.Error.ToString().ToUpper()}", $"Command: {context.Message}\n" +
-                                                                                 $"Error: {result.ErrorReason}");
+                                                                                 $"Error: {result.ErrorReason}\n" +
+                                                                                 $"To report this error, please type: `{Config.Load().Prefix}report <errormessage>`");
+
                     embed.Color = Color.Red;
                     await context.Channel.SendMessageAsync("", false, embed.Build());
                     Log.Logger = new LoggerConfiguration()
