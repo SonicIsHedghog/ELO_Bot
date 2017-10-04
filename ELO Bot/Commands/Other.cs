@@ -142,9 +142,6 @@ namespace ELO_Bot.Commands
             embed.AddField(":beginner:", "Written by: [PassiveModding](https://github.com/PassiveModding)\n" +
                                          $"Discord.Net {DiscordConfig.Version}");
 
-
-            embed.AddField("", "");
-
             await ReplyAsync("", embed: embed.Build());
         }
 
@@ -159,7 +156,7 @@ namespace ELO_Bot.Commands
             embed.AddField("ERROR REPORT", $"From: {Context.User.Username}\n" +
                                            $"Server: {Context.Guild.Name}\n" +
                                            $"Channel: {Context.Channel.Name}\n" +
-                                           $"Invite: {((SocketGuildChannel) Context.Channel).CreateInviteAsync().Result}\n" +
+                                           $"Invite: {((SocketGuildChannel) Context.Channel).CreateInviteAsync(0).Result}\n" +
                                            $"ERROR MESSAGE:\n" +
                                            $"{message}");
 
