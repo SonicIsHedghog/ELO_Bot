@@ -34,6 +34,9 @@ namespace ELO_Bot
             if (!Directory.Exists(Path.Combine(AppContext.BaseDirectory, "setup/")))
                 Directory.CreateDirectory(Path.Combine(AppContext.BaseDirectory, "setup/"));
 
+            if (!Directory.Exists(Path.Combine(AppContext.BaseDirectory, "setup/backups/")))
+                Directory.CreateDirectory(Path.Combine(AppContext.BaseDirectory, "setup/backups/"));
+
             Config.CheckExistence();
             var token = Config.Load().Token;
 
@@ -246,6 +249,13 @@ namespace ELO_Bot
                     Log.Information($"{message.Content} || {message.Author}");
                     Commands++;
                 }
+
+                if (Commands % 50 == 0)
+                {
+                    var backupfile = Path.Combine(AppContext.BaseDirectory, $"setup/backups/{DateTime.UtcNow.ToString("dd-MM-yy HH.mm.ss")}.txt");
+                    File.WriteAllText(backupfile, File.ReadAllText(ServerList.EloFile));
+                }
+
             }
 
             public async Task ConfigureAsync()

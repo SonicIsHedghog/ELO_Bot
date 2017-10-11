@@ -9,6 +9,7 @@ using ELO_Bot.PreConditions;
 namespace ELO_Bot.Commands
 {
     [CheckRegistered]
+    [RequireContext(ContextType.Guild)]
     public class MatchMaking : ModuleBase
     {
         [Ratelimit(1, 10d, Measure.Seconds)]
