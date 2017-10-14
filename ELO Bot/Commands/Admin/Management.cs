@@ -411,6 +411,57 @@ namespace ELO_Bot.Commands.Admin
             await ReplyAsync("", false, embed.Build());
         }
 
+        [Command("RankWinModifier")]
+        [Summary("RankWinModifier <@role> <points>")]
+        [Remarks("allow a specific ranks points to be modified differently to server default")]
+        public async Task RWM(IRole role, int points)
+        {
+            var embed = new EmbedBuilder();
+
+
+            var server = ServerList.Load(Context.Guild);
+
+            var containedrole = server.Ranks.SingleOrDefault(x => x.RoleId == role.Id);
+            if (containedrole != null)
+            {
+                containedrole.Winmodifier = Math.Abs(points);
+                embed.AddField("SUCCESS", $"User points for the rank {role.Mention} will now be modified accordingly");
+            }
+            else
+            {
+                embed.AddField("ERROR", "This role is not Ranked");
+            }
+
+            ServerList.Saveserver(server);
+            embed.WithColor(Color.Blue);
+            await ReplyAsync("", false, embed.Build());
+        }
+
+        [Command("RankLossModifier")]
+        [Summary("RankLossModifier <@role> <points>")]
+        [Remarks("allow a specific ranks points to be modified differently to server default")]
+        public async Task RLM(IRole role, int points)
+        {
+            var embed = new EmbedBuilder();
+
+
+            var server = ServerList.Load(Context.Guild);
+
+            var containedrole = server.Ranks.SingleOrDefault(x => x.RoleId == role.Id);
+            if (containedrole != null)
+            {
+                containedrole.Lossmodifier = Math.Abs(points);
+                embed.AddField("SUCCESS", $"User points for the rank {role.Mention} will now be modified accordingly");
+            }
+            else
+            {
+                embed.AddField("ERROR", "This role is not Ranked");
+            }
+
+            ServerList.Saveserver(server);
+            embed.WithColor(Color.Blue);
+            await ReplyAsync("", false, embed.Build());
+        }
 
         [Command("ClearUsers", RunMode = RunMode.Async)]
         [Summary("ClearUsers")]

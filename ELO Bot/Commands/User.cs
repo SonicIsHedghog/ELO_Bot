@@ -251,7 +251,7 @@ namespace ELO_Bot.Commands
             var embed = new EmbedBuilder();
             var server = ServerList.Load(Context.Guild);
             var orderedlist = server.Ranks.OrderBy(x => x.Points).Reverse();
-            var desc = "Points - Role\n";
+            var desc = "Points - Role (PPW/PPL)\n";
             foreach (var lev in orderedlist)
             {
                 string rolename;
@@ -264,8 +264,33 @@ namespace ELO_Bot.Commands
                     rolename = $"ERR: {lev.RoleId}";
                 }
 
-                desc += $"`{lev.Points}` - {rolename}\n";
+                var pwin = lev.Winmodifier == 0 ? server.Winamount : lev.Winmodifier;
+                var ploss = lev.Lossmodifier == 0 ? server.Lossamount : lev.Lossmodifier;
+
+                desc += $"`{lev.Points}` - {rolename} (+{pwin}/-{ploss})\n";
             }
+
+            if (server.RegisterRole != 0)
+            {
+                string rolename;
+                try
+                {
+                    rolename = Context.Guild.GetRole(server.RegisterRole).Name;
+                }
+                catch
+                {
+                    rolename = $"ERR: {server.RegisterRole}";
+                }
+
+                var pwin = server.Winamount;
+                var ploss = server.Lossamount;
+
+                desc += $"`0` - {rolename} (+{pwin}/-{ploss})\n";
+            }
+
+            desc += "\n\nPPW = Points per win\n" +
+                "PPL = Points per loss";
+
             embed.AddField("Ranks", desc);
             embed.WithColor(Color.Blue);
             await ReplyAsync("", false, embed.Build());
