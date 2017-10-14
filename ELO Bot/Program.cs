@@ -253,7 +253,7 @@ namespace ELO_Bot
                 if (Commands % 50 == 0)
                 {
                     var backupfile = Path.Combine(AppContext.BaseDirectory,
-                        $"setup/backups/{DateTime.UtcNow.ToString("dd-MM-yy HH.mm.ss")}.txt");
+                        $"setup/backups/{DateTime.UtcNow:dd-MM-yy HH.mm.ss}.txt");
                     File.WriteAllText(backupfile, File.ReadAllText(ServerList.EloFile));
                 }
             }

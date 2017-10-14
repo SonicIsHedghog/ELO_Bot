@@ -414,7 +414,7 @@ namespace ELO_Bot.Commands.Admin
         [Command("RankWinModifier")]
         [Summary("RankWinModifier <@role> <points>")]
         [Remarks("allow a specific ranks points to be modified differently to server default")]
-        public async Task RWM(IRole role, int points)
+        public async Task Rwm(IRole role, int points)
         {
             var embed = new EmbedBuilder();
 
@@ -440,7 +440,7 @@ namespace ELO_Bot.Commands.Admin
         [Command("RankLossModifier")]
         [Summary("RankLossModifier <@role> <points>")]
         [Remarks("allow a specific ranks points to be modified differently to server default")]
-        public async Task RLM(IRole role, int points)
+        public async Task Rlm(IRole role, int points)
         {
             var embed = new EmbedBuilder();
 
