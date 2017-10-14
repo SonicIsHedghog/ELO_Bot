@@ -140,7 +140,6 @@ namespace ELO_Bot.Commands.Admin
                 var usr = server.UserList.FirstOrDefault(x => x.UserId == user.Id);
 
 
-
                 if (usr != null && user.Id == usr.UserId)
                 {
                     try
@@ -152,13 +151,9 @@ namespace ELO_Bot.Commands.Admin
                         {
                             var rank = top.First();
                             if (rank.Winmodifier != 0 && win)
-                            {
                                 points = rank.Winmodifier;
-                            }
                             else if (rank.Lossmodifier != 0 && !win)
-                            {
                                 points = rank.Lossmodifier;
-                            }
                         }
                         catch (Exception e)
                         {

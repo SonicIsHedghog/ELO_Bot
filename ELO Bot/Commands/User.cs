@@ -289,7 +289,7 @@ namespace ELO_Bot.Commands
             }
 
             desc += "\n\nPPW = Points per win\n" +
-                "PPL = Points per loss";
+                    "PPL = Points per loss";
 
             embed.AddField("Ranks", desc);
             embed.WithColor(Color.Blue);

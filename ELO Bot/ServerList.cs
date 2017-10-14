@@ -116,6 +116,7 @@ namespace ELO_Bot
                 public ulong RoleId { get; set; }
                 public int Points { get; set; }
                 public int Winmodifier { get; set; } = 0;
+
                 public int Lossmodifier { get; set; } = 0;
                 //Winmodifier and loss modifier
                 //check if zero. If not, make adjustments to score
