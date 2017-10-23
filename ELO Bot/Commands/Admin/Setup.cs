@@ -10,9 +10,17 @@ using Newtonsoft.Json;
 namespace ELO_Bot.Commands.Admin
 {
     [RequireContext(ContextType.Guild)]
+    [CheckBlacklist]
     [CheckAdmin]
     public class Setup : ModuleBase
     {
+        private readonly CommandService _service;
+
+        public Setup(CommandService service)
+        {
+            _service = service;
+        }
+
         [Command("SetAnnouncements")]
         [Summary("SetAnnouncements")]
         [Remarks("Set the current channel for game announcements")]
@@ -267,6 +275,79 @@ namespace ELO_Bot.Commands.Admin
 
             ServerList.Saveserver(server);
             await ReplyAsync("Leaderboard Reset Complete!");
+        }
+
+
+        [Command("Blacklist")]
+        [Remarks("List blacklisted commands")]
+        [Summary("Blacklist")]
+        public async Task Blacklist()
+        {
+            var server = ServerList.Load(Context.Guild);
+
+            if (server.CmdBlacklist.Count == 0)
+            {
+                await ReplyAsync("There are no blacklisted commands in this server");
+                return;
+            }
+
+            var embed = new EmbedBuilder();
+            embed.AddField("Blacklist", $"{string.Join("\n", server.CmdBlacklist)}");
+
+            await ReplyAsync("", false, embed);
+        }
+
+        [Command("BlacklistAdd")]
+        [Remarks("Blacklist a command from all regular users.")]
+        [Summary("BlacklistAdd <command-name>")]
+        public async Task BlacklistAdd(string cmdname)
+        {
+            var server = ServerList.Load(Context.Guild);
+
+            if (_service.Modules.SelectMany(module => module.Commands).Any(command => string.Equals(command.Name, cmdname, StringComparison.CurrentCultureIgnoreCase)))
+            {
+                if (server.CmdBlacklist.Contains(cmdname.ToLower()))
+                {
+                    await ReplyAsync("Command already blacklisted.");
+                }
+                else
+                {
+                    server.CmdBlacklist.Add(cmdname.ToLower());
+                    await ReplyAsync(
+                        "Command added to blacklist. NOTE: Server Moderators and Administrators can still use this command");
+                    ServerList.Saveserver(server);
+                }
+                return;
+            }
+
+            await ReplyAsync("No Matching Command.");
+        }
+
+        [Command("BlacklistDel")]
+        [Remarks("Remove a blacklisted command")]
+        [Summary("BlacklistDel <command-name>")]
+        public async Task BlacklistDel (string cmdname)
+        {
+            var server = ServerList.Load(Context.Guild);
+
+            if (_service.Modules.SelectMany(module => module.Commands).Any(command => string.Equals(command.Name, cmdname, StringComparison.CurrentCultureIgnoreCase)))
+            {
+                if (server.CmdBlacklist.Contains(cmdname.ToLower()))
+                {
+                            
+                    server.CmdBlacklist.Remove(cmdname.ToLower());
+                    await ReplyAsync(
+                        "Command removed from blacklist. All users will be able to use it now.");
+                    ServerList.Saveserver(server);
+                }
+                else
+                {
+                    throw new Exception("Command not blacklisted.");
+                }
+                return;
+            }
+
+            await ReplyAsync("No Matching Command.");
         }
 
         [Command("Server")]

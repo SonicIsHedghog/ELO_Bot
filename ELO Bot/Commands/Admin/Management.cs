@@ -9,80 +9,10 @@ using ELO_Bot.PreConditions;
 
 namespace ELO_Bot.Commands.Admin
 {
+    [CheckBlacklist]
     [CheckAdmin]
     public class Management : ModuleBase<SocketCommandContext>
     {
-        /*[Command("RegisterAll", RunMode = RunMode.Async)]
-        [Summary("RegisterAll <role>")]
-        [Remarks("Register All Users in the server or all users in the specified role")]
-        public async Task RegisterAll(SocketRole specifiedRole = null)
-        {
-            var server = ServerList.Load(Context.Guild);
-            var userlist = server.UserList;
-            var newusers = new List<ServerList.Server.User>();
-            IRole role = null;
-            if (server.RegisterRole != 0)
-            {
-                role = Context.Guild.GetRole(server.RegisterRole);
-            }
-            var usergroup = Context.Guild.Users;
-            if (specifiedRole != null)
-            {
-                var specifiedusers = Context.Guild.Users.Where(user => user.Roles.Contains(specifiedRole)).ToList();
-                usergroup = specifiedusers;
-            }
-            
-
-            foreach (var user in usergroup)
-            {
-                if (role != null)
-                    {
-                        try
-                        {
-                            await user.AddRoleAsync(role);
-                        }
-                        catch
-                        {
-                            //
-                        }
-                    }
-                if (userlist.Any(x => x.UserId == user.Id)) continue;
-                {
-                    try
-                    {
-                        await user.ModifyAsync(x =>
-                        {
-                            x.Nickname = $"0 ~ {user.Username}";
-                        });
-                    }
-                    catch
-                    {
-                        //
-                    }
-                    var newuser = new ServerList.Server.User
-                    {
-                        Username = user.Username,
-                        Losses = 0,
-                        UserId = user.Id,
-                        Points = 0,
-                        Wins = 0
-                    };
-                    newusers.Add(newuser);
-                    await Task.Delay(1000);
-                }
-            }
-
-            //These are split so that there is no issues between the (time consuming) user name and role modification
-            //and actually modifying the database.
-            var serv = ServerList.Load(Context.Guild);
-            foreach (var user in newusers)
-            {
-                serv.UserList.Add(user);
-            }
-            await ReplyAsync($"All users have been registered.");
-            ServerList.Saveserver(serv);
-        }*/
-
         [Command("Deluser")]
         [Summary("DelUser <@user>")]
         [Remarks("deletes a user from the server's registered list")]

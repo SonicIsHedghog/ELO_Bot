@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 
 namespace ELO_Bot.Commands.Admin
 {
+
     [RequireOwner]
     public class Owner : ModuleBase
     {

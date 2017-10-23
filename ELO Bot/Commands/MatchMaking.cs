@@ -9,6 +9,7 @@ using ELO_Bot.PreConditions;
 namespace ELO_Bot.Commands
 {
     [CheckRegistered]
+    [CheckBlacklist]
     [RequireContext(ContextType.Guild)]
     public class MatchMaking : ModuleBase
     {

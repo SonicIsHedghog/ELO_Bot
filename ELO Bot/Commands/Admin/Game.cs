@@ -9,6 +9,7 @@ using ELO_Bot.PreConditions;
 
 namespace ELO_Bot.Commands.Admin
 {
+    [CheckBlacklist]
     [CheckModerator]
     public class Game : ModuleBase
     {

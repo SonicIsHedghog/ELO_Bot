@@ -9,6 +9,7 @@ using ELO_Bot.PreConditions;
 
 namespace ELO_Bot.Commands.Admin
 {
+    [CheckBlacklist]
     [CheckAdmin]
     public class Lobby : InteractiveBase
     {

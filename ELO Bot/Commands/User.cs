@@ -7,6 +7,7 @@ using ELO_Bot.PreConditions;
 namespace ELO_Bot.Commands
 {
     [RequireTopic]
+    [CheckBlacklist]
     [RequireContext(ContextType.Guild)]
     public class User : ModuleBase
     {
@@ -241,7 +242,7 @@ namespace ELO_Bot.Commands
                 await ReplyAsync("", false, embed.Build());
             }
         }
-
+        
         [Command("ranks")]
         [Summary("ranks")]
         [Remarks("display all Ranked Roles")]

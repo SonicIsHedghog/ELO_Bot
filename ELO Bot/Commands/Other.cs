@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using ELO_Bot.PreConditions;
 using Newtonsoft.Json.Linq;
 
 namespace ELO_Bot.Commands
 {
     [RequireContext(ContextType.Guild)]
+    [CheckBlacklist]
     public class Other : ModuleBase
     {
         private readonly CommandService _service;

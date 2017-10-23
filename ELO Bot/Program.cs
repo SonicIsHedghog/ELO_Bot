@@ -224,14 +224,13 @@ namespace ELO_Bot
                         if (context.Message.Content.ToLower()
                             .StartsWith($"{Config.Load().Prefix}{command.Name} ".ToLower()))
                         {
-                            embed.AddField("COMMAND INFO", $"Name: {command.Name}\n" +
-                                                           $"Summary: {command.Summary}\n" +
+                            embed.AddField("COMMAND INFO", $"Name: `{Config.Load().Prefix}{command.Summary}`\n" +
                                                            $"Info: {command.Remarks}");
                             break;
                         }
 
-                    embed.AddField($"ERROR {result.Error.ToString().ToUpper()}", $"Command: {context.Message}\n" +
-                                                                                 $"Error: {result.ErrorReason}\n" +
+                    embed.AddField($"ERROR {result.Error.ToString().ToUpper()}", $"__Command:__ \n{context.Message}\n" +
+                                                                                 $"__Error:__ \n**{result.ErrorReason}**\n\n" +
                                                                                  $"To report this error, please type: `{Config.Load().Prefix}report <errormessage>`");
 
                     embed.Color = Color.Red;
