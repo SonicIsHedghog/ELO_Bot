@@ -231,7 +231,7 @@ namespace ELO_Bot
 
                     embed.AddField($"ERROR {result.Error.ToString().ToUpper()}", $"__Command:__ \n{context.Message}\n" +
                                                                                  $"__Error:__ \n**{result.ErrorReason}**\n\n" +
-                                                                                 $"To report this error, please type: `{Config.Load().Prefix}report <errormessage>`");
+                                                                                 $"To report this error, please type: `{Config.Load().Prefix}BugReport <errormessage>`");
 
                     embed.Color = Color.Red;
                     await context.Channel.SendMessageAsync("", false, embed.Build());

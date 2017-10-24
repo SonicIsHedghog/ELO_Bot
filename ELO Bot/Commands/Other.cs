@@ -148,8 +148,8 @@ namespace ELO_Bot.Commands
         }
 
 
-        [Command("Report")]
-        [Summary("Report <errormessage>")]
+        [Command("BugReport")]
+        [Summary("BugReport <errormessage>")]
         [Remarks("an error or issue")]
         public async Task Report([Remainder] string message = null)
         {
