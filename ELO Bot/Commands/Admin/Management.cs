@@ -218,11 +218,24 @@ namespace ELO_Bot.Commands.Admin
         {
             var server = ServerList.Load(Context.Guild);
             var embed = new EmbedBuilder();
+            if (server.Bans.Count == 0 || server.Bans == null)
+            {
+                embed.AddField("Bans", "There are no bans in the current server.");
+            }
             foreach (var user in server.Bans)
             {
-                var u = Context.Guild.GetUser(user.UserId);
+                string u;
+                try
+                {
+                    u = (Context.Guild.GetUser(user.UserId)).Mention;
+                }
+                catch
+                {
+                    u = $"[Unavailable User]:{user.UserId}";
+                }
+                
                 embed.Description +=
-                    $"{u.Mention} {Math.Round((user.Time - DateTime.UtcNow).TotalMinutes, 0)} Minutes Left\n";
+                    $"{u} {Math.Round((user.Time - DateTime.UtcNow).TotalMinutes, 0)} Minutes Left\n";
             }
             embed.Description +=
                 "\nNOTE: If a user's remaining minutes is negative, their ban will automatically be removed the next time they join the queue";
