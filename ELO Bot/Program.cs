@@ -184,8 +184,7 @@ namespace ELO_Bot
                 embed.AddField("ELO Bot",
                     $"Hi there, I am ELO Bot. Type `{Config.Load().Prefix}help` to see a list of my commands and type `{Config.Load().Prefix}register <name>` to get started");
                 embed.WithColor(Color.Blue);
-                embed.AddField("Developed By PassiveModding", "Support Server: https://discord.gg/n2Vs38n \n" +
-                                                              "Patreon: https://www.patreon.com/passivebot");
+                embed.AddField("Developed By PassiveModding", "Support Server: https://discord.gg/n2Vs38n ");
                 try
                 {
                     await guild.DefaultChannel.SendMessageAsync("", false, embed.Build());
@@ -235,17 +234,11 @@ namespace ELO_Bot
 
                     embed.Color = Color.Red;
                     await context.Channel.SendMessageAsync("", false, embed.Build());
-                    Log.Logger = new LoggerConfiguration()
-                        .WriteTo.Console()
-                        .CreateLogger();
-                    Log.Error($"{message.Content} || {message.Author}");
+                    await Logger.In3Error(context.Message.Content, context.Guild.Name, context.Channel.Name, context.User.Username);
                 }
                 else
                 {
-                    Log.Logger = new LoggerConfiguration()
-                        .WriteTo.Console()
-                        .CreateLogger();
-                    Log.Information($"{message.Content} || {message.Author}");
+                    await Logger.In3(context.Message.Content, context.Guild.Name, context.Channel.Name, context.User.Username);
                     Commands++;
                 }
 
