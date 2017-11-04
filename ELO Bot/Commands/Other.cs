@@ -153,6 +153,12 @@ namespace ELO_Bot.Commands
         [Remarks("an error or issue")]
         public async Task Report([Remainder] string message = null)
         {
+
+            if (message == null)
+            {
+                await ReplyAsync("Please supply an error message");
+                return;
+            }
             var embed = new EmbedBuilder();
 
             embed.AddField("ERROR REPORT", $"From: {Context.User.Username}\n" +
