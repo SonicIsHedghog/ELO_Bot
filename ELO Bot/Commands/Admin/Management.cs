@@ -222,6 +222,11 @@ namespace ELO_Bot.Commands.Admin
             {
                 embed.AddField("Bans", "There are no bans in the current server.");
             }
+
+            var toremove = new List<ServerList.Server.Ban>();
+
+            var desc = "";
+            
             foreach (var user in server.Bans)
             {
                 string u;
@@ -234,11 +239,63 @@ namespace ELO_Bot.Commands.Admin
                     u = $"[Unavailable User]:{user.UserId}";
                 }
                 
-                embed.Description +=
-                    $"{u} {Math.Round((user.Time - DateTime.UtcNow).TotalMinutes, 0)} Minutes Left\n";
+
+
+                if (Math.Round((user.Time - DateTime.UtcNow).TotalMinutes, 0) < 0)
+                {
+                    toremove.Add(user);
+                }
+                else
+                {
+                    desc +=
+                        $"{u} {Math.Round((user.Time - DateTime.UtcNow).TotalMinutes, 0)} Minutes Left\n";
+                }
+
+                if (desc.Length > 900)
+                {
+                    embed.AddField("Bans", $"{desc}");
+                    desc = "";
+                }
             }
-            embed.Description +=
-                "\nNOTE: If a user's remaining minutes is negative, their ban will automatically be removed the next time they join the queue";
+
+            embed.AddField("Bans", desc);
+
+            var removeddesc = "";
+            if (toremove.Count > 0)
+            {
+                foreach (var user in toremove)
+                {
+                    string u;
+                    try
+                    {
+                        u = (Context.Guild.GetUser(user.UserId)).Mention;
+                    }
+                    catch
+                    {
+                        u = $"[Unavailable User]:{user.UserId}";
+                    }
+
+                    server.Bans.Remove(user);
+
+                    removeddesc += $"{u}\n";
+
+                    if (removeddesc.Length > 900)
+                    {
+                        embed.AddField("Unbanned Users", $"{removeddesc}");
+                        removeddesc = "";
+                    }
+                }
+            }
+
+            
+            embed.AddField("Unbanned Users", removeddesc);
+
+            embed.AddField("NOTE", "Unavailable user's Bans will automatically be removed once their time expires.");
+
+            
+
+
+
             await ReplyAsync("", false, embed.Build());
         }
 

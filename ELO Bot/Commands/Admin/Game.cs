@@ -334,7 +334,7 @@ namespace ELO_Bot.Commands.Admin
                         usr.Losses++;
                         if (usr.Points < 0)
                             usr.Points = 0;
-                        embed.AddField($"{usr.Username} LOST {-points}", $"Points: **{usr.Points}**\n" +
+                        embed.AddField($"{usr.Username} LOST -{points}", $"Points: **{usr.Points}**\n" +
                                                                $"W/L: **[{usr.Wins}/{usr.Losses}]**");
                         embed.Color = Color.Red;
                     }
