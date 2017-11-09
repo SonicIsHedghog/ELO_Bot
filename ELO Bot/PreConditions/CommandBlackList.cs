@@ -20,8 +20,8 @@ namespace ELO_Bot.PreConditions
             {
                 return await Task.FromResult(PreconditionResult.FromSuccess());
             }
-            //if (own.Owner.Id == context.User.Id)
-            //    return await Task.FromResult(PreconditionResult.FromSuccess());
+            if (own.Owner.Id == context.User.Id)
+                return await Task.FromResult(PreconditionResult.FromSuccess());
 
             if (server.ModRole != 0)
                 if (((IGuildUser)context.User).RoleIds.Contains(server.ModRole))
