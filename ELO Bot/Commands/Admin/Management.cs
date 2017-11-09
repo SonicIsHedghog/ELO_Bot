@@ -258,7 +258,11 @@ namespace ELO_Bot.Commands.Admin
                 }
             }
 
-            embed.AddField("Bans", desc);
+            if (desc != "")
+            {
+                embed.AddField("Bans", desc);
+            }
+
 
             var removeddesc = "";
             if (toremove.Count > 0)
@@ -287,8 +291,11 @@ namespace ELO_Bot.Commands.Admin
                 }
             }
 
+            if (removeddesc != "")
+            {
+                embed.AddField("Unbanned Users", removeddesc);
+            }
             
-            embed.AddField("Unbanned Users", removeddesc);
 
             embed.AddField("NOTE", "Unavailable user's Bans will automatically be removed once their time expires.");
 
@@ -297,6 +304,8 @@ namespace ELO_Bot.Commands.Admin
 
 
             await ReplyAsync("", false, embed.Build());
+
+            ServerList.Saveserver(server);
         }
 
         [Command("addrank")]
