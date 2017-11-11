@@ -133,6 +133,14 @@ namespace ELO_Bot.Commands.Admin
                 return;
             }
 
+            if (newname.Length > 20)
+            {
+                embed.AddField("ERROR", "Username length must be less than 20 characters");
+                embed.WithColor(Color.Red);
+                await ReplyAsync("", false, embed.Build());
+                return;
+            }
+
             var server = ServerList.Load(Context.Guild);
             var success = false;
             foreach (var member in server.UserList)

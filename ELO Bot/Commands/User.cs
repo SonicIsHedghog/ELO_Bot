@@ -27,6 +27,14 @@ namespace ELO_Bot.Commands
                 return;
             }
 
+            if (username.Length > 20)
+            {
+                embed.AddField("ERROR", "Username Must be 20 characters or less");
+                embed.WithColor(Color.Red);
+                await ReplyAsync("", false, embed.Build());
+                return;
+            }
+
             var server = ServerList.Load(Context.Guild);
 
             if (server.UserList.Count >= 20 && !server.IsPremium)
