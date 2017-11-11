@@ -310,12 +310,12 @@ namespace ELO_Bot.Commands.Admin
                         }
                         catch (Exception e)
                         {
-                            Console.WriteLine(e);
+                            //Console.WriteLine(e);
                         }
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine(e);
+                        //Console.WriteLine(e);
                     }
 
 

@@ -236,7 +236,7 @@ namespace ELO_Bot.Commands.Admin
                 }
                 catch
                 {
-                    u = $"[Unavailable User]:{user.UserId}";
+                    u = $"Unavailable User:[{user.UserId}]";
                 }
                 
 
@@ -248,7 +248,7 @@ namespace ELO_Bot.Commands.Admin
                 else
                 {
                     desc +=
-                        $"{u} {Math.Round((user.Time - DateTime.UtcNow).TotalMinutes, 0)} Minutes Left\n";
+                        $"{u} `{Math.Round((user.Time - DateTime.UtcNow).TotalMinutes, 0)} Minutes Left`\n";
                 }
 
                 if (desc.Length > 900)

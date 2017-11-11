@@ -242,7 +242,7 @@ namespace ELO_Bot
                     Commands++;
                 }
 
-                if (Commands % 50 == 0)
+                if (Commands % 1000 == 0)
                 {
                     var backupfile = Path.Combine(AppContext.BaseDirectory,
                         $"setup/backups/{DateTime.UtcNow:dd-MM-yy HH.mm.ss}.txt");
