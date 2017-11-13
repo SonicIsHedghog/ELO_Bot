@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Authentication.ExtendedProtection;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
@@ -1085,14 +1086,44 @@ namespace ELO_Bot.Commands
                 }
                 var lobbychannel = await Context.Client.GetChannelAsync(lobby.ChannelId);
 
+                var cap1 = $"[{lobby.T1Captain}]";
+                var cap2 = $"[{lobby.T2Captain}]";
 
-                var embed = new EmbedBuilder {Title = "Game Has Started"};
+                try
+                {
+                    cap1 = Context.Guild.GetUserAsync(lobby.T1Captain).Result.Mention;
+                }
+                catch
+                {
+                    //
+                }
+
+                try
+                {
+                    cap2 = Context.Guild.GetUserAsync(lobby.T2Captain).Result.Mention;
+                }
+                catch
+                {
+                    //
+                }
+
+
+
+                var embed = new EmbedBuilder
+                {
+                    Title = "Game Has Started",
+                    Url = "https://discord.gg/n2Vs38n"
+                };
                 embed.AddField("Info", "**Lobby:** \n" +
                                        $"{lobbychannel.Name} - Match #{lobby.Games}\n" +
                                        "**Selected Host:**\n" +
                                        $"{gamehost.Mention}");
+                embed.AddField("Team1", $"{cap1}\n" +
+                                        $"{string.Join(" ", team1.Select(x => x.Mention))}");
+                embed.AddField("Team2", $"{cap2}\n" +
+                                        $"{string.Join(" ", team2.Select(x => x.Mention))}");
 
-                embed.WithFooter(x => { x.Text = $"Gamecode: =game {lobbychannel.Name} {lobby.Games}"; });
+                embed.WithFooter(x => { x.Text = $"{DateTime.UtcNow} || Game: {lobbychannel.Name} {lobby.Games}"; });
 
                 if (randommap != null)
                     try
@@ -1103,6 +1134,8 @@ namespace ELO_Bot.Commands
                     {
                         //
                     }
+
+                embed.Color = Color.Blue;
 
 
                 var announcement = "**__Game Has Started__**\n" +
@@ -1119,11 +1152,26 @@ namespace ELO_Bot.Commands
 
                 try
                 {
-                    if (channel != null) await channel.SendMessageAsync(announcement);
+                    if (channel != null)
+                    try
+                    {
+                        await channel.SendMessageAsync("", false, embed.Build());
+                    }
+                    catch
+                    {
+                        await channel.SendMessageAsync(announcement);
+                    }
                 }
                 catch
                 {
-                    await Context.Channel.SendMessageAsync(announcement);
+                    try
+                    {
+                        await Context.Channel.SendMessageAsync("", false, embed.Build());
+                    }
+                    catch
+                    {
+                        await Context.Channel.SendMessageAsync(announcement);
+                    }
                 }
             }
             catch (Exception e)
