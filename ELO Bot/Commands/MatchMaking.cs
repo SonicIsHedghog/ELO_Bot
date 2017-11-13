@@ -922,6 +922,7 @@ namespace ELO_Bot.Commands
                     return;
                 }
 
+                // list of user profiles based on those in the current queue.
                 var userlist = currentqueue.Users.Select(user => server.UserList.FirstOrDefault(x => x.UserId == user))
                     .ToList();
 

@@ -134,9 +134,9 @@ namespace ELO_Bot
             {
                 public string Username { get; set; }
                 public ulong UserId { get; set; }
-                public int Points { get; set; }
-                public int Wins { get; set; }
-                public int Losses { get; set; }
+                public int Points { get; set; } = 0;
+                public int Wins { get; set; } = 0;
+                public int Losses { get; set; } = 0;
             }
         }
     }
