@@ -3,16 +3,19 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using ELO_Bot.PreConditions;
+using ELO_Bot.Preconditions;
 
 namespace ELO_Bot.Commands
 {
-    [RequireTopic]
-    [CheckBlacklist]
-    [RequireContext(ContextType.Guild)]
     public class User : ModuleBase
     {
-        [Ratelimit(3, 30d, Measure.Seconds)]
+        /// <summary>
+        /// sign up for ELO Bot
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
         [Command("Register")]
+        [Ratelimit(3, 30d, Measure.Seconds)]
         [Summary("Register <username>")]
         [Remarks("registers the user in the server")]
         public async Task Register([Remainder] string username = null)
@@ -35,7 +38,7 @@ namespace ELO_Bot.Commands
                 return;
             }
 
-            var server = ServerList.Load(Context.Guild);
+            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
 
             if (server.UserList.Count >= 20 && !server.IsPremium)
             {
@@ -102,7 +105,6 @@ namespace ELO_Bot.Commands
             };
 
             server.UserList.Add(user);
-            ServerList.Saveserver(server);
             embed.AddField($"{Context.User.Username} registered as {username}", $"{server.Registermessage}");
             embed.WithColor(Color.Blue);
             try
@@ -133,14 +135,18 @@ namespace ELO_Bot.Commands
             await ReplyAsync("", false, embed.Build());
         }
 
+        /// <summary>
+        /// get a user's profile and information
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         [Command("GetUser")]
         [Summary("GetUser <@user>")]
         [Remarks("checks stats about a user")]
-        [CheckRegistered]
         public async Task GetUser(IUser user)
         {
             var embed = new EmbedBuilder();
-            var server = ServerList.Load(Context.Guild);
+            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
             var userlist = server.UserList;
             var orderlist = server.UserList.OrderBy(x => x.Points).Reverse().ToList();
             foreach (var usr in userlist)
@@ -157,14 +163,18 @@ namespace ELO_Bot.Commands
             await ReplyAsync("User Unavailable");
         }
 
+        /// <summary>
+        /// list users in order of hihest points
+        /// most wins
+        /// or most losses
+        /// </summary>
         [Command("Leaderboard")]
         [Summary("Leaderboard <wins, losses, points>")]
         [Remarks("Displays Rank Leaderboard (Top 20 )")]
-        [CheckRegistered]
         public async Task LeaderBoard(string arg = null)
         {
             var embed = new EmbedBuilder();
-            var server = ServerList.Load(Context.Guild);
+            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
             var desc = "";
             try
             {
@@ -250,15 +260,18 @@ namespace ELO_Bot.Commands
                 await ReplyAsync("", false, embed.Build());
             }
         }
-        
+
+        /// <summary>
+        /// display ranks for the current server
+        /// </summary>
+        /// <returns></returns>
         [Command("ranks")]
         [Summary("ranks")]
         [Remarks("display all Ranked Roles")]
-        [CheckRegistered]
         public async Task List()
         {
             var embed = new EmbedBuilder();
-            var server = ServerList.Load(Context.Guild);
+            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
             var orderedlist = server.Ranks.OrderBy(x => x.Points).Reverse();
             var desc = "Points - Role (PPW/PPL)\n";
             foreach (var lev in orderedlist)
@@ -273,8 +286,8 @@ namespace ELO_Bot.Commands
                     rolename = $"ERR: {lev.RoleId}";
                 }
 
-                var pwin = lev.Winmodifier == 0 ? server.Winamount : lev.Winmodifier;
-                var ploss = lev.Lossmodifier == 0 ? server.Lossamount : lev.Lossmodifier;
+                var pwin = lev.WinModifier == 0 ? server.Winamount : lev.WinModifier;
+                var ploss = lev.LossModifier == 0 ? server.Lossamount : lev.LossModifier;
 
                 desc += $"`{lev.Points}` - {rolename} (+{pwin}/-{ploss})\n";
             }
@@ -305,6 +318,10 @@ namespace ELO_Bot.Commands
             await ReplyAsync("", false, embed.Build());
         }
 
+        /// <summary>
+        /// generate an invite for the bot to join your own server
+        /// </summary>
+        /// <returns></returns>
         [Command("Invite")]
         [Summary("Invite")]
         [Remarks("Invite the Bot")]

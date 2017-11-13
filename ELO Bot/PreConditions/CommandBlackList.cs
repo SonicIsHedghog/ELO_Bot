@@ -3,9 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using Discord.WebSocket;
 
-namespace ELO_Bot.PreConditions
+namespace ELO_Bot.Preconditions
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public sealed class CheckBlacklist : PreconditionAttribute
@@ -13,30 +12,26 @@ namespace ELO_Bot.PreConditions
         public override async Task<PreconditionResult> CheckPermissions(ICommandContext context, CommandInfo command,
             IServiceProvider prov)
         {
-            var server = ServerList.Load(context.Guild);
+            var server = ServerList.Serverlist.First(x => x.ServerId == context.Guild.Id);
             var own = await context.Client.GetApplicationInfoAsync();
 
             if (command.Name.ToLower().Contains("blacklist"))
-            {
                 return await Task.FromResult(PreconditionResult.FromSuccess());
-            }
             if (own.Owner.Id == context.User.Id)
                 return await Task.FromResult(PreconditionResult.FromSuccess());
 
             if (server.ModRole != 0)
-                if (((IGuildUser)context.User).RoleIds.Contains(server.ModRole))
+                if (((IGuildUser) context.User).RoleIds.Contains(server.ModRole))
                     return await Task.FromResult(PreconditionResult.FromSuccess());
 
             if (server.AdminRole != 0)
-                if (((IGuildUser)context.User).RoleIds.Contains(server.AdminRole))
+                if (((IGuildUser) context.User).RoleIds.Contains(server.AdminRole))
                     return await Task.FromResult(PreconditionResult.FromSuccess());
 
             if (server.CmdBlacklist.Contains(command.Name.ToLower()))
-            {
                 return await Task.FromResult(
                     PreconditionResult.FromError(
                         $"This is a Blacklisted Command."));
-            }
 
 
             return await Task.FromResult(PreconditionResult.FromSuccess());

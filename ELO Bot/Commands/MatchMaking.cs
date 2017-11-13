@@ -4,15 +4,25 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using ELO_Bot.Preconditions;
 using ELO_Bot.PreConditions;
 
 namespace ELO_Bot.Commands
 {
+    /// <summary>
+    /// ensure users are registered before using these commands
+    /// blocks blacklsted commands from being run.
+    /// these commands can only be run within a server.
+    /// </summary>
     [CheckRegistered]
     [CheckBlacklist]
     [RequireContext(ContextType.Guild)]
     public class MatchMaking : ModuleBase
     {
+        /// <summary>
+        /// dusplays the current queue.
+        /// </summary>
+        /// <returns></returns>
         [Ratelimit(1, 10d, Measure.Seconds)]
         [Command("Queue")]
         [Alias("q")]
@@ -22,7 +32,7 @@ namespace ELO_Bot.Commands
         {
             try
             {
-                var server = ServerList.Load(Context.Guild);
+                var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
                 var embed = new EmbedBuilder();
                 try
                 {
@@ -115,7 +125,10 @@ namespace ELO_Bot.Commands
             }
         }
 
-
+        /// <summary>
+        /// displays information about the current lobby
+        /// </summary>
+        /// <returns></returns>
         [Ratelimit(1, 10d, Measure.Seconds)]
         [Command("Lobby")]
         [Summary("Lobby")]
@@ -125,7 +138,7 @@ namespace ELO_Bot.Commands
             try
             {
                 //creating general info about the current lobby.
-                var server = ServerList.Load(Context.Guild);
+                var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
                 var embed = new EmbedBuilder();
                 try
                 {
@@ -163,7 +176,12 @@ namespace ELO_Bot.Commands
             }
         }
 
-
+        /// <summary>
+        /// team captain command
+        /// Select a player from the queue to join your team.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         [Ratelimit(1, 5d, Measure.Seconds)]
         [Command("pick")]
         [Summary("pick <@user>")]
@@ -173,7 +191,7 @@ namespace ELO_Bot.Commands
         {
             try
             {
-                var server = ServerList.Load(Context.Guild);
+                var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
                 var embed = new EmbedBuilder();
 
                 ServerList.Server.Q lobby;
@@ -300,7 +318,7 @@ namespace ELO_Bot.Commands
                             $"Players Left: {users}");
                         await ReplyAsync("", false, embed.Build());
                         lobby.IsPickingTeams = true;
-                        ServerList.Saveserver(server);
+
 
                         //if teams have both been filled finish the queue
                         if (lobby.Users.Count == 0 || lobby.Users == null)
@@ -383,7 +401,6 @@ namespace ELO_Bot.Commands
 
                         await ReplyAsync("", false, embed.Build());
                         lobby.IsPickingTeams = true;
-                        ServerList.Saveserver(server);
 
                         if (lobby.Users.Count == 0 || lobby.Users == null)
                             await Teams(server, lobby.Team1, lobby.Team2);
@@ -409,7 +426,13 @@ namespace ELO_Bot.Commands
             }
         }
 
-
+        /// <summary>
+        /// join the current queue
+        /// Command blocked if you are 
+        /// 1. Banned
+        /// 2. Already in another queue and mutliqueueing is disabled.
+        /// </summary>
+        /// <returns></returns>
         [Ratelimit(1, 10d, Measure.Seconds)]
         [Command("Join")]
         [Summary("Join")]
@@ -419,7 +442,7 @@ namespace ELO_Bot.Commands
         {
             try
             {
-                var server = ServerList.Load(Context.Guild);
+                var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
                 var embed = new EmbedBuilder();
                 ServerList.Server.Q lobby;
                 try
@@ -457,6 +480,14 @@ namespace ELO_Bot.Commands
                     }
                 }
 
+                if (server.BlockMultiQueueing)
+                {
+                    if (server.Queue.Any(x => x.Users.Contains(Context.User.Id)))
+                    {
+                        throw new Exception("MultiQueueing is Disabled for this server");
+                    }
+                }
+
                 //users can only join the queue when teams are not being picked.
                 if (lobby.IsPickingTeams)
                 {
@@ -476,7 +507,6 @@ namespace ELO_Bot.Commands
                         lobby.Users.Add(Context.User.Id);
                         embed.AddField("Success", $"Added to the queue **[{lobby.Users.Count}/{lobby.UserLimit}]**");
                         await ReplyAsync("", false, embed.Build());
-                        ServerList.Saveserver(server);
                     }
                     else
                     {
@@ -488,7 +518,6 @@ namespace ELO_Bot.Commands
                     {
                         //if lobby is full increment the game count by 1.
                         lobby.Games++;
-                        ServerList.Saveserver(server);
                         await FullQueue(server);
                     }
                 }
@@ -500,6 +529,11 @@ namespace ELO_Bot.Commands
             }
         }
 
+        /// <summary>
+        /// replaces a user in the current queue (for use if they are afk etc.)
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         [Ratelimit(1, 10d, Measure.Seconds)]
         [Command("subfor")]
         [Summary("subfor <@user>")]
@@ -508,7 +542,7 @@ namespace ELO_Bot.Commands
         {
             try
             {
-                var server = ServerList.Load(Context.Guild);
+                var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
                 var embed = new EmbedBuilder();
                 var queue = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
                 //get the current lobbies queue.
@@ -552,7 +586,6 @@ namespace ELO_Bot.Commands
                     }
 
 
-                    ServerList.Saveserver(server);
                     await ReplyAsync("", false, embed.Build());
                 }
                 else
@@ -567,7 +600,11 @@ namespace ELO_Bot.Commands
             }
         }
 
-
+        /// <summary>
+        /// replace a user in the most recent game for the current lobby.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         [Ratelimit(1, 10d, Measure.Seconds)]
         [Command("replace")]
         [Summary("replace <@user>")]
@@ -576,7 +613,7 @@ namespace ELO_Bot.Commands
         {
             try
             {
-                var server = ServerList.Load(Context.Guild);
+                var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
                 var queue = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
 
                 if (queue == null)
@@ -646,8 +683,6 @@ namespace ELO_Bot.Commands
                     {
                         await ReplyAsync(announcement);
                     }
-
-                    ServerList.Saveserver(server);
                 }
                 else
                 {
@@ -661,7 +696,10 @@ namespace ELO_Bot.Commands
             }
         }
 
-
+        /// <summary>
+        /// leave the current queue
+        /// </summary>
+        /// <returns></returns>
         [Ratelimit(1, 10d, Measure.Seconds)]
         [Command("Leave")]
         [Alias("l")]
@@ -671,7 +709,7 @@ namespace ELO_Bot.Commands
         {
             try
             {
-                var server = ServerList.Load(Context.Guild);
+                var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
                 var embed = new EmbedBuilder();
                 try
                 {
@@ -696,7 +734,6 @@ namespace ELO_Bot.Commands
                     embed.AddField("Success", "You have been removed from the queue.\n" +
                                               $"**[{queue.Users.Count}/{queue.UserLimit}]**");
 
-                    ServerList.Saveserver(server);
                     await ReplyAsync("", false, embed.Build());
                 }
                 catch
@@ -711,7 +748,10 @@ namespace ELO_Bot.Commands
             }
         }
 
-
+        /// <summary>
+        /// select a random map from the maps list
+        /// </summary>
+        /// <returns></returns>
         [Command("Map")]
         [Summary("Map")]
         [Remarks("select a random map")]
@@ -720,7 +760,7 @@ namespace ELO_Bot.Commands
             try
             {
                 var embed = new EmbedBuilder();
-                var server = ServerList.Load(Context.Guild);
+                var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
                 //load the current server
                 var lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
 
@@ -749,6 +789,10 @@ namespace ELO_Bot.Commands
             }
         }
 
+        /// <summary>
+        /// list all maps for the current lobby
+        /// </summary>
+        /// <returns></returns>
         [Ratelimit(1, 10d, Measure.Seconds)]
         [Command("Maps")]
         [Summary("Maps")]
@@ -758,7 +802,7 @@ namespace ELO_Bot.Commands
             try
             {
                 var embed = new EmbedBuilder();
-                var server = ServerList.Load(Context.Guild);
+                var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
                 //load the current server
                 var lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
                 //try to output the current lobby
@@ -781,6 +825,13 @@ namespace ELO_Bot.Commands
             }
         }
 
+        /// <summary>
+        /// Announce the currrent game.
+        /// </summary>
+        /// <param name="server"></param>
+        /// <param name="team1"></param>
+        /// <param name="team2"></param>
+        /// <returns></returns>
         public async Task Teams(ServerList.Server server, List<ulong> team1, List<ulong> team2)
         {
             try
@@ -846,17 +897,19 @@ namespace ELO_Bot.Commands
                 server.Gamelist.Add(newgame);
 
                 await Announce(currentqueue, host, currentqueue.ChannelGametype, team1Userlist, team2Userlist);
-
-
-                ServerList.Saveserver(server);
             }
             catch (Exception e)
             {
-                await ReplyAsync("Contact Passive with the following message:\n" +
-                                 $"{e}");
+                throw new Exception(e.ToString());
             }
         }
 
+        /// <summary>
+        /// if a queue is full, check if captains and go into picking mode
+        /// otherwise, auto assign teams.
+        /// </summary>
+        /// <param name="server"></param>
+        /// <returns></returns>
         public async Task FullQueue(ServerList.Server server)
         {
             try
@@ -926,7 +979,6 @@ namespace ELO_Bot.Commands
                     currentqueue.Team1 = new List<ulong>();
                     currentqueue.Team2 = new List<ulong>();
                     currentqueue.IsPickingTeams = true;
-                    ServerList.Saveserver(server);
                     return;
                 }
 
@@ -969,15 +1021,17 @@ namespace ELO_Bot.Commands
                     currentqueue.ChannelGametype = "Unknown";
                 embed.AddField("Match Info", $"{currentqueue.ChannelGametype}");
 
+
+                string randmap;
                 try
                 {
                     var r = new Random().Next(0, currentqueue.Maps.Count);
-                    var randmap = currentqueue.Maps[r];
+                    randmap = currentqueue.Maps[r];
                     embed.AddField("Random Map", $"{randmap}");
                 }
                 catch
                 {
-                    //
+                    randmap = null;
                 }
 
 
@@ -992,10 +1046,9 @@ namespace ELO_Bot.Commands
                 };
                 server.Gamelist.Add(newgame);
 
-                ServerList.Saveserver(server);
                 var random = new Random().Next(0, sortedlist.Count);
                 var gamehost = await Context.Guild.GetUserAsync(sortedlist[random].UserId);
-                await Announce(currentqueue, gamehost, currentqueue.ChannelGametype, t1Users, t2Users);
+                await Announce(currentqueue, gamehost, currentqueue.ChannelGametype, t1Users, t2Users, randmap);
             }
             catch (Exception e)
             {
@@ -1004,13 +1057,23 @@ namespace ELO_Bot.Commands
             }
         }
 
+        /// <summary>
+        /// announce the current game!
+        /// </summary>
+        /// <param name="lobby"></param>
+        /// <param name="gamehost"></param>
+        /// <param name="matchdescription"></param>
+        /// <param name="team1"></param>
+        /// <param name="team2"></param>
+        /// <param name="randommap"></param>
+        /// <returns></returns>
         public async Task Announce(ServerList.Server.Q lobby, IGuildUser gamehost, string matchdescription,
             List<IUser> team1,
-            List<IUser> team2)
+            List<IUser> team2, string randommap = null)
         {
             try
             {
-                var server = ServerList.Load(Context.Guild);
+                var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
                 IMessageChannel channel;
                 try
                 {
@@ -1020,8 +1083,28 @@ namespace ELO_Bot.Commands
                 {
                     channel = Context.Channel;
                 }
-
                 var lobbychannel = await Context.Client.GetChannelAsync(lobby.ChannelId);
+
+
+                var embed = new EmbedBuilder {Title = "Game Has Started"};
+                embed.AddField("Info", "**Lobby:** \n" +
+                                       $"{lobbychannel.Name} - Match #{lobby.Games}\n" +
+                                       "**Selected Host:**\n" +
+                                       $"{gamehost.Mention}");
+
+                embed.WithFooter(x => { x.Text = $"Gamecode: =game {lobbychannel.Name} {lobby.Games}"; });
+
+                if (randommap != null)
+                    try
+                    {
+                        embed.AddField("Random Map", $"{randommap}");
+                    }
+                    catch
+                    {
+                        //
+                    }
+
+
                 var announcement = "**__Game Has Started__**\n" +
                                    "**Lobby:** \n" +
                                    $"{lobbychannel.Name} - Match #{lobby.Games}\n" +
@@ -1045,8 +1128,7 @@ namespace ELO_Bot.Commands
             }
             catch (Exception e)
             {
-                await ReplyAsync("Contact Passive with the following message:\n" +
-                                 $"{e}");
+                throw new Exception(e.ToString());
             }
         }
     }

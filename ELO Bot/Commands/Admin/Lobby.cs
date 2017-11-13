@@ -5,20 +5,34 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Addons.Interactive;
 using Discord.Commands;
-using ELO_Bot.PreConditions;
+using ELO_Bot.Preconditions;
 
 namespace ELO_Bot.Commands.Admin
 {
+    /// <summary>
+    /// checks ensure that blacklisted commands are not run
+    /// and that these commands are only used by an admin
+    /// </summary>
     [CheckBlacklist]
     [CheckAdmin]
     public class Lobby : InteractiveBase
     {
+
+        /// <summary>
+        /// creates a lobby
+        /// requires the user to provide the following:
+        /// Users Per Game
+        /// If teams are automatically chosen or chosen by team captains
+        /// Lobby Description
+        /// </summary>
+        /// <param name="lolsdvdv">ignored text, previously used in a different context</param>
+        /// <returns></returns>
         [Command("Createlobby", RunMode = RunMode.Async)]
         [Summary("Createlobby")]
         [Remarks("Initialise a lobby in the current channel")]
         public async Task Createlobby([Remainder] string lolsdvdv = null)
         {
-            var server = ServerList.Load(Context.Guild);
+            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
 
             var embed = new EmbedBuilder();
 
@@ -46,7 +60,7 @@ namespace ELO_Bot.Commands.Admin
                             var n3 = await NextMessageAsync(timeout: TimeSpan.FromMinutes(1d));
 
 
-                            var ser = ServerList.Load(Context.Guild);
+                            var ser = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
                             ser.Queue.Add(new ServerList.Server.Q
                             {
                                 ChannelId = Context.Channel.Id,
@@ -56,7 +70,6 @@ namespace ELO_Bot.Commands.Admin
                                 Captains = captains
                             });
 
-                            ServerList.Saveserver(ser);
 
                             embed.AddField("LOBBY CREATED", $"**Lobby Name:** \n{Context.Channel.Name}\n" +
                                                             $"**PlayerLimit:** \n{i}\n" +
@@ -80,13 +93,16 @@ namespace ELO_Bot.Commands.Admin
             }
         }
 
-
+        /// <summary>
+        /// removes the current channel from being used as a lobby if applicable
+        /// </summary>
+        /// <returns></returns>
         [Command("RemoveLobby")]
         [Summary("RemoveLobby")]
         [Remarks("Remove A Lobby")]
         public async Task ClearLobby()
         {
-            var server = ServerList.Load(Context.Guild);
+            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
             var q = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
             server.Queue.Remove(q);
 
@@ -95,18 +111,20 @@ namespace ELO_Bot.Commands.Admin
                 if (server.Gamelist.Contains(game))
                     server.Gamelist.Remove(game);
 
-            ServerList.Saveserver(server);
             await ReplyAsync($"{Context.Channel.Name} is no longer a lobby!\n" +
                              "Previous games that took place in this lobby have been cleared from history.");
         }
 
-
-        [Command("Clear")]
-        [Summary("Clear")]
+        /// <summary>
+        /// removes all players form the current queue
+        /// </summary>
+        /// <returns></returns>
+        [Command("ClearQueue")]
+        [Summary("ClearQueue")]
         [Remarks("Clear All Players from The Queue")]
         public async Task ClearQueue()
         {
-            var server = ServerList.Load(Context.Guild);
+            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
             var q = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
 
             if (q == null)
@@ -122,17 +140,21 @@ namespace ELO_Bot.Commands.Admin
             q.T1Captain = 0;
             q.T2Captain = 0;
 
-            ServerList.Saveserver(server);
             await ReplyAsync($"{Context.Channel.Name}'s queue has been cleared!");
         }
 
+        /// <summary>
+        /// adds a list of maps to the current lobby
+        /// </summary>
+        /// <param name="mapName">list of maps ie. map1 map2 map3...</param>
+        /// <returns></returns>
         [Command("AddMap")]
         [Summary("AddMap <Map_0> <Map_1>")]
         [Remarks("Add A Map")]
         public async Task AddMap(params string[] mapName)
         {
             var embed = new EmbedBuilder();
-            var server = ServerList.Load(Context.Guild);
+            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
             var lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
             if (lobby == null)
             {
@@ -152,15 +174,19 @@ namespace ELO_Bot.Commands.Admin
                 }
 
             await ReplyAsync("", false, embed.Build());
-            ServerList.Saveserver(server);
         }
 
+        /// <summary>
+        /// remove a map from the maps list
+        /// </summary>
+        /// <param name="mapName">the name of the map you want to delete</param>
+        /// <returns></returns>
         [Command("DelMap")]
         [Summary("DelMap <MapName>")]
         [Remarks("Delete A Map")]
         public async Task DeleteMap(string mapName)
         {
-            var server = ServerList.Load(Context.Guild);
+            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
             var lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
 
             if (lobby == null)
@@ -173,7 +199,6 @@ namespace ELO_Bot.Commands.Admin
             {
                 lobby.Maps.Remove(mapName);
                 await ReplyAsync($"Map Removed {mapName}");
-                ServerList.Saveserver(server);
             }
             else
             {
@@ -181,13 +206,18 @@ namespace ELO_Bot.Commands.Admin
             }
         }
 
+        /// <summary>
+        /// rather than adding maps, set the entire list of maps for the current channel
+        /// </summary>
+        /// <param name="mapName">list of maps ie. map1 map2 map3...</param>
+        /// <returns></returns>
         [Command("SetMaps")]
         [Summary("SetMaps <Map_0> <Map_1>")]
         [Remarks("Set all maps for the current lobby")]
         public async Task SetMaps(params string[] mapName)
         {
             var embed = new EmbedBuilder();
-            var server = ServerList.Load(Context.Guild);
+            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
             var lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
             if (lobby == null)
             {
@@ -203,15 +233,18 @@ namespace ELO_Bot.Commands.Admin
             lobby.Maps = mapName.ToList();
 
             await ReplyAsync("", false, embed.Build());
-            ServerList.Saveserver(server);
         }
 
+        /// <summary>
+        /// clears all maps for the current lobby
+        /// </summary>
+        /// <returns></returns>
         [Command("ClearMaps")]
         [Summary("ClearMaps")]
         [Remarks("Clear all maps for the current lobby")]
         public async Task ClearMap()
         {
-            var server = ServerList.Load(Context.Guild);
+            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
             var lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
 
             if (lobby == null)
@@ -221,7 +254,6 @@ namespace ELO_Bot.Commands.Admin
             }
 
             lobby.Maps = new List<string>();
-            ServerList.Saveserver(server);
             await ReplyAsync("Maps Cleared.");
         }
     }

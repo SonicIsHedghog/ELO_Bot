@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Discord;
 using Newtonsoft.Json;
 
 namespace ELO_Bot
@@ -10,9 +9,9 @@ namespace ELO_Bot
     {
         [JsonIgnore] public static string EloFile = Path.Combine(AppContext.BaseDirectory, "setup/serverlist.json");
 
-        public List<Server> Serverlist { get; set; }
+        public static List<Server> Serverlist = new List<Server>();
 
-        public static Server Load(IGuild guild)
+        /*public static Server Load(IGuild guild)
         {
             if (!File.Exists(EloFile))
                 File.Create(EloFile).Dispose();
@@ -53,7 +52,7 @@ namespace ELO_Bot
             file.Serverlist.Add(serverconfig);
             var output = JsonConvert.SerializeObject(file, Formatting.Indented);
             File.WriteAllText(EloFile, output);
-        }
+        }*/
 
         public class Server
         {
@@ -72,6 +71,7 @@ namespace ELO_Bot
             public int Lossamount { get; set; } = 5;
             public bool Autoremove { get; set; } = true;
             public List<string> CmdBlacklist { get; set; } = new List<string>();
+            public bool BlockMultiQueueing { get; set; } = false;
 
             public List<Q> Queue { get; set; } = new List<Q>();
             public List<PreviouMatches> Gamelist { get; set; } = new List<PreviouMatches>();
@@ -109,6 +109,11 @@ namespace ELO_Bot
                 public ulong LobbyId { get; set; }
                 public List<ulong> Team1 { get; set; } = new List<ulong>();
                 public List<ulong> Team2 { get; set; } = new List<ulong>();
+
+                public bool? Result { get; set; } = null;
+                // result by default is null,
+                //true represents team1
+                //false represents team2
             }
 
 
@@ -116,10 +121,10 @@ namespace ELO_Bot
             {
                 public ulong RoleId { get; set; }
                 public int Points { get; set; }
-                public int Winmodifier { get; set; } = 0;
+                public int WinModifier { get; set; } = 0;
 
-                public int Lossmodifier { get; set; } = 0;
-                //Winmodifier and loss modifier
+                public int LossModifier { get; set; } = 0;
+                //WinModifier and loss modifier
                 //check if zero. If not, make adjustments to score
                 //based on this per rank rather than per server.
             }

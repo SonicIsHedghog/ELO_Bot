@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using ELO_Bot.PreConditions;
+using ELO_Bot.Preconditions;
 using Newtonsoft.Json.Linq;
 
 namespace ELO_Bot.Commands
@@ -21,6 +21,11 @@ namespace ELO_Bot.Commands
             _service = service;
         }
 
+        /// <summary>
+        /// lists all administrator commands
+        /// </summary>
+        /// <param name="modulearg"></param>
+        /// <returns></returns>
         [Command("adminhelp")]
         [Summary("adminhelp")]
         [Remarks("adminall help commands")]
@@ -53,6 +58,11 @@ namespace ELO_Bot.Commands
             await ReplyAsync("", false, embed.Build());
         }
 
+        /// <summary>
+        /// lists all regular commands
+        /// </summary>
+        /// <param name="modulearg"></param>
+        /// <returns></returns>
         [Command("help")]
         [Summary("help")]
         [Remarks("all help commands")]
@@ -85,6 +95,10 @@ namespace ELO_Bot.Commands
             await ReplyAsync("", false, embed.Build());
         }
 
+        /// <summary>
+        /// information about the bot on github as well as other stuff about usercounts etc.
+        /// </summary>
+        /// <returns></returns>
         [Command("Info")]
         [Summary("Info")]
         [Remarks("Bot Info and Stats")]
@@ -137,8 +151,7 @@ namespace ELO_Bot.Commands
                     true);
             }
             embed.AddField(":space_invader:",
-                $"Commands Ran: {Program.Commands}\n" +
-                $"Messages Received: {Program.Messages}", true);
+                $"Commands Ran: {CommandHandler.Commands}", true);
             embed.AddField(":hammer_pick:",
                 $"Heap Size: {Math.Round(GC.GetTotalMemory(true) / (1024.0 * 1024.0), 2)} MB", true);
             embed.AddField(":beginner:", "Written by: [PassiveModding](https://github.com/PassiveModding)\n" +
@@ -147,13 +160,16 @@ namespace ELO_Bot.Commands
             await ReplyAsync("", embed: embed.Build());
         }
 
-
+        /// <summary>
+        /// report an issue directly to the bot owner
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
         [Command("BugReport")]
         [Summary("BugReport <errormessage>")]
         [Remarks("an error or issue")]
         public async Task Report([Remainder] string message = null)
         {
-
             if (message == null)
             {
                 await ReplyAsync("Please supply an error message");
@@ -165,7 +181,7 @@ namespace ELO_Bot.Commands
                                            $"Server: {Context.Guild.Name}\n" +
                                            $"Channel: {Context.Channel.Name}\n" +
                                            $"Invite: {((SocketGuildChannel) Context.Channel).CreateInviteAsync(0).Result}\n" +
-                                           $"ERROR MESSAGE:\n" +
+                                           "ERROR MESSAGE:\n" +
                                            $"{message}");
 
             //var m = await Context.Channel.GetMessagesAsync(10).Flatten();

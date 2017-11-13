@@ -3,14 +3,23 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using ELO_Bot.PreConditions;
+using ELO_Bot.Preconditions;
 
 namespace ELO_Bot.Commands.Admin
 {
+    /// <summary>
+    /// makes sure that only admins can run the following commands.
+    /// </summary>
     [CheckBlacklist]
     [CheckAdmin]
     public class Point : ModuleBase
     {
+        /// <summary>
+        /// adds the given points to the specified users.
+        /// </summary>
+        /// <param name="points">points to add</param>
+        /// <param name="userlist">users ie. @user1 @user3 @user3....</param>
+        /// <returns></returns>
         [Command("AddPoints")]
         [Summary("AddPoints <points> <users>")]
         [Remarks("add points to the specified users")]
@@ -25,7 +34,7 @@ namespace ELO_Bot.Commands.Admin
             }
             else
             {
-                var server = ServerList.Load(Context.Guild);
+                var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
                 foreach (var user in userlist)
                 {
                     var success = false;
@@ -57,12 +66,17 @@ namespace ELO_Bot.Commands.Admin
                         embed.AddField($"{user.Username} MODIFIED", $"Added: +{points}\n" +
                                                                     $"Current Points: {userval}");
                 }
-                ServerList.Saveserver(server);
                 embed.Color = Color.Green;
                 await ReplyAsync("", false, embed.Build());
             }
         }
 
+        /// <summary>
+        /// remove given points from the specified users.
+        /// </summary>
+        /// <param name="points">points to remove</param>
+        /// <param name="userlist">users ie. @user1 @user3 @user3....</param>
+        /// <returns></returns>
         [Command("DelPoints")]
         [Summary("DelPoints <points> <users>")]
         [Remarks("remove points from the specified users")]
@@ -72,7 +86,7 @@ namespace ELO_Bot.Commands.Admin
 
             if (points <= 0)
                 points = Math.Abs(points);
-            var server = ServerList.Load(Context.Guild);
+            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
             foreach (var user in userlist)
             {
                 var success = false;
@@ -105,11 +119,16 @@ namespace ELO_Bot.Commands.Admin
                     embed.AddField($"{user.Username} MODIFIED", $"Removed: -{points}\n" +
                                                                 $"Current Points: {userval}");
             }
-            ServerList.Saveserver(server);
             embed.Color = Color.Green;
             await ReplyAsync("", false, embed.Build());
         }
 
+        /// <summary>
+        /// set the specific points of a user
+        /// </summary>
+        /// <param name="points">points value</param>
+        /// <param name="user">user to edit</param>
+        /// <returns></returns>
         [Command("SetPoints")]
         [Summary("SetPoints <points> <user>")]
         [Remarks("set a user's exact points")]
@@ -119,7 +138,7 @@ namespace ELO_Bot.Commands.Admin
 
             if (points <= 0)
                 points = Math.Abs(points);
-            var server = ServerList.Load(Context.Guild);
+            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
             var success = false;
             var userval = 0;
 
@@ -149,11 +168,17 @@ namespace ELO_Bot.Commands.Admin
                 embed.AddField($"{user.Username} ERROR", "Not Registered");
             else
                 embed.AddField($"{user.Username} MODIFIED", $"Current Points: {userval}");
-            ServerList.Saveserver(server);
             embed.Color = Color.Green;
             await ReplyAsync("", false, embed.Build());
         }
 
+        /// <summary>
+        /// check the rank of the specified user corresponds with their score.
+        /// </summary>
+        /// <param name="server">current server</param>
+        /// <param name="user">user to modify</param>
+        /// <param name="subject">user profile</param>
+        /// <returns></returns>
         public async Task CheckRank(ServerList.Server server, IUser user, ServerList.Server.User subject)
         {
             foreach (var role in server.Ranks)

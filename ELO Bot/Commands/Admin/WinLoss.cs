@@ -1,14 +1,23 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using ELO_Bot.PreConditions;
+using ELO_Bot.Preconditions;
 
 namespace ELO_Bot.Commands.Admin
 {
+    /// <summary>
+    /// denies users that aren't administrators from accesing these commands.
+    /// </summary>
     [CheckBlacklist]
     [CheckAdmin]
     public class WinLoss : ModuleBase
     {
+        /// <summary>
+        /// remove a single win from the provided users
+        /// </summary>
+        /// <param name="userlist"></param>
+        /// <returns></returns>
         [Command("DelWin")]
         [Summary("DelWin <users>")]
         [Remarks("remove one win from the specified users")]
@@ -16,7 +25,7 @@ namespace ELO_Bot.Commands.Admin
         {
             var embed = new EmbedBuilder();
 
-            var server = ServerList.Load(Context.Guild);
+            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
             foreach (var user in userlist)
             {
                 var success = false;
@@ -36,11 +45,15 @@ namespace ELO_Bot.Commands.Admin
                     embed.AddField($"{user.Username} MODIFIED", "Removed: -1\n" +
                                                                 $"Current wins: {userval}");
             }
-            ServerList.Saveserver(server);
             embed.Color = Color.Green;
             await ReplyAsync("", false, embed.Build());
         }
 
+        /// <summary>
+        /// remove a single loss from the provided users
+        /// </summary>
+        /// <param name="userlist"></param>
+        /// <returns></returns>
         [Command("DelLose")]
         [Summary("DelLose <users>")]
         [Remarks("remove a single loss from the specified users")]
@@ -48,7 +61,7 @@ namespace ELO_Bot.Commands.Admin
         {
             var embed = new EmbedBuilder();
 
-            var server = ServerList.Load(Context.Guild);
+            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
             foreach (var user in userlist)
             {
                 var success = false;
@@ -68,7 +81,6 @@ namespace ELO_Bot.Commands.Admin
                     embed.AddField($"{user.Username} MODIFIED", "Removed: -1\n" +
                                                                 $"Current Losses: {userval}");
             }
-            ServerList.Saveserver(server);
             embed.Color = Color.Green;
             await ReplyAsync("", false, embed.Build());
         }

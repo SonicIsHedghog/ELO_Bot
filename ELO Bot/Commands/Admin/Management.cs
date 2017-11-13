@@ -3,23 +3,33 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
+using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.WebSocket;
-using ELO_Bot.PreConditions;
+using ELO_Bot.Preconditions;
 
 namespace ELO_Bot.Commands.Admin
 {
+    /// <summary>
+    /// to ensure no blacklisted commands are used
+    /// make sure that only admins can use these commands
+    /// </summary>
     [CheckBlacklist]
     [CheckAdmin]
-    public class Management : ModuleBase<SocketCommandContext>
+    public class Management : InteractiveBase<SocketCommandContext>
     {
+        /// <summary>
+        /// deletes the specified user's profile.
+        /// </summary>
+        /// <param name="user">@user</param>
+        /// <returns></returns>
         [Command("Deluser")]
         [Summary("DelUser <@user>")]
         [Remarks("deletes a user from the server's registered list")]
         public async Task DelUser(IUser user)
         {
             var embed = new EmbedBuilder();
-            var server = ServerList.Load(Context.Guild);
+            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
 
 
             foreach (var subject in server.UserList)
@@ -29,7 +39,6 @@ namespace ELO_Bot.Commands.Admin
                     break;
                 }
 
-            ServerList.Saveserver(server);
 
             try
             {
@@ -45,6 +54,12 @@ namespace ELO_Bot.Commands.Admin
             await ReplyAsync("", false, embed.Build());
         }
 
+        /// <summary>
+        /// registers a user with the given username
+        /// </summary>
+        /// <param name="user">user to register</param>
+        /// <param name="username">name for the user</param>
+        /// <returns></returns>
         [Command("Registeruser")]
         [Summary("Registeruser <@user> <username>")]
         [Remarks("registers the user in the server")]
@@ -67,7 +82,7 @@ namespace ELO_Bot.Commands.Admin
                     Points = 0
                 };
 
-                var server = ServerList.Load(Context.Guild);
+                var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
                 if (server.UserList.Count >= 20)
                     if (!server.IsPremium)
                     {
@@ -85,7 +100,6 @@ namespace ELO_Bot.Commands.Admin
                     return;
                 }
                 server.UserList.Add(usr);
-                ServerList.Saveserver(server);
                 embed.AddField($"{user.Username} registered as {username}", $"{server.Registermessage}");
                 embed.WithColor(Color.Blue);
                 try
@@ -117,6 +131,12 @@ namespace ELO_Bot.Commands.Admin
             }
         }
 
+        /// <summary>
+        /// rename the specified user
+        /// </summary>
+        /// <param name="user">user to rename</param>
+        /// <param name="newname">new name</param>
+        /// <returns></returns>
         [Command("Rename")]
         [Summary("Rename <@user>")]
         [Remarks("Sets the role users will join when registering")]
@@ -141,7 +161,7 @@ namespace ELO_Bot.Commands.Admin
                 return;
             }
 
-            var server = ServerList.Load(Context.Guild);
+            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
             var success = false;
             foreach (var member in server.UserList)
                 if (member.UserId == user.Id)
@@ -166,7 +186,6 @@ namespace ELO_Bot.Commands.Admin
 
             if (success)
             {
-                ServerList.Saveserver(server);
                 embed.WithColor(Color.Blue);
                 await ReplyAsync("", false, embed.Build());
             }
@@ -178,12 +197,18 @@ namespace ELO_Bot.Commands.Admin
             }
         }
 
+        /// <summary>
+        /// bans the specified user from using the queue
+        /// </summary>
+        /// <param name="user">user to ban</param>
+        /// <param name="i">hours to ban the user for.</param>
+        /// <returns></returns>
         [Command("ban")]
         [Summary("ban <@user> <hours>")]
         [Remarks("ban user from using Lobbies for specified time")]
         public async Task Ban(SocketGuildUser user, int i)
         {
-            var server = ServerList.Load(Context.Guild);
+            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
             var b = new ServerList.Server.Ban
             {
                 UserId = user.Id,
@@ -200,87 +225,81 @@ namespace ELO_Bot.Commands.Admin
                     queue.Users.Remove(user.Id);
 
             await ReplyAsync($"{user.Mention} has been banned for {i} hours from matchmaking.");
-
-            ServerList.Saveserver(server);
         }
 
+        /// <summary>
+        /// unbans the specified user from matchmaking
+        /// </summary>
+        /// <param name="user">user to unban</param>
+        /// <returns></returns>
         [Command("unban")]
         [Summary("unban <@user>")]
         [Remarks("Unban the specified user")]
         public async Task Unban(SocketGuildUser user)
         {
-            var server = ServerList.Load(Context.Guild);
+            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
 
             if (server.Bans.Select(x => x.UserId == user.Id).Any())
                 server.Bans.Remove(server.Bans.FirstOrDefault(x => x.UserId == user.Id));
 
             await ReplyAsync($"{user.Mention} has been unbanned");
-
-            ServerList.Saveserver(server);
         }
 
+        /// <summary>
+        /// lists all bans in the server
+        /// Also runs a check for users and removes expired bans
+        /// </summary>
+        /// <returns></returns>
         [Command("bans")]
         [Summary("bans")]
         [Remarks("List all bans in the server.")]
         public async Task Bans()
         {
-            var server = ServerList.Load(Context.Guild);
+            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
             var embed = new EmbedBuilder();
             if (server.Bans.Count == 0 || server.Bans == null)
-            {
                 embed.AddField("Bans", "There are no bans in the current server.");
-            }
 
             var toremove = new List<ServerList.Server.Ban>();
 
             var desc = "";
-            
+
             foreach (var user in server.Bans)
             {
                 string u;
                 try
                 {
-                    u = (Context.Guild.GetUser(user.UserId)).Mention;
+                    u = Context.Guild.GetUser(user.UserId).Mention;
                 }
                 catch
                 {
                     u = $"Unavailable User:[{user.UserId}]";
                 }
-                
 
 
                 if (Math.Round((user.Time - DateTime.UtcNow).TotalMinutes, 0) < 0)
-                {
                     toremove.Add(user);
-                }
                 else
-                {
                     desc +=
                         $"{u} `{Math.Round((user.Time - DateTime.UtcNow).TotalMinutes, 0)} Minutes Left`\n";
-                }
 
-                if (desc.Length > 900)
-                {
-                    embed.AddField("Bans", $"{desc}");
-                    desc = "";
-                }
+                if (desc.Length <= 900) continue;
+                embed.AddField("Bans", $"{desc}");
+                desc = "";
             }
 
             if (desc != "")
-            {
                 embed.AddField("Bans", desc);
-            }
 
 
             var removeddesc = "";
             if (toremove.Count > 0)
-            {
                 foreach (var user in toremove)
                 {
                     string u;
                     try
                     {
-                        u = (Context.Guild.GetUser(user.UserId)).Mention;
+                        u = Context.Guild.GetUser(user.UserId).Mention;
                     }
                     catch
                     {
@@ -291,31 +310,27 @@ namespace ELO_Bot.Commands.Admin
 
                     removeddesc += $"{u}\n";
 
-                    if (removeddesc.Length > 900)
-                    {
-                        embed.AddField("Unbanned Users", $"{removeddesc}");
-                        removeddesc = "";
-                    }
+                    if (removeddesc.Length <= 900) continue;
+                    embed.AddField("Unbanned Users", $"{removeddesc}");
+                    removeddesc = "";
                 }
-            }
 
             if (removeddesc != "")
-            {
                 embed.AddField("Unbanned Users", removeddesc);
-            }
-            
+
 
             embed.AddField("NOTE", "Unavailable user's Bans will automatically be removed once their time expires.");
 
-            
-
-
 
             await ReplyAsync("", false, embed.Build());
-
-            ServerList.Saveserver(server);
         }
 
+        /// <summary>
+        /// adds a new rank to the server
+        /// </summary>
+        /// <param name="points">points required to be given this rank</param>
+        /// <param name="role">role name ie. @role</param>
+        /// <returns></returns>
         [Command("addrank")]
         [Summary("addrank <points> <@role>")]
         [Remarks("set a Rank to join")]
@@ -332,7 +347,7 @@ namespace ELO_Bot.Commands.Admin
             }
 
 
-            var server = ServerList.Load(Context.Guild);
+            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
             var add = new ServerList.Server.Ranking
             {
                 Points = points,
@@ -363,11 +378,15 @@ namespace ELO_Bot.Commands.Admin
                                         $"Points: {points}");
             }
 
-            ServerList.Saveserver(server);
             embed.WithColor(Color.Blue);
             await ReplyAsync("", false, embed.Build());
         }
 
+        /// <summary>
+        /// remove the specified rank
+        /// </summary>
+        /// <param name="role">@role</param>
+        /// <returns></returns>
         [Command("removerank")]
         [Summary("removerank <@role>")]
         [Remarks("remove a role from the Ranks list")]
@@ -384,7 +403,7 @@ namespace ELO_Bot.Commands.Admin
             }
 
 
-            var server = ServerList.Load(Context.Guild);
+            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
 
             var containedrole = server.Ranks.SingleOrDefault(x => x.RoleId == role.Id);
             if (containedrole != null)
@@ -397,11 +416,15 @@ namespace ELO_Bot.Commands.Admin
                 embed.AddField("ERROR", "This role is not Ranked");
             }
 
-            ServerList.Saveserver(server);
             embed.WithColor(Color.Blue);
             await ReplyAsync("", false, embed.Build());
         }
 
+        /// <summary>
+        /// remove the specified rank by the role ID, this prevents issues with deleted roles being ranked still.
+        /// </summary>
+        /// <param name="role">role ID</param>
+        /// <returns></returns>
         [Command("removerank")]
         [Summary("removerank <RoleID>")]
         [Remarks("remove a role from the Ranks list by ID")]
@@ -410,7 +433,7 @@ namespace ELO_Bot.Commands.Admin
             var embed = new EmbedBuilder();
 
 
-            var server = ServerList.Load(Context.Guild);
+            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
 
             var containedrole = server.Ranks.SingleOrDefault(x => x.RoleId == role);
             if (containedrole != null)
@@ -423,11 +446,18 @@ namespace ELO_Bot.Commands.Admin
                 embed.AddField("ERROR", "This role is not Ranked");
             }
 
-            ServerList.Saveserver(server);
             embed.WithColor(Color.Blue);
             await ReplyAsync("", false, embed.Build());
         }
 
+        /// <summary>
+        /// specify a rankwinmodifier for the given rank
+        /// if a user has this rank and wins, their points will be modified according to this value rather than the server default
+        /// set this value to 0 for the default server modifier to be used
+        /// </summary>
+        /// <param name="role">ranked role</param>
+        /// <param name="points">points per win</param>
+        /// <returns></returns>
         [Command("RankWinModifier")]
         [Summary("RankWinModifier <@role> <points>")]
         [Remarks("allow a specific ranks points to be modified differently to server default")]
@@ -436,12 +466,12 @@ namespace ELO_Bot.Commands.Admin
             var embed = new EmbedBuilder();
 
 
-            var server = ServerList.Load(Context.Guild);
+            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
 
             var containedrole = server.Ranks.SingleOrDefault(x => x.RoleId == role.Id);
             if (containedrole != null)
             {
-                containedrole.Winmodifier = Math.Abs(points);
+                containedrole.WinModifier = Math.Abs(points);
                 embed.AddField("SUCCESS", $"User points for the rank {role.Mention} will now be modified accordingly");
             }
             else
@@ -449,11 +479,18 @@ namespace ELO_Bot.Commands.Admin
                 embed.AddField("ERROR", "This role is not Ranked");
             }
 
-            ServerList.Saveserver(server);
             embed.WithColor(Color.Blue);
             await ReplyAsync("", false, embed.Build());
         }
 
+        /// <summary>
+        /// specify a ranklossmodifier for the given rank
+        /// if a user has this rank and loses, their points will be modified according to this value rather than the server default
+        /// set this value to 0 to use the server default again
+        /// </summary>
+        /// <param name="role">ranked role</param>
+        /// <param name="points">points per loss</param>
+        /// <returns></returns>
         [Command("RankLossModifier")]
         [Summary("RankLossModifier <@role> <points>")]
         [Remarks("allow a specific ranks points to be modified differently to server default")]
@@ -462,12 +499,12 @@ namespace ELO_Bot.Commands.Admin
             var embed = new EmbedBuilder();
 
 
-            var server = ServerList.Load(Context.Guild);
+            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
 
             var containedrole = server.Ranks.SingleOrDefault(x => x.RoleId == role.Id);
             if (containedrole != null)
             {
-                containedrole.Lossmodifier = Math.Abs(points);
+                containedrole.LossModifier = Math.Abs(points);
                 embed.AddField("SUCCESS", $"User points for the rank {role.Mention} will now be modified accordingly");
             }
             else
@@ -475,18 +512,32 @@ namespace ELO_Bot.Commands.Admin
                 embed.AddField("ERROR", "This role is not Ranked");
             }
 
-            ServerList.Saveserver(server);
             embed.WithColor(Color.Blue);
             await ReplyAsync("", false, embed.Build());
         }
 
+
+        /// <summary>
+        /// server owner only command, removes server users
+        /// removes server lobbies. bans and previous games as well.
+        /// </summary>
+        /// <returns></returns>
         [Command("ClearUsers", RunMode = RunMode.Async)]
         [Summary("ClearUsers")]
         [Remarks("Deletes ALL user profiles in the server.")]
         [ServerOwner]
         public async Task ClearUsers()
         {
-            var server = ServerList.Load(Context.Guild);
+            var rnd = new Random().Next(0, 100);
+            await ReplyAsync($"Reply with `{rnd}` string to delete all user profiles for this server.\n" +
+                             "NOTE: Profiles can NOT be recovered, this also removes bans, lobbies and previous games.");
+            var nextmessage = await NextMessageAsync();
+            if (!nextmessage.Content.Contains(rnd.ToString()))
+            {
+                await ReplyAsync("Clear has been aborted.");
+                return;
+            }
+            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
             var modified = 0;
             var unmodified = 0;
             await ReplyAsync($"Users Being Pruned. Estimated time: {server.UserList.Count * 2} seconds");
@@ -494,7 +545,7 @@ namespace ELO_Bot.Commands.Admin
             foreach (var user in server.UserList)
             {
                 iiterations++;
-                if (iiterations % 5 == 0)
+                if (iiterations % 20 == 0)
                     await ReplyAsync($"{Math.Ceiling((double) (iiterations * 100) / server.UserList.Count)}% complete");
                 try
                 {
@@ -514,7 +565,6 @@ namespace ELO_Bot.Commands.Admin
             server.Queue = new List<ServerList.Server.Q>();
             server.Gamelist = new List<ServerList.Server.PreviouMatches>();
             server.Bans = new List<ServerList.Server.Ban>();
-            ServerList.Saveserver(server);
 
             await ReplyAsync("User prune completed.\n" +
                              $"Users Reset: {modified}\n" +
