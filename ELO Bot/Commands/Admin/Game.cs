@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Addons.Interactive;
 using Discord.Commands;
-using Discord.WebSocket;
 using ELO_Bot.Preconditions;
 
 namespace ELO_Bot.Commands.Admin
@@ -15,7 +14,7 @@ namespace ELO_Bot.Commands.Admin
     /// </summary>
     [CheckBlacklist]
     [CheckModerator]
-    public class Game :  InteractiveBase<SocketCommandContext>
+    public class Game :  InteractiveBase
     {
         /// <summary>
         ///     adds a win and increaces the points for the specified users.
@@ -130,13 +129,13 @@ namespace ELO_Bot.Commands.Admin
                 switch (team.ToLower())
                 {
                     case "team1":
-                        await UndoWinLossPoints(server, team1, true, server.Winamount, $"{Config.Load().Prefix}UndoGame {lobbyname} {game} {team}");
-                        await UndoWinLossPoints(server, team2, false, server.Lossamount, $"{Config.Load().Prefix}UndoGame {lobbyname} {game} {team}");
+                        await UndoWinLossPoints(server, team1, true, server.Winamount, $"{lobbyname} {game.GameNumber} {team}");
+                        await UndoWinLossPoints(server, team2, false, server.Lossamount, $"{lobbyname} {game.GameNumber} {team}");
                         game.Result = null;
                         break;
                     case "team2":
-                        await UndoWinLossPoints(server, team2, true, server.Winamount, $"{Config.Load().Prefix}UndoGame {lobbyname} {game} {team}");
-                        await UndoWinLossPoints(server, team1, false, server.Lossamount, $"{Config.Load().Prefix}UndoGame {lobbyname} {game} {team}");
+                        await UndoWinLossPoints(server, team2, true, server.Winamount, $"{lobbyname} {game.GameNumber} {team}");
+                        await UndoWinLossPoints(server, team1, false, server.Lossamount, $"{lobbyname} {game.GameNumber} {team}");
                         game.Result = null;
                         break;
                     default:
@@ -160,7 +159,7 @@ namespace ELO_Bot.Commands.Admin
         /// <param name="gamenumber">game number for the specified lobby</param>
         /// <param name="team">winning team ie. Team2 or Team2</param>
         /// <returns></returns>
-        [Command("Game")]
+        [Command("Game", RunMode = RunMode.Async)]
         [Summary("Game <lobbyname> <gamenumber> <winningteam>")]
         [Remarks("Automatically update wins/losses for the selected team")]
         public async Task Win(string lobbyname, int gamenumber, string team)
@@ -178,8 +177,16 @@ namespace ELO_Bot.Commands.Admin
                     var queuechannels = "";
                     foreach (var chan in server.Queue)
                     {
-                        var getqueuechannels = await ((IGuild) Context.Guild).GetChannelAsync(chan.ChannelId);
-                        queuechannels += $"{getqueuechannels.Name}\n";
+                        try
+                        {
+                            var getqueuechannels = await ((IGuild) Context.Guild).GetChannelAsync(chan.ChannelId);
+                            queuechannels += $"{getqueuechannels.Name}\n";
+                        }
+                        catch
+                        {
+                            //
+                        }
+
                     }
                     await ReplyAsync("**ERROR:** Please specify the channel in which queue was created\n" +
                                      "Here are a list:\n" +
@@ -205,15 +212,16 @@ namespace ELO_Bot.Commands.Admin
                         await ReplyAsync("Team2 is already recorded as winning this game.");
 
                     await ReplyAsync("Reply with `YES` to continue scoring this game, reply with `NO` to cancel");
-                    var response = await NextMessageAsync();
-                    if (response.Content.ToLower().Contains("yes"))
-                    {
-                        //
-                    }
-                    else
-                    {
-                        throw new Exception("Command Aborted.");
-                    }
+                        var response = await NextMessageAsync(timeout: TimeSpan.FromSeconds(30));
+                        if (response.Content.ToLower().Contains("yes"))
+                        {
+                            //
+                        }
+                        else
+                        {
+                            await ReplyAsync("Command Aborted.");
+                            return;
+                        }
                 }
 
                 var team1 = new List<IUser>();
@@ -244,13 +252,13 @@ namespace ELO_Bot.Commands.Admin
                 switch (team.ToLower())
                 {
                     case "team1":
-                        await WinLossPoints(server, team1, true, server.Winamount, $"{Config.Load().Prefix}game {lobbyname} {game} {team}");
-                        await WinLossPoints(server, team2, false, server.Lossamount, $"{Config.Load().Prefix}game {lobbyname} {game} {team}");
+                        await WinLossPoints(server, team1, true, server.Winamount, $"{lobbyname} {game.GameNumber} {team}");
+                        await WinLossPoints(server, team2, false, server.Lossamount, $"{lobbyname} {game.GameNumber} {team}");
                         game.Result = true;
                         break;
                     case "team2":
-                        await WinLossPoints(server, team2, true, server.Winamount, $"{Config.Load().Prefix}game {lobbyname} {game} {team}");
-                        await WinLossPoints(server, team1, false, server.Lossamount, $"{Config.Load().Prefix}game {lobbyname} {game} {team}");
+                        await WinLossPoints(server, team2, true, server.Winamount, $"{lobbyname} {game.GameNumber} {team}");
+                        await WinLossPoints(server, team1, false, server.Lossamount, $"{lobbyname} {game.GameNumber} {team}");
                         game.Result = false;
                         break;
                     default:
@@ -418,7 +426,7 @@ namespace ELO_Bot.Commands.Admin
                         usr.Losses++;
                         if (usr.Points < 0)
                             usr.Points = 0;
-                        embed.AddField($"{usr.Username} LOST -{points}", $"Points: **{usr.Points}**\n" +
+                        embed.AddField($"{usr.Username} LOST (-{points})", $"Points: **{usr.Points}**\n" +
                                                                          $"W/L: **[{usr.Wins}/{usr.Losses}]**");
                         embed.Color = Color.Red;
                     }
@@ -436,7 +444,7 @@ namespace ELO_Bot.Commands.Admin
 
             if (gametext != null)
             {
-                embed.Title = gametext;
+                embed.Title = $"Game Decided: {gametext}";
             }
             
             await ReplyAsync("", false, embed.Build());

@@ -117,14 +117,15 @@ namespace ELO_Bot
                 Commands++;
             }
 
-            if (Commands % 1000 == 0)
+            if (Commands % 100 == 0)
             {
                 var backupfile = Path.Combine(AppContext.BaseDirectory,
                     $"setup/backups/{DateTime.UtcNow:dd-MM-yy HH.mm.ss}.txt");
-                //File.WriteAllText(backupfile, File.ReadAllText(ServerList.EloFile));
+                
 
                 var jsonbackup = JsonConvert.SerializeObject(ServerList.Serverlist);
                 File.WriteAllText(backupfile, jsonbackup);
+                File.WriteAllText(ServerList.EloFile, jsonbackup);
             }
         }
 

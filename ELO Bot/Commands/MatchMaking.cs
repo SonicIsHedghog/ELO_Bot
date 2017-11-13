@@ -524,8 +524,7 @@ namespace ELO_Bot.Commands
             }
             catch (Exception e)
             {
-                await ReplyAsync("Contact Passive with the following message:\n" +
-                                 $"{e}");
+                throw new Exception(e.ToString());
             }
         }
 
