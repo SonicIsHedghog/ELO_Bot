@@ -30,8 +30,6 @@ namespace ELO_Bot.Commands
         [Remarks("Display the current queue")]
         public async Task Queue()
         {
-            try
-            {
                 var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
                 var embed = new EmbedBuilder();
                 try
@@ -117,12 +115,6 @@ namespace ELO_Bot.Commands
                 }
 
                 await ReplyAsync("", false, embed.Build());
-            }
-            catch (Exception e)
-            {
-                await ReplyAsync("Contact Passive with the following message:\n" +
-                                 $"{e}");
-            }
         }
 
         /// <summary>
@@ -135,8 +127,6 @@ namespace ELO_Bot.Commands
         [Remarks("Gamemode Info")]
         public async Task Lobby()
         {
-            try
-            {
                 //creating general info about the current lobby.
                 var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
                 var embed = new EmbedBuilder();
@@ -168,12 +158,6 @@ namespace ELO_Bot.Commands
                 }
 
                 await ReplyAsync("", false, embed.Build());
-            }
-            catch (Exception e)
-            {
-                await ReplyAsync("Contact Passive with the following message:\n" +
-                                 $"{e}");
-            }
         }
 
         /// <summary>
@@ -189,8 +173,6 @@ namespace ELO_Bot.Commands
         [Remarks("Choose a player for your team")]
         public async Task Pick(IUser user)
         {
-            try
-            {
                 var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
                 var embed = new EmbedBuilder();
 
@@ -418,12 +400,6 @@ namespace ELO_Bot.Commands
                     embed.AddField("ERROR", "Not A Captain!");
                     await ReplyAsync("", false, embed.Build());
                 }
-            }
-            catch (Exception e)
-            {
-                await ReplyAsync("Contact Passive with the following message:\n" +
-                                 $"{e}");
-            }
         }
 
         /// <summary>
@@ -440,8 +416,6 @@ namespace ELO_Bot.Commands
         [Remarks("Join the current queue")]
         public async Task Join()
         {
-            try
-            {
                 var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
                 var embed = new EmbedBuilder();
                 Servers.Server.Q lobby;
@@ -521,11 +495,6 @@ namespace ELO_Bot.Commands
                         await FullQueue(server);
                     }
                 }
-            }
-            catch (Exception e)
-            {
-                throw new Exception(e.ToString());
-            }
         }
 
         /// <summary>
@@ -539,8 +508,6 @@ namespace ELO_Bot.Commands
         [Remarks("replace the given user in the queue")]
         public async Task Sub(IUser user)
         {
-            try
-            {
                 var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
                 var embed = new EmbedBuilder();
                 var queue = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
@@ -591,12 +558,6 @@ namespace ELO_Bot.Commands
                 {
                     await ReplyAsync("Error: No queue? or something... ask passive idk");
                 }
-            }
-            catch (Exception e)
-            {
-                await ReplyAsync("Contact Passive with the following message:\n" +
-                                 $"{e}");
-            }
         }
 
         /// <summary>
@@ -610,8 +571,6 @@ namespace ELO_Bot.Commands
         [Remarks("replace the specified user in the previously chosen game")]
         public async Task Replace(IUser user)
         {
-            try
-            {
                 var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
                 var queue = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
 
@@ -687,12 +646,6 @@ namespace ELO_Bot.Commands
                 {
                     await ReplyAsync("Error: No queue? or something... ask passive idk");
                 }
-            }
-            catch (Exception e)
-            {
-                await ReplyAsync("Contact Passive with the following message:\n" +
-                                 $"{e}");
-            }
         }
 
         /// <summary>
@@ -706,8 +659,6 @@ namespace ELO_Bot.Commands
         [Remarks("Leave the current queue")]
         public async Task Leave()
         {
-            try
-            {
                 var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
                 var embed = new EmbedBuilder();
                 try
@@ -739,12 +690,6 @@ namespace ELO_Bot.Commands
                 {
                     await ReplyAsync("Not Queued?");
                 }
-            }
-            catch (Exception e)
-            {
-                await ReplyAsync("Contact Passive with the following message:\n" +
-                                 $"{e}");
-            }
         }
 
         /// <summary>
@@ -756,8 +701,6 @@ namespace ELO_Bot.Commands
         [Remarks("select a random map")]
         public async Task Map()
         {
-            try
-            {
                 var embed = new EmbedBuilder();
                 var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
                 //load the current server
@@ -780,12 +723,6 @@ namespace ELO_Bot.Commands
                 embed.AddField("Random Map", $"{lobby.Maps[r]}");
 
                 await ReplyAsync("", false, embed.Build());
-            }
-            catch (Exception e)
-            {
-                await ReplyAsync("Contact Passive with the following message:\n" +
-                                 $"{e}");
-            }
         }
 
         /// <summary>
@@ -798,8 +735,7 @@ namespace ELO_Bot.Commands
         [Remarks("List Maps")]
         public async Task Maps()
         {
-            try
-            {
+
                 var embed = new EmbedBuilder();
                 var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
                 //load the current server
@@ -816,12 +752,6 @@ namespace ELO_Bot.Commands
                 //adds each map in the list to the embed
 
                 await ReplyAsync("", false, embed.Build());
-            }
-            catch (Exception e)
-            {
-                await ReplyAsync("Contact Passive with the following message:\n" +
-                                 $"{e}");
-            }
         }
 
         /// <summary>
@@ -833,8 +763,6 @@ namespace ELO_Bot.Commands
         /// <returns></returns>
         public async Task Teams(Servers.Server server, List<ulong> team1, List<ulong> team2)
         {
-            try
-            {
                 var team1Userlist = new List<IUser>();
                 var t1 = "";
                 foreach (var user in team1)
@@ -896,11 +824,7 @@ namespace ELO_Bot.Commands
                 server.Gamelist.Add(newgame);
 
                 await Announce(currentqueue, host, currentqueue.ChannelGametype, team1Userlist, team2Userlist);
-            }
-            catch (Exception e)
-            {
-                throw new Exception(e.ToString());
-            }
+            
         }
 
         /// <summary>
@@ -911,8 +835,6 @@ namespace ELO_Bot.Commands
         /// <returns></returns>
         public async Task FullQueue(Servers.Server server)
         {
-            try
-            {
                 var embed = new EmbedBuilder();
                 var currentqueue = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
 
@@ -1049,12 +971,6 @@ namespace ELO_Bot.Commands
                 var random = new Random().Next(0, sortedlist.Count);
                 var gamehost = await Context.Guild.GetUserAsync(sortedlist[random].UserId);
                 await Announce(currentqueue, gamehost, currentqueue.ChannelGametype, t1Users, t2Users, randmap);
-            }
-            catch (Exception e)
-            {
-                await ReplyAsync("Contact Passive with the following message:\n" +
-                                 $"{e}");
-            }
         }
 
         /// <summary>
@@ -1071,8 +987,6 @@ namespace ELO_Bot.Commands
             List<IUser> team1,
             List<IUser> team2, string randommap = null)
         {
-            try
-            {
                 var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
                 IMessageChannel channel;
                 try
@@ -1172,11 +1086,6 @@ namespace ELO_Bot.Commands
                         await Context.Channel.SendMessageAsync(announcement);
                     }
                 }
-            }
-            catch (Exception e)
-            {
-                throw new Exception(e.ToString());
-            }
         }
     }
 }

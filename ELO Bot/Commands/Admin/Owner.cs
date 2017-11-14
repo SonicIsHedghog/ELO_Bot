@@ -21,8 +21,6 @@ namespace ELO_Bot.Commands.Admin
         [Remarks("Bot Creator Command")]
         public async Task Addpremium(params string[] keys)
         {
-            try
-            {
                 var i = 0;
                 var duplicates = "Dupes:\n";
                 if (CommandHandler.Keys == null)
@@ -54,11 +52,6 @@ namespace ELO_Bot.Commands.Admin
                                  $"{duplicates}");
                 var keyobject = JsonConvert.SerializeObject(CommandHandler.Keys, Formatting.Indented);
                 File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "setup/keys.json"), keyobject);
-            }
-            catch (Exception e)
-            {
-                await ReplyAsync(e.ToString());
-            }
         }
 
         /// <summary>

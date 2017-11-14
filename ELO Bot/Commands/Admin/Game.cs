@@ -67,8 +67,6 @@ namespace ELO_Bot.Commands.Admin
         [Remarks("Undo the results of a previous game")]
         public async Task UnWin(string lobbyname, int gamenumber, string team)
         {
-            try
-            {
                 var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
                 IMessageChannel channel = null;
                 foreach (var chan in Context.Guild.Channels)
@@ -143,11 +141,6 @@ namespace ELO_Bot.Commands.Admin
                             "Please specify a team in the following format `=game <lobby> <number> team1` or `=game <lobby> <number> team2`");
                         break;
                 }
-            }
-            catch (Exception e)
-            {
-                throw new Exception(e.ToString());
-            }
         }
 
 
@@ -164,8 +157,6 @@ namespace ELO_Bot.Commands.Admin
         [Remarks("Automatically update wins/losses for the selected team")]
         public async Task Win(string lobbyname, int gamenumber, string team)
         {
-            try
-            {
                 var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
                 IMessageChannel channel = null;
                 foreach (var chan in Context.Guild.Channels)
@@ -266,11 +257,6 @@ namespace ELO_Bot.Commands.Admin
                             "Please specify a team in the following format `=game <lobby> <number> team1` or `=game <lobby> <number> team2`");
                         break;
                 }
-            }
-            catch (Exception e)
-            {
-                await ReplyAsync(e.ToString());
-            }
         }
 
         /// <summary>

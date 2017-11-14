@@ -114,6 +114,26 @@ namespace ELO_Bot
             {
                 await Logger.In3(context.Message.Content, context.Guild.Name, context.Channel.Name,
                     context.User.Username);
+
+                var rnd = new Random().Next(0, 50);
+                if (rnd == 10)
+                {
+                    try
+                    {
+                        var embed = new EmbedBuilder
+                        {
+                            Title = $"Consider supporting this project by Joining the Patreon!",
+                            Url = "http://patreon.com/passivebot"
+                        };
+                        await context.Channel.SendMessageAsync("", false, embed.Build());
+                    }
+                    catch
+                    {
+                        //
+                    }
+
+                }
+
                 Commands++;
             }
 
