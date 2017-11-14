@@ -38,7 +38,7 @@ namespace ELO_Bot.Commands
                 return;
             }
 
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
 
             if (server.UserList.Count >= 20 && !server.IsPremium)
             {
@@ -97,7 +97,7 @@ namespace ELO_Bot.Commands
                 return;
             }
 
-            var user = new ServerList.Server.User
+            var user = new Servers.Server.User
             {
                 UserId = Context.User.Id,
                 Username = username,
@@ -146,7 +146,7 @@ namespace ELO_Bot.Commands
         public async Task GetUser(IUser user)
         {
             var embed = new EmbedBuilder();
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
             var userlist = server.UserList;
             var orderlist = server.UserList.OrderBy(x => x.Points).Reverse().ToList();
             foreach (var usr in userlist)
@@ -174,7 +174,7 @@ namespace ELO_Bot.Commands
         public async Task LeaderBoard(string arg = null)
         {
             var embed = new EmbedBuilder();
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
             var desc = "";
             try
             {
@@ -271,7 +271,7 @@ namespace ELO_Bot.Commands
         public async Task List()
         {
             var embed = new EmbedBuilder();
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
             var orderedlist = server.Ranks.OrderBy(x => x.Points).Reverse();
             var desc = "Points - Role (PPW/PPL)\n";
             foreach (var lev in orderedlist)

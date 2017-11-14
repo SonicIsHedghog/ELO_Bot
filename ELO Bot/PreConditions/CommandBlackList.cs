@@ -12,7 +12,7 @@ namespace ELO_Bot.Preconditions
         public override async Task<PreconditionResult> CheckPermissions(ICommandContext context, CommandInfo command,
             IServiceProvider prov)
         {
-            var server = ServerList.Serverlist.First(x => x.ServerId == context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == context.Guild.Id);
             var own = await context.Client.GetApplicationInfoAsync();
 
             if (command.Name.ToLower().Contains("blacklist"))

@@ -12,7 +12,7 @@ namespace ELO_Bot.Preconditions
         public override async Task<PreconditionResult> CheckPermissions(ICommandContext context, CommandInfo command,
             IServiceProvider prov)
         {
-            var s1 = ServerList.Serverlist.First(x => x.ServerId == context.Guild.Id);
+            var s1 = Servers.ServerList.First(x => x.ServerId == context.Guild.Id);
 
             var own = await context.Client.GetApplicationInfoAsync();
             if (own.Owner.Id == context.User.Id)
@@ -38,7 +38,7 @@ namespace ELO_Bot.Preconditions
         public override async Task<PreconditionResult> CheckPermissions(ICommandContext context, CommandInfo command,
             IServiceProvider prov)
         {
-            var s1 = ServerList.Serverlist.First(x => x.ServerId == context.Guild.Id);
+            var s1 = Servers.ServerList.First(x => x.ServerId == context.Guild.Id);
 
             var own = await context.Client.GetApplicationInfoAsync();
             if (own.Owner.Id == context.User.Id)
@@ -83,7 +83,7 @@ namespace ELO_Bot.Preconditions
         public override async Task<PreconditionResult> CheckPermissions(ICommandContext context, CommandInfo command,
             IServiceProvider prov)
         {
-            var s1 = ServerList.Serverlist.First(x => x.ServerId == context.Guild.Id);
+            var s1 = Servers.ServerList.First(x => x.ServerId == context.Guild.Id);
 
             try
             {

@@ -5,19 +5,19 @@ using Newtonsoft.Json;
 
 namespace ELO_Bot
 {
-    public class ServerList
+    public class Servers
     {
         [JsonIgnore] public static string EloFile = Path.Combine(AppContext.BaseDirectory, "setup/serverlist.json");
 
-        public static List<Server> Serverlist = new List<Server>();
+        public static List<Server> ServerList = new List<Server>();
 
         /*public static Server Load(IGuild guild)
         {
             if (!File.Exists(EloFile))
                 File.Create(EloFile).Dispose();
-            var obj = JsonConvert.DeserializeObject<ServerList>(File.ReadAllText(EloFile));
+            var obj = JsonConvert.DeserializeObject<Servers>(File.ReadAllText(EloFile));
 
-            foreach (var server in obj.Serverlist)
+            foreach (var server in obj.Servers)
                 if (server.ServerId == guild.Id)
                     return server;
 
@@ -31,25 +31,25 @@ namespace ELO_Bot
             return nullserver;
         }
 
-        public static ServerList LoadFull()
+        public static Servers LoadFull()
         {
             if (!File.Exists(EloFile))
                 File.Create(EloFile).Dispose();
-            var obj = JsonConvert.DeserializeObject<ServerList>(File.ReadAllText(EloFile));
+            var obj = JsonConvert.DeserializeObject<Servers>(File.ReadAllText(EloFile));
 
             return obj;
         }
 
         public static void Saveserver(Server serverconfig)
         {
-            var file = JsonConvert.DeserializeObject<ServerList>(File.ReadAllText(EloFile));
-            foreach (var server in file.Serverlist)
+            var file = JsonConvert.DeserializeObject<Servers>(File.ReadAllText(EloFile));
+            foreach (var server in file.Servers)
                 if (server.ServerId == serverconfig.ServerId)
                 {
-                    file.Serverlist.Remove(server);
+                    file.Servers.Remove(server);
                     break;
                 }
-            file.Serverlist.Add(serverconfig);
+            file.Servers.Add(serverconfig);
             var output = JsonConvert.SerializeObject(file, Formatting.Indented);
             File.WriteAllText(EloFile, output);
         }*/

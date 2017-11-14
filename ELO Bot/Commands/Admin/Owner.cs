@@ -86,7 +86,7 @@ namespace ELO_Bot.Commands.Admin
         [Remarks("Backup the current state of the database")]
         public async Task Backup()
         {
-            var contents = JsonConvert.SerializeObject(ServerList.Serverlist);
+            var contents = JsonConvert.SerializeObject(Servers.ServerList);
             File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "setup/serverlist.json"), contents);
 
             var time = $"{DateTime.UtcNow:dd - MM - yy HH.mm.ss}.txt";

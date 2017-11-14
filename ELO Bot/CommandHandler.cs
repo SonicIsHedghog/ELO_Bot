@@ -63,7 +63,7 @@ namespace ELO_Bot
 
             var backupfile = Path.Combine(AppContext.BaseDirectory,
                 "setup/serverlist.json");
-            var jsonbackup = JsonConvert.SerializeObject(ServerList.Serverlist);
+            var jsonbackup = JsonConvert.SerializeObject(Servers.ServerList);
             File.WriteAllText(backupfile, jsonbackup);
         }
 
@@ -123,9 +123,9 @@ namespace ELO_Bot
                     $"setup/backups/{DateTime.UtcNow:dd-MM-yy HH.mm.ss}.txt");
                 
 
-                var jsonbackup = JsonConvert.SerializeObject(ServerList.Serverlist);
+                var jsonbackup = JsonConvert.SerializeObject(Servers.ServerList);
                 File.WriteAllText(backupfile, jsonbackup);
-                File.WriteAllText(ServerList.EloFile, jsonbackup);
+                File.WriteAllText(Servers.EloFile, jsonbackup);
             }
         }
 

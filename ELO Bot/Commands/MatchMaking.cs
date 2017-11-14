@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Authentication.ExtendedProtection;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
@@ -33,7 +32,7 @@ namespace ELO_Bot.Commands
         {
             try
             {
-                var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+                var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
                 var embed = new EmbedBuilder();
                 try
                 {
@@ -139,7 +138,7 @@ namespace ELO_Bot.Commands
             try
             {
                 //creating general info about the current lobby.
-                var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+                var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
                 var embed = new EmbedBuilder();
                 try
                 {
@@ -192,10 +191,10 @@ namespace ELO_Bot.Commands
         {
             try
             {
-                var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+                var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
                 var embed = new EmbedBuilder();
 
-                ServerList.Server.Q lobby;
+                Servers.Server.Q lobby;
                 try
                 {
                     lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
@@ -443,9 +442,9 @@ namespace ELO_Bot.Commands
         {
             try
             {
-                var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+                var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
                 var embed = new EmbedBuilder();
-                ServerList.Server.Q lobby;
+                Servers.Server.Q lobby;
                 try
                 {
                     lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
@@ -542,7 +541,7 @@ namespace ELO_Bot.Commands
         {
             try
             {
-                var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+                var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
                 var embed = new EmbedBuilder();
                 var queue = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
                 //get the current lobbies queue.
@@ -613,7 +612,7 @@ namespace ELO_Bot.Commands
         {
             try
             {
-                var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+                var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
                 var queue = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
 
                 if (queue == null)
@@ -709,7 +708,7 @@ namespace ELO_Bot.Commands
         {
             try
             {
-                var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+                var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
                 var embed = new EmbedBuilder();
                 try
                 {
@@ -760,7 +759,7 @@ namespace ELO_Bot.Commands
             try
             {
                 var embed = new EmbedBuilder();
-                var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+                var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
                 //load the current server
                 var lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
 
@@ -802,7 +801,7 @@ namespace ELO_Bot.Commands
             try
             {
                 var embed = new EmbedBuilder();
-                var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+                var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
                 //load the current server
                 var lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
                 //try to output the current lobby
@@ -832,7 +831,7 @@ namespace ELO_Bot.Commands
         /// <param name="team1"></param>
         /// <param name="team2"></param>
         /// <returns></returns>
-        public async Task Teams(ServerList.Server server, List<ulong> team1, List<ulong> team2)
+        public async Task Teams(Servers.Server server, List<ulong> team1, List<ulong> team2)
         {
             try
             {
@@ -887,7 +886,7 @@ namespace ELO_Bot.Commands
                 currentqueue.T2Captain = 0;
                 currentqueue.IsPickingTeams = false;
 
-                var newgame = new ServerList.Server.PreviouMatches
+                var newgame = new Servers.Server.PreviouMatches
                 {
                     GameNumber = currentqueue.Games,
                     LobbyId = Context.Channel.Id,
@@ -910,7 +909,7 @@ namespace ELO_Bot.Commands
         /// </summary>
         /// <param name="server"></param>
         /// <returns></returns>
-        public async Task FullQueue(ServerList.Server server)
+        public async Task FullQueue(Servers.Server server)
         {
             try
             {
@@ -986,8 +985,8 @@ namespace ELO_Bot.Commands
 
                 //automatically select teams evenly based on points
                 var sortedlist = userlist.OrderBy(x => x.Points).Reverse().ToList();
-                var team1 = new List<ServerList.Server.User>();
-                var team2 = new List<ServerList.Server.User>();
+                var team1 = new List<Servers.Server.User>();
+                var team2 = new List<Servers.Server.User>();
                 foreach (var user in sortedlist)
                     if (team1.Count > team2.Count)
                         team2.Add(user);
@@ -1038,7 +1037,7 @@ namespace ELO_Bot.Commands
 
                 await ReplyAsync("", false, embed.Build());
                 currentqueue.Users = new List<ulong>();
-                var newgame = new ServerList.Server.PreviouMatches
+                var newgame = new Servers.Server.PreviouMatches
                 {
                     GameNumber = currentqueue.Games,
                     LobbyId = Context.Channel.Id,
@@ -1068,13 +1067,13 @@ namespace ELO_Bot.Commands
         /// <param name="team2"></param>
         /// <param name="randommap"></param>
         /// <returns></returns>
-        public async Task Announce(ServerList.Server.Q lobby, IGuildUser gamehost, string matchdescription,
+        public async Task Announce(Servers.Server.Q lobby, IGuildUser gamehost, string matchdescription,
             List<IUser> team1,
             List<IUser> team2, string randommap = null)
         {
             try
             {
-                var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+                var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
                 IMessageChannel channel;
                 try
                 {

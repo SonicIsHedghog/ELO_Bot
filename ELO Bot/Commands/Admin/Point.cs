@@ -34,7 +34,7 @@ namespace ELO_Bot.Commands.Admin
             }
             else
             {
-                var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+                var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
                 foreach (var user in userlist)
                 {
                     var success = false;
@@ -86,7 +86,7 @@ namespace ELO_Bot.Commands.Admin
 
             if (points <= 0)
                 points = Math.Abs(points);
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
             foreach (var user in userlist)
             {
                 var success = false;
@@ -138,7 +138,7 @@ namespace ELO_Bot.Commands.Admin
 
             if (points <= 0)
                 points = Math.Abs(points);
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
             var success = false;
             var userval = 0;
 
@@ -179,7 +179,7 @@ namespace ELO_Bot.Commands.Admin
         /// <param name="user">user to modify</param>
         /// <param name="subject">user profile</param>
         /// <returns></returns>
-        public async Task CheckRank(ServerList.Server server, IUser user, ServerList.Server.User subject)
+        public async Task CheckRank(Servers.Server server, IUser user, Servers.Server.User subject)
         {
             foreach (var role in server.Ranks)
             {

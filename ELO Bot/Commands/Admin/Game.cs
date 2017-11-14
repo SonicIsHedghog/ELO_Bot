@@ -26,7 +26,7 @@ namespace ELO_Bot.Commands.Admin
         [Remarks("Add a win + win points for the specified users")]
         public async Task Win(params IUser[] userlist)
         {
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
             var points = server.Winamount;
             if (!(server.Winamount > 0))
                 throw new Exception("ERROR this server's win modifier has not been set up yet.");
@@ -44,7 +44,7 @@ namespace ELO_Bot.Commands.Admin
         [Remarks("Add a loss to the specified users")]
         public async Task Lose(params IUser[] userlist)
         {
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
             var points = server.Lossamount;
 
             if (!(server.Lossamount > 0))
@@ -69,7 +69,7 @@ namespace ELO_Bot.Commands.Admin
         {
             try
             {
-                var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+                var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
                 IMessageChannel channel = null;
                 foreach (var chan in Context.Guild.Channels)
                     if (string.Equals(chan.Name, lobbyname, StringComparison.CurrentCultureIgnoreCase))
@@ -166,7 +166,7 @@ namespace ELO_Bot.Commands.Admin
         {
             try
             {
-                var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+                var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
                 IMessageChannel channel = null;
                 foreach (var chan in Context.Guild.Channels)
                     if (string.Equals(chan.Name, lobbyname, StringComparison.CurrentCultureIgnoreCase))
@@ -286,7 +286,7 @@ namespace ELO_Bot.Commands.Admin
         /// <param name="points">default points for the user's to be modified.</param>
         /// <param name="gametext">String of the game info</param>
         /// <returns></returns>
-        public async Task UndoWinLossPoints(ServerList.Server server, List<IUser> users, bool win, int points, string gametext = null)
+        public async Task UndoWinLossPoints(Servers.Server server, List<IUser> users, bool win, int points, string gametext = null)
         {
             var embed = new EmbedBuilder();
             foreach (var user in users)
@@ -373,7 +373,7 @@ namespace ELO_Bot.Commands.Admin
         /// <param name="points">default points for the user's to be modified.</param>
         /// <param name="gametext">Game text information</param>
         /// <returns></returns>
-        public async Task WinLossPoints(ServerList.Server server, List<IUser> users, bool win, int points, string gametext = null)
+        public async Task WinLossPoints(Servers.Server server, List<IUser> users, bool win, int points, string gametext = null)
         {
             var embed = new EmbedBuilder();
             foreach (var user in users)
@@ -450,7 +450,7 @@ namespace ELO_Bot.Commands.Admin
             await ReplyAsync("", false, embed.Build());
         }
 
-        public async Task CheckRank(ServerList.Server server, IUser user, ServerList.Server.User subject)
+        public async Task CheckRank(Servers.Server server, IUser user, Servers.Server.User subject)
         {
             if (server.Ranks.Count == 0)
                 return;

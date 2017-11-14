@@ -25,7 +25,7 @@ namespace ELO_Bot.Commands.Admin
         {
             var embed = new EmbedBuilder();
 
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
             foreach (var user in userlist)
             {
                 var success = false;
@@ -61,7 +61,7 @@ namespace ELO_Bot.Commands.Admin
         {
             var embed = new EmbedBuilder();
 
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
             foreach (var user in userlist)
             {
                 var success = false;

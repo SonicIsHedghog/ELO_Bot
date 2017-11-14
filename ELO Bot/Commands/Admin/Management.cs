@@ -29,7 +29,7 @@ namespace ELO_Bot.Commands.Admin
         public async Task DelUser(IUser user)
         {
             var embed = new EmbedBuilder();
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
 
 
             foreach (var subject in server.UserList)
@@ -75,14 +75,14 @@ namespace ELO_Bot.Commands.Admin
             }
             else
             {
-                var usr = new ServerList.Server.User
+                var usr = new Servers.Server.User
                 {
                     UserId = user.Id,
                     Username = username,
                     Points = 0
                 };
 
-                var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+                var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
                 if (server.UserList.Count >= 20)
                     if (!server.IsPremium)
                     {
@@ -161,7 +161,7 @@ namespace ELO_Bot.Commands.Admin
                 return;
             }
 
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
             var success = false;
             foreach (var member in server.UserList)
                 if (member.UserId == user.Id)
@@ -208,8 +208,8 @@ namespace ELO_Bot.Commands.Admin
         [Remarks("ban user from using Lobbies for specified time")]
         public async Task Ban(SocketGuildUser user, int i)
         {
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
-            var b = new ServerList.Server.Ban
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
+            var b = new Servers.Server.Ban
             {
                 UserId = user.Id,
                 Time = DateTime.UtcNow.AddHours(i)
@@ -237,7 +237,7 @@ namespace ELO_Bot.Commands.Admin
         [Remarks("Unban the specified user")]
         public async Task Unban(SocketGuildUser user)
         {
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
 
             if (server.Bans.Select(x => x.UserId == user.Id).Any())
                 server.Bans.Remove(server.Bans.FirstOrDefault(x => x.UserId == user.Id));
@@ -255,12 +255,12 @@ namespace ELO_Bot.Commands.Admin
         [Remarks("List all bans in the server.")]
         public async Task Bans()
         {
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
             var embed = new EmbedBuilder();
             if (server.Bans.Count == 0 || server.Bans == null)
                 embed.AddField("Bans", "There are no bans in the current server.");
 
-            var toremove = new List<ServerList.Server.Ban>();
+            var toremove = new List<Servers.Server.Ban>();
 
             var desc = "";
 
@@ -347,8 +347,8 @@ namespace ELO_Bot.Commands.Admin
             }
 
 
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
-            var add = new ServerList.Server.Ranking
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
+            var add = new Servers.Server.Ranking
             {
                 Points = points,
                 RoleId = role.Id
@@ -403,7 +403,7 @@ namespace ELO_Bot.Commands.Admin
             }
 
 
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
 
             var containedrole = server.Ranks.SingleOrDefault(x => x.RoleId == role.Id);
             if (containedrole != null)
@@ -433,7 +433,7 @@ namespace ELO_Bot.Commands.Admin
             var embed = new EmbedBuilder();
 
 
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
 
             var containedrole = server.Ranks.SingleOrDefault(x => x.RoleId == role);
             if (containedrole != null)
@@ -466,7 +466,7 @@ namespace ELO_Bot.Commands.Admin
             var embed = new EmbedBuilder();
 
 
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
 
             var containedrole = server.Ranks.SingleOrDefault(x => x.RoleId == role.Id);
             if (containedrole != null)
@@ -499,7 +499,7 @@ namespace ELO_Bot.Commands.Admin
             var embed = new EmbedBuilder();
 
 
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
 
             var containedrole = server.Ranks.SingleOrDefault(x => x.RoleId == role.Id);
             if (containedrole != null)
@@ -537,7 +537,7 @@ namespace ELO_Bot.Commands.Admin
                 await ReplyAsync("Clear has been aborted.");
                 return;
             }
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
             var modified = 0;
             var unmodified = 0;
             await ReplyAsync($"Users Being Pruned. Estimated time: {server.UserList.Count * 2} seconds");
@@ -561,10 +561,10 @@ namespace ELO_Bot.Commands.Admin
                 }
             }
 
-            server.UserList = new List<ServerList.Server.User>();
-            server.Queue = new List<ServerList.Server.Q>();
-            server.Gamelist = new List<ServerList.Server.PreviouMatches>();
-            server.Bans = new List<ServerList.Server.Ban>();
+            server.UserList = new List<Servers.Server.User>();
+            server.Queue = new List<Servers.Server.Q>();
+            server.Gamelist = new List<Servers.Server.PreviouMatches>();
+            server.Bans = new List<Servers.Server.Ban>();
 
             await ReplyAsync("User prune completed.\n" +
                              $"Users Reset: {modified}\n" +

@@ -55,8 +55,8 @@ namespace ELO_Bot
                                 $"----------");
             }
 
-            var serversave = File.ReadAllText(ServerList.EloFile);
-            ServerList.Serverlist = JsonConvert.DeserializeObject<List<ServerList.Server>>(serversave);
+            var serversave = File.ReadAllText(Servers.EloFile);
+            Servers.ServerList = JsonConvert.DeserializeObject<List<Servers.Server>>(serversave);
 
             var serviceProvider = ConfigureServices();
             _handler = new CommandHandler(serviceProvider);

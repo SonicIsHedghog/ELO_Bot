@@ -33,7 +33,7 @@ namespace ELO_Bot.Commands.Admin
         [Remarks("Set the current channel for game announcements")]
         public async Task SetAnnounce()
         {
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
             server.AnnouncementsChannel = Context.Channel.Id;
             await ReplyAsync("GameAnnouncements will now be posted in this channel");
         }
@@ -58,7 +58,7 @@ namespace ELO_Bot.Commands.Admin
                 return;
             }
 
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
             server.RegisterRole = role.Id;
             embed.AddField("Complete!", $"Upon registering, users will now be added to the role: {role.Name}");
             embed.WithColor(Color.Blue);
@@ -74,7 +74,7 @@ namespace ELO_Bot.Commands.Admin
         [Remarks("Set if users are removed from the queue when going idle")]
         public async Task IdleRemove()
         {
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
             server.Autoremove = !server.Autoremove;
             if (server.Autoremove)
                 await ReplyAsync("Users will be removed from queues if they go idle or if they go offline");
@@ -91,7 +91,7 @@ namespace ELO_Bot.Commands.Admin
         [Remarks("Toggle wether users are able to join more than one queue at a time")]
         public async Task MultiQueue()
         {
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
             server.BlockMultiQueueing = !server.BlockMultiQueueing;
             if (server.BlockMultiQueueing)
                 await ReplyAsync("Users will only be allowed in one queue at any one time.");
@@ -109,7 +109,7 @@ namespace ELO_Bot.Commands.Admin
         [Remarks("Upgrade the server to premium and increase the userlimit to unlimited")]
         public async Task PremiumCommand(string key = null)
         {
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
             var embed = new EmbedBuilder();
 
             if (key == null)
@@ -164,7 +164,7 @@ namespace ELO_Bot.Commands.Admin
         {
             var embed = new EmbedBuilder();
 
-            var s1 = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var s1 = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
 
             s1.AdminRole = adminrole.Id;
             embed.AddField("Complete!", $"People with the role {adminrole.Mention} can now use admin commands");
@@ -184,7 +184,7 @@ namespace ELO_Bot.Commands.Admin
         {
             var embed = new EmbedBuilder();
 
-            var s1 = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var s1 = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
 
             s1.ModRole = modRole.Id;
             embed.AddField("Complete!",
@@ -210,7 +210,7 @@ namespace ELO_Bot.Commands.Admin
         {
             var embed = new EmbedBuilder();
 
-            var s1 = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var s1 = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
 
             if (message == null)
             {
@@ -238,7 +238,7 @@ namespace ELO_Bot.Commands.Admin
         public async Task Lose(int points)
         {
             var embed = new EmbedBuilder();
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
             if (points == 0)
             {
                 embed.AddField("ERROR", "Please supply a number that isnt 0");
@@ -265,7 +265,7 @@ namespace ELO_Bot.Commands.Admin
         public async Task Win(int points)
         {
             var embed = new EmbedBuilder();
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
             if (points == 0)
             {
                 embed.AddField("ERROR", "Please supply a number that isnt 0");
@@ -291,7 +291,7 @@ namespace ELO_Bot.Commands.Admin
         [ServerOwner]
         public async Task Reset()
         {
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
             await ReplyAsync("Working...\n" +
                              $"Estimated Reset time = {server.UserList.Count * 3} seconds");
             var iiterations = 0;
@@ -350,7 +350,7 @@ namespace ELO_Bot.Commands.Admin
         [Summary("Blacklist")]
         public async Task Blacklist()
         {
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
 
             if (server.CmdBlacklist.Count == 0)
             {
@@ -374,7 +374,7 @@ namespace ELO_Bot.Commands.Admin
         [Summary("BlacklistAdd <command-name>")]
         public async Task BlacklistAdd(string cmdname)
         {
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
 
             if (_service.Modules.SelectMany(module => module.Commands).Any(command =>
                 string.Equals(command.Name, cmdname, StringComparison.CurrentCultureIgnoreCase)))
@@ -405,7 +405,7 @@ namespace ELO_Bot.Commands.Admin
         [Summary("BlacklistDel <command-name>")]
         public async Task BlacklistDel(string cmdname)
         {
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
 
             if (_service.Modules.SelectMany(module => module.Commands).Any(command =>
                 string.Equals(command.Name, cmdname, StringComparison.CurrentCultureIgnoreCase)))
@@ -437,7 +437,7 @@ namespace ELO_Bot.Commands.Admin
         public async Task Stats()
         {
             var embed = new EmbedBuilder();
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
 
             try
             {

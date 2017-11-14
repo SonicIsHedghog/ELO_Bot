@@ -32,7 +32,7 @@ namespace ELO_Bot.Commands.Admin
         [Remarks("Initialise a lobby in the current channel")]
         public async Task Createlobby([Remainder] string lolsdvdv = null)
         {
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
 
             var embed = new EmbedBuilder();
 
@@ -60,8 +60,8 @@ namespace ELO_Bot.Commands.Admin
                             var n3 = await NextMessageAsync(timeout: TimeSpan.FromMinutes(1d));
 
 
-                            var ser = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
-                            ser.Queue.Add(new ServerList.Server.Q
+                            var ser = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
+                            ser.Queue.Add(new Servers.Server.Q
                             {
                                 ChannelId = Context.Channel.Id,
                                 Users = new List<ulong>(),
@@ -102,7 +102,7 @@ namespace ELO_Bot.Commands.Admin
         [Remarks("Remove A Lobby")]
         public async Task ClearLobby()
         {
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
             var q = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
             server.Queue.Remove(q);
 
@@ -124,7 +124,7 @@ namespace ELO_Bot.Commands.Admin
         [Remarks("Clear All Players from The Queue")]
         public async Task ClearQueue()
         {
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
             var q = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
 
             if (q == null)
@@ -154,7 +154,7 @@ namespace ELO_Bot.Commands.Admin
         public async Task AddMap(params string[] mapName)
         {
             var embed = new EmbedBuilder();
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
             var lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
             if (lobby == null)
             {
@@ -186,7 +186,7 @@ namespace ELO_Bot.Commands.Admin
         [Remarks("Delete A Map")]
         public async Task DeleteMap(string mapName)
         {
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
             var lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
 
             if (lobby == null)
@@ -217,7 +217,7 @@ namespace ELO_Bot.Commands.Admin
         public async Task SetMaps(params string[] mapName)
         {
             var embed = new EmbedBuilder();
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
             var lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
             if (lobby == null)
             {
@@ -244,7 +244,7 @@ namespace ELO_Bot.Commands.Admin
         [Remarks("Clear all maps for the current lobby")]
         public async Task ClearMap()
         {
-            var server = ServerList.Serverlist.First(x => x.ServerId == Context.Guild.Id);
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
             var lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
 
             if (lobby == null)
