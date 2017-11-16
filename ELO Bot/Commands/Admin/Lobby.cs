@@ -10,20 +10,19 @@ using ELO_Bot.Preconditions;
 namespace ELO_Bot.Commands.Admin
 {
     /// <summary>
-    /// checks ensure that blacklisted commands are not run
-    /// and that these commands are only used by an admin
+    ///     checks ensure that blacklisted commands are not run
+    ///     and that these commands are only used by an admin
     /// </summary>
     [CheckBlacklist]
     [CheckAdmin]
     public class Lobby : InteractiveBase
     {
-
         /// <summary>
-        /// creates a lobby
-        /// requires the user to provide the following:
-        /// Users Per Game
-        /// If teams are automatically chosen or chosen by team captains
-        /// Lobby Description
+        ///     creates a lobby
+        ///     requires the user to provide the following:
+        ///     Users Per Game
+        ///     If teams are automatically chosen or chosen by team captains
+        ///     Lobby Description
         /// </summary>
         /// <param name="lolsdvdv">ignored text, previously used in a different context</param>
         /// <returns></returns>
@@ -94,7 +93,7 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// removes the current channel from being used as a lobby if applicable
+        ///     removes the current channel from being used as a lobby if applicable
         /// </summary>
         /// <returns></returns>
         [Command("RemoveLobby")]
@@ -116,7 +115,7 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// removes all players form the current queue
+        ///     removes all players form the current queue
         /// </summary>
         /// <returns></returns>
         [Command("ClearQueue")]
@@ -144,7 +143,7 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// adds a list of maps to the current lobby
+        ///     adds a list of maps to the current lobby
         /// </summary>
         /// <param name="mapName">list of maps ie. map1 map2 map3...</param>
         /// <returns></returns>
@@ -177,7 +176,7 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// remove a map from the maps list
+        ///     remove a map from the maps list
         /// </summary>
         /// <param name="mapName">the name of the map you want to delete</param>
         /// <returns></returns>
@@ -207,7 +206,7 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// rather than adding maps, set the entire list of maps for the current channel
+        ///     rather than adding maps, set the entire list of maps for the current channel
         /// </summary>
         /// <param name="mapName">list of maps ie. map1 map2 map3...</param>
         /// <returns></returns>
@@ -236,7 +235,7 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// clears all maps for the current lobby
+        ///     clears all maps for the current lobby
         /// </summary>
         /// <returns></returns>
         [Command("ClearMaps")]

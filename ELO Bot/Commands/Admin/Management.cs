@@ -11,15 +11,15 @@ using ELO_Bot.Preconditions;
 namespace ELO_Bot.Commands.Admin
 {
     /// <summary>
-    /// to ensure no blacklisted commands are used
-    /// make sure that only admins can use these commands
+    ///     to ensure no blacklisted commands are used
+    ///     make sure that only admins can use these commands
     /// </summary>
     [CheckBlacklist]
     [CheckAdmin]
     public class Management : InteractiveBase<SocketCommandContext>
     {
         /// <summary>
-        /// deletes the specified user's profile.
+        ///     deletes the specified user's profile.
         /// </summary>
         /// <param name="user">@user</param>
         /// <returns></returns>
@@ -55,7 +55,7 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// registers a user with the given username
+        ///     registers a user with the given username
         /// </summary>
         /// <param name="user">user to register</param>
         /// <param name="username">name for the user</param>
@@ -132,14 +132,14 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// rename the specified user
+        ///     rename the specified user
         /// </summary>
         /// <param name="user">user to rename</param>
         /// <param name="newname">new name</param>
         /// <returns></returns>
         [Command("Rename")]
-        [Summary("Rename <@user>")]
-        [Remarks("Sets the role users will join when registering")]
+        [Summary("Rename <@user> <newname>")]
+        [Remarks("Change a user's nickname")]
         public async Task Rename(IUser user, [Remainder] string newname = null)
         {
             var embed = new EmbedBuilder();
@@ -198,7 +198,7 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// bans the specified user from using the queue
+        ///     bans the specified user from using the queue
         /// </summary>
         /// <param name="user">user to ban</param>
         /// <param name="i">hours to ban the user for.</param>
@@ -228,7 +228,7 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// unbans the specified user from matchmaking
+        ///     unbans the specified user from matchmaking
         /// </summary>
         /// <param name="user">user to unban</param>
         /// <returns></returns>
@@ -246,8 +246,8 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// lists all bans in the server
-        /// Also runs a check for users and removes expired bans
+        ///     lists all bans in the server
+        ///     Also runs a check for users and removes expired bans
         /// </summary>
         /// <returns></returns>
         [Command("bans")]
@@ -326,14 +326,14 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// adds a new rank to the server
+        ///     adds a new rank to the server
         /// </summary>
         /// <param name="points">points required to be given this rank</param>
         /// <param name="role">role name ie. @role</param>
         /// <returns></returns>
         [Command("addrank")]
         [Summary("addrank <points> <@role>")]
-        [Remarks("set a Rank to join")]
+        [Remarks("set a role which people are given once reaching the specified points")]
         public async Task SetReg(int points, IRole role)
         {
             var embed = new EmbedBuilder();
@@ -383,7 +383,7 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// remove the specified rank
+        ///     remove the specified rank
         /// </summary>
         /// <param name="role">@role</param>
         /// <returns></returns>
@@ -421,7 +421,7 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// remove the specified rank by the role ID, this prevents issues with deleted roles being ranked still.
+        ///     remove the specified rank by the role ID, this prevents issues with deleted roles being ranked still.
         /// </summary>
         /// <param name="role">role ID</param>
         /// <returns></returns>
@@ -451,9 +451,10 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// specify a rankwinmodifier for the given rank
-        /// if a user has this rank and wins, their points will be modified according to this value rather than the server default
-        /// set this value to 0 for the default server modifier to be used
+        ///     specify a rankwinmodifier for the given rank
+        ///     if a user has this rank and wins, their points will be modified according to this value rather than the server
+        ///     default
+        ///     set this value to 0 for the default server modifier to be used
         /// </summary>
         /// <param name="role">ranked role</param>
         /// <param name="points">points per win</param>
@@ -484,9 +485,10 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// specify a ranklossmodifier for the given rank
-        /// if a user has this rank and loses, their points will be modified according to this value rather than the server default
-        /// set this value to 0 to use the server default again
+        ///     specify a ranklossmodifier for the given rank
+        ///     if a user has this rank and loses, their points will be modified according to this value rather than the server
+        ///     default
+        ///     set this value to 0 to use the server default again
         /// </summary>
         /// <param name="role">ranked role</param>
         /// <param name="points">points per loss</param>
@@ -518,13 +520,13 @@ namespace ELO_Bot.Commands.Admin
 
 
         /// <summary>
-        /// server owner only command, removes server users
-        /// removes server lobbies. bans and previous games as well.
+        ///     server owner only command, removes server users
+        ///     removes server lobbies. bans and previous games as well.
         /// </summary>
         /// <returns></returns>
         [Command("ClearUsers", RunMode = RunMode.Async)]
         [Summary("ClearUsers")]
-        [Remarks("Deletes ALL user profiles in the server.")]
+        [Remarks("Deletes ALL user profiles in the server (SERVER OWNER ONLY)")]
         [ServerOwner]
         public async Task ClearUsers()
         {

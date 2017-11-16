@@ -3,14 +3,13 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using ELO_Bot.PreConditions;
-using ELO_Bot.Preconditions;
 
 namespace ELO_Bot.Commands
 {
     public class User : ModuleBase
     {
         /// <summary>
-        /// sign up for ELO Bot
+        ///     sign up for ELO Bot
         /// </summary>
         /// <param name="username"></param>
         /// <returns></returns>
@@ -136,7 +135,7 @@ namespace ELO_Bot.Commands
         }
 
         /// <summary>
-        /// get a user's profile and information
+        ///     get a user's profile and information
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
@@ -164,9 +163,9 @@ namespace ELO_Bot.Commands
         }
 
         /// <summary>
-        /// list users in order of hihest points
-        /// most wins
-        /// or most losses
+        ///     list users in order of hihest points
+        ///     most wins
+        ///     or most losses
         /// </summary>
         [Command("Leaderboard")]
         [Summary("Leaderboard <wins, losses, points>")]
@@ -262,7 +261,7 @@ namespace ELO_Bot.Commands
         }
 
         /// <summary>
-        /// display ranks for the current server
+        ///     display ranks for the current server
         /// </summary>
         /// <returns></returns>
         [Command("ranks")]
@@ -319,7 +318,7 @@ namespace ELO_Bot.Commands
         }
 
         /// <summary>
-        /// generate an invite for the bot to join your own server
+        ///     generate an invite for the bot to join your own server
         /// </summary>
         /// <returns></returns>
         [Command("Invite")]

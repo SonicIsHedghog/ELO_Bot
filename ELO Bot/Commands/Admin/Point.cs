@@ -8,14 +8,14 @@ using ELO_Bot.Preconditions;
 namespace ELO_Bot.Commands.Admin
 {
     /// <summary>
-    /// makes sure that only admins can run the following commands.
+    ///     makes sure that only admins can run the following commands.
     /// </summary>
     [CheckBlacklist]
     [CheckAdmin]
     public class Point : ModuleBase
     {
         /// <summary>
-        /// adds the given points to the specified users.
+        ///     adds the given points to the specified users.
         /// </summary>
         /// <param name="points">points to add</param>
         /// <param name="userlist">users ie. @user1 @user3 @user3....</param>
@@ -72,7 +72,7 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// remove given points from the specified users.
+        ///     remove given points from the specified users.
         /// </summary>
         /// <param name="points">points to remove</param>
         /// <param name="userlist">users ie. @user1 @user3 @user3....</param>
@@ -124,7 +124,7 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// set the specific points of a user
+        ///     set the specific points of a user
         /// </summary>
         /// <param name="points">points value</param>
         /// <param name="user">user to edit</param>
@@ -173,7 +173,7 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// check the rank of the specified user corresponds with their score.
+        ///     check the rank of the specified user corresponds with their score.
         /// </summary>
         /// <param name="server">current server</param>
         /// <param name="user">user to modify</param>

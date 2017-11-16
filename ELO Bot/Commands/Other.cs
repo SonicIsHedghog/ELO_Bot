@@ -22,7 +22,7 @@ namespace ELO_Bot.Commands
         }
 
         /// <summary>
-        /// lists all administrator commands
+        ///     lists all administrator commands
         /// </summary>
         /// <param name="modulearg"></param>
         /// <returns></returns>
@@ -59,7 +59,7 @@ namespace ELO_Bot.Commands
         }
 
         /// <summary>
-        /// lists all regular commands
+        ///     lists all regular commands
         /// </summary>
         /// <param name="modulearg"></param>
         /// <returns></returns>
@@ -96,7 +96,7 @@ namespace ELO_Bot.Commands
         }
 
         /// <summary>
-        /// information about the bot on github as well as other stuff about usercounts etc.
+        ///     information about the bot on github as well as other stuff about usercounts etc.
         /// </summary>
         /// <returns></returns>
         [Command("Info")]
@@ -161,7 +161,7 @@ namespace ELO_Bot.Commands
         }
 
         /// <summary>
-        /// report an issue directly to the bot owner
+        ///     report an issue directly to the bot owner
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>

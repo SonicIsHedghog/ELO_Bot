@@ -21,37 +21,37 @@ namespace ELO_Bot.Commands.Admin
         [Remarks("Bot Creator Command")]
         public async Task Addpremium(params string[] keys)
         {
-                var i = 0;
-                var duplicates = "Dupes:\n";
-                if (CommandHandler.Keys == null)
+            var i = 0;
+            var duplicates = "Dupes:\n";
+            if (CommandHandler.Keys == null)
+            {
+                CommandHandler.Keys = keys.ToList();
+                await ReplyAsync("list replaced.");
+                var obj1 = JsonConvert.SerializeObject(CommandHandler.Keys, Formatting.Indented);
+                File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "setup/keys.json"), obj1);
+                return;
+            }
+            foreach (var key in keys)
+            {
+                var dupe = false;
+                foreach (var k in CommandHandler.Keys)
+                    if (k == key)
+                        dupe = true;
+                if (!dupe)
                 {
-                    CommandHandler.Keys = keys.ToList();
-                    await ReplyAsync("list replaced.");
-                    var obj1 = JsonConvert.SerializeObject(CommandHandler.Keys, Formatting.Indented);
-                    File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "setup/keys.json"), obj1);
-                    return;
+                    i++;
+                    CommandHandler.Keys.Add(key); //NO DUPES
                 }
-                foreach (var key in keys)
+                else
                 {
-                    var dupe = false;
-                    foreach (var k in CommandHandler.Keys)
-                        if (k == key)
-                            dupe = true;
-                    if (!dupe)
-                    {
-                        i++;
-                        CommandHandler.Keys.Add(key); //NO DUPES
-                    }
-                    else
-                    {
-                        duplicates += $"{key}\n";
-                    }
+                    duplicates += $"{key}\n";
                 }
-                await ReplyAsync($"{keys.Length} Supplied\n" +
-                                 $"{i} Added\n" +
-                                 $"{duplicates}");
-                var keyobject = JsonConvert.SerializeObject(CommandHandler.Keys, Formatting.Indented);
-                File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "setup/keys.json"), keyobject);
+            }
+            await ReplyAsync($"{keys.Length} Supplied\n" +
+                             $"{i} Added\n" +
+                             $"{duplicates}");
+            var keyobject = JsonConvert.SerializeObject(CommandHandler.Keys, Formatting.Indented);
+            File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "setup/keys.json"), keyobject);
         }
 
         /// <summary>

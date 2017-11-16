@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 namespace ELO_Bot.Commands.Admin
 {
     /// <summary>
-    /// ensure only admins can use the commands
+    ///     ensure only admins can use the commands
     /// </summary>
     [RequireContext(ContextType.Guild)]
     [CheckBlacklist]
@@ -25,7 +25,7 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// set the current channel for game announcements
+        ///     set the current channel for game announcements
         /// </summary>
         /// <returns></returns>
         [Command("SetAnnouncements")]
@@ -39,7 +39,7 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// set the role that users are given upon registering.
+        ///     set the role that users are given upon registering.
         /// </summary>
         /// <param name="role">role to give users. ie. @role</param>
         /// <returns></returns>
@@ -66,7 +66,7 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// toggle whether users are removed from queues when going idle/offline
+        ///     toggle whether users are removed from queues when going idle/offline
         /// </summary>
         /// <returns></returns>
         [Command("ToggleRemoveIdle")]
@@ -83,7 +83,7 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// toggle whether to block users from joining more than one queue at a time.
+        ///     toggle whether to block users from joining more than one queue at a time.
         /// </summary>
         /// <returns></returns>
         [Command("ToggleMultiQueue")]
@@ -100,7 +100,7 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// command for upgrading a server to the premium version of ELO Bot. Ie, have 20+ users registered
+        ///     command for upgrading a server to the premium version of ELO Bot. Ie, have 20+ users registered
         /// </summary>
         /// <param name="key">key to input ie. 1234-5678-1234-5678</param>
         /// <returns></returns>
@@ -153,7 +153,7 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// set the rolethat is given bot administrator permissions
+        ///     set the rolethat is given bot administrator permissions
         /// </summary>
         /// <param name="adminrole"></param>
         /// <returns></returns>
@@ -173,7 +173,7 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// set the role that is given moderator permissions. ie. Are able to use the `game` commands
+        ///     set the role that is given moderator permissions. ie. Are able to use the `game` commands
         /// </summary>
         /// <param name="modRole"></param>
         /// <returns></returns>
@@ -199,7 +199,7 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// set the welcome message given to users when they register
+        ///     set the welcome message given to users when they register
         /// </summary>
         /// <param name="message">message to be displayed</param>
         /// <returns></returns>
@@ -228,7 +228,7 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// sets the points removed from a user when they lose.
+        ///     sets the points removed from a user when they lose.
         /// </summary>
         /// <param name="points"></param>
         /// <returns></returns>
@@ -255,7 +255,7 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// set the points given to a user when they win
+        ///     set the points given to a user when they win
         /// </summary>
         /// <param name="points"></param>
         /// <returns></returns>
@@ -282,7 +282,7 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// server owner only command, resets all user scores on the scoreboard.
+        ///     server owner only command, resets all user scores on the scoreboard.
         /// </summary>
         /// <returns></returns>
         [Command("ScoreboardReset", RunMode = RunMode.Async)]
@@ -299,9 +299,7 @@ namespace ELO_Bot.Commands.Admin
             {
                 iiterations++;
                 if (iiterations % 20 == 0)
-                {
-                    await ReplyAsync($"{Math.Ceiling((double)(iiterations * 100) / server.UserList.Count)}% complete");
-                }
+                    await ReplyAsync($"{Math.Ceiling((double) (iiterations * 100) / server.UserList.Count)}% complete");
                 user.Points = 0;
                 user.Wins = 0;
                 user.Losses = 0;
@@ -341,8 +339,8 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// list all commands unavailable to regilar users 
-        /// these commands have been 'blacklisted' and are not able to be used by regular users.
+        ///     list all commands unavailable to regilar users
+        ///     these commands have been 'blacklisted' and are not able to be used by regular users.
         /// </summary>
         /// <returns></returns>
         [Command("Blacklist")]
@@ -365,7 +363,7 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// add a command to the blacklist.
+        ///     add a command to the blacklist.
         /// </summary>
         /// <param name="cmdname">command name.</param>
         /// <returns></returns>
@@ -396,7 +394,7 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// remove a command from the blacklist
+        ///     remove a command from the blacklist
         /// </summary>
         /// <param name="cmdname">command name</param>
         /// <returns></returns>
@@ -427,7 +425,7 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// server information
+        ///     server information
         /// </summary>
         /// <returns></returns>
         [Command("Server")]

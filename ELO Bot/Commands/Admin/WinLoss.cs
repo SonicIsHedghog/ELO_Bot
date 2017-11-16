@@ -7,14 +7,14 @@ using ELO_Bot.Preconditions;
 namespace ELO_Bot.Commands.Admin
 {
     /// <summary>
-    /// denies users that aren't administrators from accesing these commands.
+    ///     denies users that aren't administrators from accesing these commands.
     /// </summary>
     [CheckBlacklist]
     [CheckAdmin]
     public class WinLoss : ModuleBase
     {
         /// <summary>
-        /// remove a single win from the provided users
+        ///     remove a single win from the provided users
         /// </summary>
         /// <param name="userlist"></param>
         /// <returns></returns>
@@ -50,7 +50,7 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// remove a single loss from the provided users
+        ///     remove a single loss from the provided users
         /// </summary>
         /// <param name="userlist"></param>
         /// <returns></returns>

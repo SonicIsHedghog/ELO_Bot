@@ -115,14 +115,13 @@ namespace ELO_Bot
                 await Logger.In3(context.Message.Content, context.Guild.Name, context.Channel.Name,
                     context.User.Username);
 
-                var rnd = new Random().Next(0, 50);
-                if (rnd == 10)
-                {
+                var rnd = new Random().Next(0, 100);
+                if (rnd == 1)
                     try
                     {
                         var embed = new EmbedBuilder
                         {
-                            Title = $"Consider supporting this project by Joining the Patreon!",
+                            Title = "Consider supporting this project by Joining the Patreon!",
                             Url = "http://patreon.com/passivebot"
                         };
                         await context.Channel.SendMessageAsync("", false, embed.Build());
@@ -132,8 +131,6 @@ namespace ELO_Bot
                         //
                     }
 
-                }
-
                 Commands++;
             }
 
@@ -141,7 +138,7 @@ namespace ELO_Bot
             {
                 var backupfile = Path.Combine(AppContext.BaseDirectory,
                     $"setup/backups/{DateTime.UtcNow:dd-MM-yy HH.mm.ss}.txt");
-                
+
 
                 var jsonbackup = JsonConvert.SerializeObject(Servers.ServerList);
                 File.WriteAllText(backupfile, jsonbackup);

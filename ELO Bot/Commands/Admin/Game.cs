@@ -14,7 +14,7 @@ namespace ELO_Bot.Commands.Admin
     /// </summary>
     [CheckBlacklist]
     [CheckModerator]
-    public class Game :  InteractiveBase
+    public class Game : InteractiveBase
     {
         /// <summary>
         ///     adds a win and increaces the points for the specified users.
@@ -67,80 +67,83 @@ namespace ELO_Bot.Commands.Admin
         [Remarks("Undo the results of a previous game")]
         public async Task UnWin(string lobbyname, int gamenumber, string team)
         {
-                var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
-                IMessageChannel channel = null;
-                foreach (var chan in Context.Guild.Channels)
-                    if (string.Equals(chan.Name, lobbyname, StringComparison.CurrentCultureIgnoreCase))
-                        channel = chan as IMessageChannel;
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
+            IMessageChannel channel = null;
+            foreach (var chan in Context.Guild.Channels)
+                if (string.Equals(chan.Name, lobbyname, StringComparison.CurrentCultureIgnoreCase))
+                    channel = chan as IMessageChannel;
 
-                if (channel == null)
+            if (channel == null)
+            {
+                var queuechannels = "";
+                foreach (var chan in server.Queue)
                 {
-                    var queuechannels = "";
-                    foreach (var chan in server.Queue)
-                    {
-                        var getqueuechannels = await ((IGuild) Context.Guild).GetChannelAsync(chan.ChannelId);
-                        queuechannels += $"{getqueuechannels.Name}\n";
-                    }
-
-                    await ReplyAsync("**ERROR:** Please specify the channel in which queue was created\n" +
-                                     "Here are a list:\n" +
-                                     $"{queuechannels}");
-                    return;
+                    var getqueuechannels = await ((IGuild) Context.Guild).GetChannelAsync(chan.ChannelId);
+                    queuechannels += $"{getqueuechannels.Name}\n";
                 }
 
-                var game = server.Gamelist.FirstOrDefault(x => x.LobbyId == channel.Id
-                                                               && x.GameNumber == gamenumber);
+                await ReplyAsync("**ERROR:** Please specify the channel in which queue was created\n" +
+                                 "Here are a list:\n" +
+                                 $"{queuechannels}");
+                return;
+            }
 
-                if (game == null)
+            var game = server.Gamelist.FirstOrDefault(x => x.LobbyId == channel.Id
+                                                           && x.GameNumber == gamenumber);
+
+            if (game == null)
+            {
+                await ReplyAsync("ERROR: Invalid Game number/channel");
+                return;
+            }
+
+            var team1 = new List<IUser>();
+            var team2 = new List<IUser>();
+            foreach (var user in game.Team1)
+                try
                 {
-                    await ReplyAsync("ERROR: Invalid Game number/channel");
-                    return;
+                    team1.Add(await ((IGuild) Context.Guild).GetUserAsync(user));
+                }
+                catch
+                {
+                    await ReplyAsync(
+                        $"{server.UserList.FirstOrDefault(x => x.UserId == user)?.Username} was unavailable");
                 }
 
-                var team1 = new List<IUser>();
-                var team2 = new List<IUser>();
-                foreach (var user in game.Team1)
-                    try
-                    {
-                        team1.Add(await ((IGuild) Context.Guild).GetUserAsync(user));
-                    }
-                    catch
-                    {
-                        await ReplyAsync(
-                            $"{server.UserList.FirstOrDefault(x => x.UserId == user)?.Username} was unavailable");
-                    }
 
-
-                foreach (var user in game.Team2)
-                    try
-                    {
-                        team2.Add(await ((IGuild) Context.Guild).GetUserAsync(user));
-                    }
-                    catch
-                    {
-                        await ReplyAsync(
-                            $"{server.UserList.FirstOrDefault(x => x.UserId == user)?.Username} was unavailable");
-                    }
-
-                
-
-                switch (team.ToLower())
+            foreach (var user in game.Team2)
+                try
                 {
-                    case "team1":
-                        await UndoWinLossPoints(server, team1, true, server.Winamount, $"{lobbyname} {game.GameNumber} {team}");
-                        await UndoWinLossPoints(server, team2, false, server.Lossamount, $"{lobbyname} {game.GameNumber} {team}");
-                        game.Result = null;
-                        break;
-                    case "team2":
-                        await UndoWinLossPoints(server, team2, true, server.Winamount, $"{lobbyname} {game.GameNumber} {team}");
-                        await UndoWinLossPoints(server, team1, false, server.Lossamount, $"{lobbyname} {game.GameNumber} {team}");
-                        game.Result = null;
-                        break;
-                    default:
-                        await ReplyAsync(
-                            "Please specify a team in the following format `=game <lobby> <number> team1` or `=game <lobby> <number> team2`");
-                        break;
+                    team2.Add(await ((IGuild) Context.Guild).GetUserAsync(user));
                 }
+                catch
+                {
+                    await ReplyAsync(
+                        $"{server.UserList.FirstOrDefault(x => x.UserId == user)?.Username} was unavailable");
+                }
+
+
+            switch (team.ToLower())
+            {
+                case "team1":
+                    await UndoWinLossPoints(server, team1, true, server.Winamount,
+                        $"{lobbyname} {game.GameNumber} {team}");
+                    await UndoWinLossPoints(server, team2, false, server.Lossamount,
+                        $"{lobbyname} {game.GameNumber} {team}");
+                    game.Result = null;
+                    break;
+                case "team2":
+                    await UndoWinLossPoints(server, team2, true, server.Winamount,
+                        $"{lobbyname} {game.GameNumber} {team}");
+                    await UndoWinLossPoints(server, team1, false, server.Lossamount,
+                        $"{lobbyname} {game.GameNumber} {team}");
+                    game.Result = null;
+                    break;
+                default:
+                    await ReplyAsync(
+                        "Please specify a team in the following format `=game <lobby> <number> team1` or `=game <lobby> <number> team2`");
+                    break;
+            }
         }
 
 
@@ -157,106 +160,105 @@ namespace ELO_Bot.Commands.Admin
         [Remarks("Automatically update wins/losses for the selected team")]
         public async Task Win(string lobbyname, int gamenumber, string team)
         {
-                var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
-                IMessageChannel channel = null;
-                foreach (var chan in Context.Guild.Channels)
-                    if (string.Equals(chan.Name, lobbyname, StringComparison.CurrentCultureIgnoreCase))
-                        channel = chan as IMessageChannel;
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
+            IMessageChannel channel = null;
+            foreach (var chan in Context.Guild.Channels)
+                if (string.Equals(chan.Name, lobbyname, StringComparison.CurrentCultureIgnoreCase))
+                    channel = chan as IMessageChannel;
 
-                if (channel == null)
-                {
-                    var queuechannels = "";
-                    foreach (var chan in server.Queue)
-                    {
-                        try
-                        {
-                            var getqueuechannels = await ((IGuild) Context.Guild).GetChannelAsync(chan.ChannelId);
-                            queuechannels += $"{getqueuechannels.Name}\n";
-                        }
-                        catch
-                        {
-                            //
-                        }
-
-                    }
-                    await ReplyAsync("**ERROR:** Please specify the channel in which queue was created\n" +
-                                     "Here are a list:\n" +
-                                     $"{queuechannels}");
-                    return;
-                }
-
-                var game = server.Gamelist.FirstOrDefault(x => x.LobbyId == channel.Id
-                                                               && x.GameNumber == gamenumber);
-
-                if (game == null)
-                {
-                    await ReplyAsync("ERROR: Invalid Game number/channel");
-                    return;
-                }
-
-                if (game.Result != null)
-                {
-                    if (game.Result is true)
-                        await ReplyAsync("Team1 is already recorded as winning this game.");
-
-                    if (game.Result is false)
-                        await ReplyAsync("Team2 is already recorded as winning this game.");
-
-                    await ReplyAsync("Reply with `YES` to continue scoring this game, reply with `NO` to cancel");
-                        var response = await NextMessageAsync(timeout: TimeSpan.FromSeconds(30));
-                        if (response.Content.ToLower().Contains("yes"))
-                        {
-                            //
-                        }
-                        else
-                        {
-                            await ReplyAsync("Command Aborted.");
-                            return;
-                        }
-                }
-
-                var team1 = new List<IUser>();
-                var team2 = new List<IUser>();
-                foreach (var user in game.Team1)
+            if (channel == null)
+            {
+                var queuechannels = "";
+                foreach (var chan in server.Queue)
                     try
                     {
-                        team1.Add(await ((IGuild) Context.Guild).GetUserAsync(user));
+                        var getqueuechannels = await ((IGuild) Context.Guild).GetChannelAsync(chan.ChannelId);
+                        queuechannels += $"{getqueuechannels.Name}\n";
                     }
                     catch
                     {
-                        await ReplyAsync(
-                            $"{server.UserList.FirstOrDefault(x => x.UserId == user)?.Username} was unavailable");
+                        //
                     }
+                await ReplyAsync("**ERROR:** Please specify the channel in which queue was created\n" +
+                                 "Here are a list:\n" +
+                                 $"{queuechannels}");
+                return;
+            }
 
+            var game = server.Gamelist.FirstOrDefault(x => x.LobbyId == channel.Id
+                                                           && x.GameNumber == gamenumber);
 
-                foreach (var user in game.Team2)
-                    try
-                    {
-                        team2.Add(await ((IGuild) Context.Guild).GetUserAsync(user));
-                    }
-                    catch
-                    {
-                        await ReplyAsync(
-                            $"{server.UserList.FirstOrDefault(x => x.UserId == user)?.Username} was unavailable");
-                    }
+            if (game == null)
+            {
+                await ReplyAsync("ERROR: Invalid Game number/channel");
+                return;
+            }
 
-                switch (team.ToLower())
+            if (game.Result != null)
+            {
+                if (game.Result is true)
+                    await ReplyAsync("Team1 is already recorded as winning this game.");
+
+                if (game.Result is false)
+                    await ReplyAsync("Team2 is already recorded as winning this game.");
+
+                await ReplyAsync("Reply with `YES` to continue scoring this game, reply with `NO` to cancel");
+                var response = await NextMessageAsync(timeout: TimeSpan.FromSeconds(30));
+                if (response.Content.ToLower().Contains("yes"))
                 {
-                    case "team1":
-                        await WinLossPoints(server, team1, true, server.Winamount, $"{lobbyname} {game.GameNumber} {team}");
-                        await WinLossPoints(server, team2, false, server.Lossamount, $"{lobbyname} {game.GameNumber} {team}");
-                        game.Result = true;
-                        break;
-                    case "team2":
-                        await WinLossPoints(server, team2, true, server.Winamount, $"{lobbyname} {game.GameNumber} {team}");
-                        await WinLossPoints(server, team1, false, server.Lossamount, $"{lobbyname} {game.GameNumber} {team}");
-                        game.Result = false;
-                        break;
-                    default:
-                        await ReplyAsync(
-                            "Please specify a team in the following format `=game <lobby> <number> team1` or `=game <lobby> <number> team2`");
-                        break;
+                    //
                 }
+                else
+                {
+                    await ReplyAsync("Command Aborted.");
+                    return;
+                }
+            }
+
+            var team1 = new List<IUser>();
+            var team2 = new List<IUser>();
+            foreach (var user in game.Team1)
+                try
+                {
+                    team1.Add(await ((IGuild) Context.Guild).GetUserAsync(user));
+                }
+                catch
+                {
+                    await ReplyAsync(
+                        $"{server.UserList.FirstOrDefault(x => x.UserId == user)?.Username} was unavailable");
+                }
+
+
+            foreach (var user in game.Team2)
+                try
+                {
+                    team2.Add(await ((IGuild) Context.Guild).GetUserAsync(user));
+                }
+                catch
+                {
+                    await ReplyAsync(
+                        $"{server.UserList.FirstOrDefault(x => x.UserId == user)?.Username} was unavailable");
+                }
+
+            switch (team.ToLower())
+            {
+                case "team1":
+                    await WinLossPoints(server, team1, true, server.Winamount, $"{lobbyname} {game.GameNumber} {team}");
+                    await WinLossPoints(server, team2, false, server.Lossamount,
+                        $"{lobbyname} {game.GameNumber} {team}");
+                    game.Result = true;
+                    break;
+                case "team2":
+                    await WinLossPoints(server, team2, true, server.Winamount, $"{lobbyname} {game.GameNumber} {team}");
+                    await WinLossPoints(server, team1, false, server.Lossamount,
+                        $"{lobbyname} {game.GameNumber} {team}");
+                    game.Result = false;
+                    break;
+                default:
+                    await ReplyAsync(
+                        "Please specify a team in the following format `=game <lobby> <number> team1` or `=game <lobby> <number> team2`");
+                    break;
+            }
         }
 
         /// <summary>
@@ -272,7 +274,8 @@ namespace ELO_Bot.Commands.Admin
         /// <param name="points">default points for the user's to be modified.</param>
         /// <param name="gametext">String of the game info</param>
         /// <returns></returns>
-        public async Task UndoWinLossPoints(Servers.Server server, List<IUser> users, bool win, int points, string gametext = null)
+        public async Task UndoWinLossPoints(Servers.Server server, List<IUser> users, bool win, int points,
+            string gametext = null)
         {
             var embed = new EmbedBuilder();
             foreach (var user in users)
@@ -342,7 +345,7 @@ namespace ELO_Bot.Commands.Admin
                 }
             }
             embed.Title = gametext != null ? $"Game Undone ({gametext})" : "Game Undone";
-            
+
             await ReplyAsync("", false, embed.Build());
         }
 
@@ -359,7 +362,8 @@ namespace ELO_Bot.Commands.Admin
         /// <param name="points">default points for the user's to be modified.</param>
         /// <param name="gametext">Game text information</param>
         /// <returns></returns>
-        public async Task WinLossPoints(Servers.Server server, List<IUser> users, bool win, int points, string gametext = null)
+        public async Task WinLossPoints(Servers.Server server, List<IUser> users, bool win, int points,
+            string gametext = null)
         {
             var embed = new EmbedBuilder();
             foreach (var user in users)
@@ -413,7 +417,7 @@ namespace ELO_Bot.Commands.Admin
                         if (usr.Points < 0)
                             usr.Points = 0;
                         embed.AddField($"{usr.Username} LOST (-{points})", $"Points: **{usr.Points}**\n" +
-                                                                         $"W/L: **[{usr.Wins}/{usr.Losses}]**");
+                                                                           $"W/L: **[{usr.Wins}/{usr.Losses}]**");
                         embed.Color = Color.Red;
                     }
                     try
@@ -429,10 +433,8 @@ namespace ELO_Bot.Commands.Admin
             }
 
             if (gametext != null)
-            {
                 embed.Title = $"Game Decided: {gametext}";
-            }
-            
+
             await ReplyAsync("", false, embed.Build());
         }
 
