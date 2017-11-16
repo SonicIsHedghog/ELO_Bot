@@ -81,8 +81,9 @@ namespace ELO_Bot
 
             public class Ban
             {
-                public DateTime Time;
-                public ulong UserId;
+                public DateTime Time { get; set; }
+                public ulong UserId { get; set; }
+                public string Reason { get; set; } = null;
             }
 
             public class Q

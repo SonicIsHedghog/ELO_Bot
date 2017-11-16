@@ -998,7 +998,8 @@ namespace ELO_Bot.Commands
 
             try
             {
-                cap1 = Context.Guild.GetUserAsync(lobby.T1Captain).Result.Mention;
+                var c1 = await Context.Guild.GetUserAsync(lobby.T1Captain);
+                cap1 = $"[{c1.Mention}]";
             }
             catch
             {
@@ -1007,7 +1008,8 @@ namespace ELO_Bot.Commands
 
             try
             {
-                cap2 = Context.Guild.GetUserAsync(lobby.T2Captain).Result.Mention;
+                var c2 = await Context.Guild.GetUserAsync(lobby.T2Captain);
+                cap2 = $"[{c2.Mention}]";
             }
             catch
             {

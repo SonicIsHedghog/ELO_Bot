@@ -204,15 +204,17 @@ namespace ELO_Bot.Commands.Admin
         /// <param name="i">hours to ban the user for.</param>
         /// <returns></returns>
         [Command("ban")]
-        [Summary("ban <@user> <hours>")]
-        [Remarks("ban user from using Lobbies for specified time")]
-        public async Task Ban(SocketGuildUser user, int i)
+        [Summary("ban <@user> <hours> <reason>")]
+        [Remarks("ban user from using Lobbies for specified anount of hours")]
+        public async Task Ban(SocketGuildUser user, int i, [Remainder] string reason = null)
         {
             var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
+
             var b = new Servers.Server.Ban
             {
                 UserId = user.Id,
-                Time = DateTime.UtcNow.AddHours(i)
+                Time = DateTime.UtcNow.AddHours(i),
+                Reason = reason
             };
 
             if (server.Bans.Select(x => x.UserId == user.Id).Any())
@@ -224,7 +226,12 @@ namespace ELO_Bot.Commands.Admin
                 if (queue.Users.Contains(user.Id) && !queue.IsPickingTeams)
                     queue.Users.Remove(user.Id);
 
-            await ReplyAsync($"{user.Mention} has been banned for {i} hours from matchmaking.");
+            if (reason == null)
+            await ReplyAsync($"**{user.Mention} has been banned for {i} hours from matchmaking**");
+            else
+            {
+                await ReplyAsync($"**{user.Mention} has been banned for {i} hours from matchmaking for:** {reason}");
+            }
         }
 
         /// <summary>
@@ -273,15 +280,26 @@ namespace ELO_Bot.Commands.Admin
                 }
                 catch
                 {
-                    u = $"Unavailable User:[{user.UserId}]";
+                    u = $"[{user.UserId}]";
                 }
 
 
                 if (Math.Round((user.Time - DateTime.UtcNow).TotalMinutes, 0) < 0)
                     toremove.Add(user);
                 else
-                    desc +=
-                        $"{u} `{Math.Round((user.Time - DateTime.UtcNow).TotalMinutes, 0)} Minutes Left`\n";
+                {
+                    if (user.Reason != null)
+                    {
+                        desc +=
+                           $"{u} `{Math.Round((user.Time - DateTime.UtcNow).TotalMinutes, 0)} Minutes Left` for: {user.Reason}\n";
+                    }
+                    else
+                    {
+                        desc +=
+                           $"{u} `{Math.Round((user.Time - DateTime.UtcNow).TotalMinutes, 0)} Minutes Left`\n";
+                    }
+                    
+                }
 
                 if (desc.Length <= 900) continue;
                 embed.AddField("Bans", $"{desc}");
@@ -319,7 +337,8 @@ namespace ELO_Bot.Commands.Admin
                 embed.AddField("Unbanned Users", removeddesc);
 
 
-            embed.AddField("NOTE", "Unavailable user's Bans will automatically be removed once their time expires.");
+            embed.AddField("NOTE", "1. User Bans will automatically be removed once their time expires.\n" +
+                                   "2. Names displayed as [123456789012345] are users who are no longer in the server");
 
 
             await ReplyAsync("", false, embed.Build());
