@@ -786,6 +786,7 @@ namespace ELO_Bot.Commands
 
             var host = await Context.Guild.GetUserAsync(currentqueue.T1Captain);
 
+
             if (currentqueue.Maps.Count > 0 && currentqueue.Maps != null)
             {
                 var rnd = new Random().Next(0, currentqueue.Maps.Count);
@@ -800,6 +801,8 @@ namespace ELO_Bot.Commands
                                  $"Team1: {t1}\n" +
                                  $"Team2: {t2}");
             }
+
+
 
 
             currentqueue.Users = new List<ulong>();
@@ -928,10 +931,18 @@ namespace ELO_Bot.Commands
                 t2Users.Add(Context.Guild.GetUserAsync(user.UserId).Result);
             }
 
+            var random = new Random().Next(0, sortedlist.Count);
+            var gamehost = await Context.Guild.GetUserAsync(sortedlist[random].UserId);
 
-            embed.Title = $"Match #{currentqueue.Games}";
+            embed.Title = $"{Context.Channel.Name} Match #{currentqueue.Games}";
+            embed.AddField($"Random Host", $"{gamehost.Mention}");
             embed.AddField($"Team 1 - {t1Sum}", $"{t1Desc}");
             embed.AddField($"Team 2 - {t2Sum}", $"{t2Desc}");
+            embed.WithFooter(x =>
+            {
+                x.Text = $"{DateTime.UtcNow} || Game: {Context.Channel.Name} {currentqueue.Games}";
+            });
+
 
             if (currentqueue.ChannelGametype == null)
                 currentqueue.ChannelGametype = "Unknown";
@@ -962,8 +973,8 @@ namespace ELO_Bot.Commands
             };
             server.Gamelist.Add(newgame);
 
-            var random = new Random().Next(0, sortedlist.Count);
-            var gamehost = await Context.Guild.GetUserAsync(sortedlist[random].UserId);
+            
+            
             await Announce(currentqueue, gamehost, currentqueue.ChannelGametype, t1Users, t2Users, randmap);
         }
 
@@ -1026,10 +1037,19 @@ namespace ELO_Bot.Commands
                                    $"{lobbychannel.Name} - Match #{lobby.Games}\n" +
                                    "**Selected Host:**\n" +
                                    $"{gamehost.Mention}");
-            embed.AddField("Team1", $"{cap1}\n" +
-                                    $"{string.Join(" ", team1.Select(x => x.Mention))}");
-            embed.AddField("Team2", $"{cap2}\n" +
-                                    $"{string.Join(" ", team2.Select(x => x.Mention))}");
+            if (cap1 == "[0]" || cap2 == "[0]")
+            {
+                embed.AddField("Team1", $"{string.Join(" ", team1.Select(x => x.Mention))}");
+                embed.AddField("Team2", $"{string.Join(" ", team2.Select(x => x.Mention))}");
+            }
+            else
+            {
+                embed.AddField("Team1", $"{cap1}\n" +
+                        $"{string.Join(" ", team1.Select(x => x.Mention))}");
+                embed.AddField("Team2", $"{cap2}\n" +
+                        $"{string.Join(" ", team2.Select(x => x.Mention))}");
+            }
+
 
             embed.WithFooter(x => { x.Text = $"{DateTime.UtcNow} || Game: {lobbychannel.Name} {lobby.Games}"; });
 

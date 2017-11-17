@@ -126,6 +126,8 @@ namespace ELO_Bot.Commands.Admin
             switch (team.ToLower())
             {
                 case "team1":
+                case "team 1":
+                case "1":
                     await UndoWinLossPoints(server, team1, true, server.Winamount,
                         $"{lobbyname} {game.GameNumber} {team}");
                     await UndoWinLossPoints(server, team2, false, server.Lossamount,
@@ -133,6 +135,8 @@ namespace ELO_Bot.Commands.Admin
                     game.Result = null;
                     break;
                 case "team2":
+                case "team 2":
+                case "2":
                     await UndoWinLossPoints(server, team2, true, server.Winamount,
                         $"{lobbyname} {game.GameNumber} {team}");
                     await UndoWinLossPoints(server, team1, false, server.Lossamount,

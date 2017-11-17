@@ -81,6 +81,9 @@ namespace ELO_Bot.Commands
                     {
                         x.Nickname = $"{userprofile.Points} ~ {username}";
                     });
+
+                    userprofile.Username = username;
+
                 }
                 catch
                 {
