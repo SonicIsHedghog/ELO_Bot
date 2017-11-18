@@ -163,9 +163,7 @@ namespace ELO_Bot.Commands
             });
 
             if (changes.Length > 1000)
-            {
                 changes = changes.Substring(0, 1000);
-            }
 
             embed.AddField("Changes", changes);
             if (client != null)

@@ -26,7 +26,7 @@ namespace ELO_Bot.Commands.Admin
         }
 
         /// <summary>
-        /// Command to inisialise the server configuration (if it wasn't done initially)
+        ///     Command to inisialise the server configuration (if it wasn't done initially)
         /// </summary>
         /// <returns></returns>
         [Command("Initialise")]

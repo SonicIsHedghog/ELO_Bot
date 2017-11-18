@@ -141,7 +141,6 @@ namespace ELO_Bot.Commands.Admin
             var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
 
             foreach (var u in users)
-            {
                 try
                 {
                     var user = server.UserList.First(x => x.UserId == u.Id);
@@ -151,10 +150,7 @@ namespace ELO_Bot.Commands.Admin
                         user.Points = 0;
                     try
                     {
-                        await ((IGuildUser) u).ModifyAsync(x =>
-                        {
-                            x.Nickname = $"{user.Points} ~ {user.Username}";
-                        });
+                        await ((IGuildUser) u).ModifyAsync(x => { x.Nickname = $"{user.Points} ~ {user.Username}"; });
 
                         embed.AddField($"{user.Username} MODIFIED", $"Current Points: {user.Points}");
                     }
@@ -164,16 +160,11 @@ namespace ELO_Bot.Commands.Admin
                             $"Current Points: {user.Points}\n" +
                             $"{user.Username}'s username Unable to be modified (Permissions are above the bot)");
                     }
-
-                    
                 }
                 catch
                 {
                     embed.AddField($"{u.Username} ERROR", "Not Registered");
                 }
-               
-                    
-            }
 
 
             embed.Color = Color.Green;

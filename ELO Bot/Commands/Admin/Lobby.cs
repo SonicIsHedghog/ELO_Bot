@@ -6,7 +6,6 @@ using Discord;
 using Discord.Addons.Interactive;
 using Discord.Commands;
 using ELO_Bot.Preconditions;
-using System.Runtime.InteropServices.ComTypes;
 
 namespace ELO_Bot.Commands.Admin
 {
@@ -264,27 +263,20 @@ namespace ELO_Bot.Commands.Admin
         {
             var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
 
-            var games = server.Gamelist.Where(x => x.LobbyId == Context.Channel.Id).OrderByDescending(x => x.GameNumber);
+            var games = server.Gamelist.Where(x => x.LobbyId == Context.Channel.Id)
+                .OrderByDescending(x => x.GameNumber);
             var gameresults = "";
             foreach (var game in games)
             {
                 if (game.Result is true)
-                {
                     gameresults += $"{Context.Channel.Name} {game.GameNumber} **Team1**\n";
-                }
                 else if (game.Result is false)
-                {
                     gameresults += $"{Context.Channel.Name} {game.GameNumber} **Team2**\n";
-                }
                 else
-                {
                     gameresults += $"{Context.Channel.Name} {game.GameNumber} **Undecided**\n";
-                }
                 var numLines = gameresults.Split('\n').Length;
                 if (numLines > 20)
-                {
                     break;
-                }
             }
 
             var embed = new EmbedBuilder
