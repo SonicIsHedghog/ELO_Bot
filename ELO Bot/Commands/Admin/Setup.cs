@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,6 +23,31 @@ namespace ELO_Bot.Commands.Admin
         public Setup(CommandService service)
         {
             _service = service;
+        }
+
+        /// <summary>
+        /// Command to inisialise the server configuration (if it wasn't done initially)
+        /// </summary>
+        /// <returns></returns>
+        [Command("Initialise")]
+        [Summary("Inisialise")]
+        [Remarks("Run this command to add your server to the serverlist")]
+        public async Task Initialise()
+        {
+            if (Servers.ServerList.All(x => x.ServerId != Context.Guild.Id))
+            {
+                var server = new Servers.Server
+                {
+                    ServerId = Context.Guild.Id,
+                    UserList = new List<Servers.Server.User>()
+                };
+
+                Servers.ServerList.Add(server);
+                await ReplyAsync("Server Initialised, users may now register");
+                return;
+            }
+
+            await ReplyAsync("Server has already been initialised. Denied.");
         }
 
         /// <summary>

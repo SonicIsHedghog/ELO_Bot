@@ -47,57 +47,64 @@ namespace ELO_Bot.Commands
                 return;
             }
 
-            if (server.UserList.Any(member => member.UserId == Context.User.Id))
+            try
             {
-                var userprofile = server.UserList.FirstOrDefault(x => x.UserId == Context.User.Id);
-
-                if (userprofile == null)
+                if (server.UserList.Any(member => member.UserId == Context.User.Id))
                 {
-                    await ReplyAsync("ERROR: User not registered!");
-                    return;
-                }
+                    var userprofile = server.UserList.FirstOrDefault(x => x.UserId == Context.User.Id);
 
-                if (!((IGuildUser) Context.User).RoleIds.Contains(server.RegisterRole) && server.RegisterRole != 0)
-                    try
+                    if (userprofile == null)
                     {
-                        var serverrole = Context.Guild.GetRole(server.RegisterRole);
+                        await ReplyAsync("ERROR: User not registered!");
+                        return;
+                    }
+
+                    if (!((IGuildUser) Context.User).RoleIds.Contains(server.RegisterRole) && server.RegisterRole != 0)
                         try
                         {
-                            await ((IGuildUser) Context.User).AddRoleAsync(serverrole);
+                            var serverrole = Context.Guild.GetRole(server.RegisterRole);
+                            try
+                            {
+                                await ((IGuildUser) Context.User).AddRoleAsync(serverrole);
+                            }
+                            catch
+                            {
+                                embed.AddField("ERROR", "User Role Unable to be modified");
+                            }
                         }
                         catch
                         {
-                            embed.AddField("ERROR", "User Role Unable to be modified");
+                            embed.AddField("ERROR", "Register Role is Unavailable");
                         }
+
+                    try
+                    {
+                        await ((IGuildUser) Context.User).ModifyAsync(x =>
+                        {
+                            x.Nickname = $"{userprofile.Points} ~ {username}";
+                        });
+
+                        userprofile.Username = username;
                     }
                     catch
                     {
-                        embed.AddField("ERROR", "Register Role is Unavailable");
+                        embed.AddField("ERROR", "Username Unable to be modified (Permissions are above the bot)");
                     }
 
-                try
-                {
-                    await ((IGuildUser) Context.User).ModifyAsync(x =>
-                    {
-                        x.Nickname = $"{userprofile.Points} ~ {username}";
-                    });
 
-                    userprofile.Username = username;
+                    embed.AddField("ERROR", "User is already registered, role and name have been updated accordingly");
 
+                    embed.WithColor(Color.Red);
+
+                    await ReplyAsync("", false, embed.Build());
+                    return;
                 }
-                catch
-                {
-                    embed.AddField("ERROR", "Username Unable to be modified (Permissions are above the bot)");
-                }
-
-
-                embed.AddField("ERROR", "User is already registered, role and name have been updated accordingly");
-
-                embed.WithColor(Color.Red);
-
-                await ReplyAsync("", false, embed.Build());
-                return;
             }
+            catch
+            {
+                //
+            }
+
 
             var user = new Servers.Server.User
             {

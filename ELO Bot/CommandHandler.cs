@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Discord;
@@ -46,6 +47,17 @@ namespace ELO_Bot
             catch
             {
                 //
+            }
+
+            if (Servers.ServerList.All(x => x.ServerId != guild.Id))
+            {
+                var server = new Servers.Server
+                {
+                    ServerId = guild.Id,
+                    UserList = new List<Servers.Server.User>()
+                };
+
+                Servers.ServerList.Add(server);
             }
         }
 

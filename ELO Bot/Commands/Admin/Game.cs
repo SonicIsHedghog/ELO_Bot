@@ -65,7 +65,7 @@ namespace ELO_Bot.Commands.Admin
         [Command("UndoGame")]
         [Summary("UndoGame <lobbyname> <gamenumber> <winningteam>")]
         [Remarks("Undo the results of a previous game")]
-        public async Task UnWin(string lobbyname, int gamenumber, string team)
+        public async Task UnWin(string lobbyname, int gamenumber, [Remainder]string team)
         {
             var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
             IMessageChannel channel = null;
@@ -162,7 +162,7 @@ namespace ELO_Bot.Commands.Admin
         [Command("Game", RunMode = RunMode.Async)]
         [Summary("Game <lobbyname> <gamenumber> <winningteam>")]
         [Remarks("Automatically update wins/losses for the selected team")]
-        public async Task Win(string lobbyname, int gamenumber, string team)
+        public async Task Win(string lobbyname, int gamenumber, [Remainder]string team)
         {
             var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
             IMessageChannel channel = null;
@@ -200,11 +200,15 @@ namespace ELO_Bot.Commands.Admin
 
             if (game.Result != null)
             {
-                if (game.Result is true)
-                    await ReplyAsync("Team1 is already recorded as winning this game.");
-
-                if (game.Result is false)
-                    await ReplyAsync("Team2 is already recorded as winning this game.");
+                switch (game.Result)
+                {
+                    case true:
+                        await ReplyAsync("Team1 is already recorded as winning this game.");
+                        break;
+                    case false:
+                        await ReplyAsync("Team2 is already recorded as winning this game.");
+                        break;
+                }
 
                 await ReplyAsync("Reply with `YES` to continue scoring this game, reply with `NO` to cancel");
                 var response = await NextMessageAsync(timeout: TimeSpan.FromSeconds(30));

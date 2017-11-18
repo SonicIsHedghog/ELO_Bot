@@ -803,8 +803,6 @@ namespace ELO_Bot.Commands
             }
 
 
-
-
             currentqueue.Users = new List<ulong>();
             currentqueue.Team1 = new List<ulong>();
             currentqueue.Team2 = new List<ulong>();
@@ -973,8 +971,7 @@ namespace ELO_Bot.Commands
             };
             server.Gamelist.Add(newgame);
 
-            
-            
+
             await Announce(currentqueue, gamehost, currentqueue.ChannelGametype, t1Users, t2Users, randmap);
         }
 
@@ -1045,9 +1042,9 @@ namespace ELO_Bot.Commands
             else
             {
                 embed.AddField("Team1", $"{cap1}\n" +
-                        $"{string.Join(" ", team1.Select(x => x.Mention))}");
+                                        $"{string.Join(" ", team1.Select(x => x.Mention))}");
                 embed.AddField("Team2", $"{cap2}\n" +
-                        $"{string.Join(" ", team2.Select(x => x.Mention))}");
+                                        $"{string.Join(" ", team2.Select(x => x.Mention))}");
             }
 
 

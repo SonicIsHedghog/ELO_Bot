@@ -6,6 +6,7 @@ using Discord;
 using Discord.Addons.Interactive;
 using Discord.Commands;
 using ELO_Bot.Preconditions;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace ELO_Bot.Commands.Admin
 {
@@ -254,6 +255,45 @@ namespace ELO_Bot.Commands.Admin
 
             lobby.Maps = new List<string>();
             await ReplyAsync("Maps Cleared.");
+        }
+
+        [Command("GameList")]
+        [Summary("GameList")]
+        [Remarks("List previous games and their results")]
+        public async Task GameList()
+        {
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
+
+            var games = server.Gamelist.Where(x => x.LobbyId == Context.Channel.Id).OrderByDescending(x => x.GameNumber);
+            var gameresults = "";
+            foreach (var game in games)
+            {
+                if (game.Result is true)
+                {
+                    gameresults += $"{Context.Channel.Name} {game.GameNumber} **Team1**\n";
+                }
+                else if (game.Result is false)
+                {
+                    gameresults += $"{Context.Channel.Name} {game.GameNumber} **Team2**\n";
+                }
+                else
+                {
+                    gameresults += $"{Context.Channel.Name} {game.GameNumber} **Undecided**\n";
+                }
+                var numLines = gameresults.Split('\n').Length;
+                if (numLines > 20)
+                {
+                    break;
+                }
+            }
+
+            var embed = new EmbedBuilder
+            {
+                Title = $"{Context.Channel.Name} Results",
+                Description = gameresults
+            };
+
+            await ReplyAsync("", false, embed.Build());
         }
     }
 }

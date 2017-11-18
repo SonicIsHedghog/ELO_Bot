@@ -127,47 +127,55 @@ namespace ELO_Bot.Commands.Admin
         ///     set the specific points of a user
         /// </summary>
         /// <param name="points">points value</param>
-        /// <param name="user">user to edit</param>
+        /// <param name="users">list of users to modify the points for</param>
         /// <returns></returns>
         [Command("SetPoints")]
         [Summary("SetPoints <points> <user>")]
         [Remarks("set a user's exact points")]
-        public async Task DelPoints(int points, IUser user)
+        public async Task SetPoints(int points, params IUser[] users)
         {
             var embed = new EmbedBuilder();
 
             if (points <= 0)
                 points = Math.Abs(points);
             var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
-            var success = false;
-            var userval = 0;
 
-            foreach (var subject in server.UserList)
-                if (subject.UserId == user.Id)
+            foreach (var u in users)
+            {
+                try
                 {
-                    subject.Points = points;
-                    if (subject.Points < 0)
-                        subject.Points = 0;
-                    success = true;
-                    userval = subject.Points;
+                    var user = server.UserList.First(x => x.UserId == u.Id);
+
+                    user.Points = points;
+                    if (user.Points < 0)
+                        user.Points = 0;
                     try
                     {
-                        await ((IGuildUser) user).ModifyAsync(x =>
+                        await ((IGuildUser) u).ModifyAsync(x =>
                         {
-                            x.Nickname = $"{subject.Points} ~ {subject.Username}";
+                            x.Nickname = $"{user.Points} ~ {user.Username}";
                         });
+
+                        embed.AddField($"{user.Username} MODIFIED", $"Current Points: {user.Points}");
                     }
                     catch
                     {
-                        embed.AddField("NAME ERROR",
+                        embed.AddField($"{user.Username} MODIFIED",
+                            $"Current Points: {user.Points}\n" +
                             $"{user.Username}'s username Unable to be modified (Permissions are above the bot)");
                     }
-                    await CheckRank(server, user, subject);
+
+                    
                 }
-            if (!success)
-                embed.AddField($"{user.Username} ERROR", "Not Registered");
-            else
-                embed.AddField($"{user.Username} MODIFIED", $"Current Points: {userval}");
+                catch
+                {
+                    embed.AddField($"{u.Username} ERROR", "Not Registered");
+                }
+               
+                    
+            }
+
+
             embed.Color = Color.Green;
             await ReplyAsync("", false, embed.Build());
         }

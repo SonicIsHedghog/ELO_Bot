@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Discord;
+using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.WebSocket;
 using ELO_Bot.Preconditions;
@@ -12,7 +14,7 @@ namespace ELO_Bot.Commands
 {
     [RequireContext(ContextType.Guild)]
     [CheckBlacklist]
-    public class Other : ModuleBase
+    public class Other : InteractiveBase
     {
         private readonly CommandService _service;
 
@@ -31,31 +33,44 @@ namespace ELO_Bot.Commands
         [Remarks("adminall help commands")]
         public async Task AHelpAsync([Remainder] string modulearg = null)
         {
-            var embed = new EmbedBuilder
-            {
-                Color = new Color(114, 137, 218),
-                Title = $"ELO BOT | Commands | Prefix: {Config.Load().Prefix}"
-            };
+            var pages = new List<string>();
+
+            var modules = _service.Modules.Select(x => x.Name).Where(x =>
+                x.ToLower() != "other" && x.ToLower() != "matchmaking" &&
+                x.ToLower() != "user" && x.ToLower() != "owner");
+            var modulesector = $"**Modules**\n" +
+                               $"{string.Join("\n", modules)}\n\n" +
+                               $"Press the arrow buttons to go through each module and its commands";
+            pages.Add(modulesector);
 
             foreach (var module in _service.Modules)
                 if (module.Name.ToLower() != "other" && module.Name.ToLower() != "matchmaking" &&
-                    module.Name.ToLower() != "user")
+                    module.Name.ToLower() != "user" && module.Name.ToLower() != "owner")
                 {
                     var list = module.Commands
                         .Select(command => $"`{Config.Load().Prefix}{command.Summary}` - {command.Remarks}").ToList();
                     if (module.Commands.Count > 0)
-                        embed.AddField(x =>
-                        {
-                            x.Name = $"{module.Name}";
-                            x.Value = string.Join("\n", list);
-                        });
+                    {
+                        var toadd = $"**{module.Name}**\n" +
+                                    $"{string.Join("\n", list)}";
+                        pages.Add(toadd);
+                    }
                 }
 
-            embed.AddField("Developed By PassiveModding", "[Support Server](https://discord.gg/n2Vs38n)\n" +
-                                                          "[Patreon](https://www.patreon.com/passivebot)\n" +
-                                                          "[Invite the BOT](https://goo.gl/mbfnjj)");
+            pages.Add("**Links**\n" +
+                      "[Support Server](https://discord.gg/n2Vs38n)\n" +
+                      "[Patreon](https://www.patreon.com/passivebot)\n" +
+                      "[Invite the BOT](https://goo.gl/mbfnjj)");
 
-            await ReplyAsync("", false, embed.Build());
+            var msg = new PaginatedMessage
+            {
+                Title = $"ELO BOT | Commands | Prefix: {Config.Load().Prefix}",
+                Pages = pages,
+                Color = new Color(114, 137, 218)
+            };
+
+
+            await PagedReplyAsync(msg);
         }
 
         /// <summary>
@@ -68,11 +83,15 @@ namespace ELO_Bot.Commands
         [Remarks("all help commands")]
         public async Task HelpAsync([Remainder] string modulearg = null)
         {
-            var embed = new EmbedBuilder
-            {
-                Color = new Color(114, 137, 218),
-                Title = $"ELO BOT | Commands | Prefix: {Config.Load().Prefix}"
-            };
+            var pages = new List<string>();
+
+            var modules = _service.Modules.Select(x => x.Name).Where(x =>
+                x.ToLower() == "other" || x.ToLower() == "matchmaking" ||
+                x.ToLower() == "user");
+            var modulesector = $"**Modules**\n" +
+                               $"{string.Join("\n", modules)}\n\n" +
+                               $"Press the arrow buttons to go through each module and its commands";
+            pages.Add(modulesector);
 
             foreach (var module in _service.Modules)
                 if (module.Name.ToLower() == "other" || module.Name.ToLower() == "matchmaking" ||
@@ -81,18 +100,24 @@ namespace ELO_Bot.Commands
                     var list = module.Commands
                         .Select(command => $"`{Config.Load().Prefix}{command.Summary}` - {command.Remarks}").ToList();
                     if (module.Commands.Count > 0)
-                        embed.AddField(x =>
-                        {
-                            x.Name = $"{module.Name}";
-                            x.Value = string.Join("\n", list);
-                        });
+                        pages.Add($"**{module.Name}**\n" +
+                                  $"{string.Join("\n", list)}");
                 }
 
-            embed.AddField("Developed By PassiveModding", "[Support Server](https://discord.gg/n2Vs38n)\n" +
-                                                          "[Patreon](https://www.patreon.com/passivebot)\n" +
-                                                          "[Invite the BOT](https://goo.gl/mbfnjj)");
+            pages.Add("**Links**\n" +
+                      "[Support Server](https://discord.gg/n2Vs38n)\n" +
+                      "[Patreon](https://www.patreon.com/passivebot)\n" +
+                      "[Invite the BOT](https://goo.gl/mbfnjj)");
 
-            await ReplyAsync("", false, embed.Build());
+            var msg = new PaginatedMessage
+            {
+                Title = $"ELO BOT | Commands | Prefix: {Config.Load().Prefix}",
+                Pages = pages,
+                Color = new Color(114, 137, 218)
+            };
+
+
+            await PagedReplyAsync(msg);
         }
 
         /// <summary>
@@ -104,7 +129,7 @@ namespace ELO_Bot.Commands
         [Remarks("Bot Info and Stats")]
         public async Task Info()
         {
-            var client = Context.Client as DiscordSocketClient;
+            var client = Context.Client;
             var hClient = new HttpClient();
             string changes;
             hClient.DefaultRequestHeaders.Add("User-Agent",

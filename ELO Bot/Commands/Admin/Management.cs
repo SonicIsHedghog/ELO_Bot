@@ -227,11 +227,9 @@ namespace ELO_Bot.Commands.Admin
                     queue.Users.Remove(user.Id);
 
             if (reason == null)
-            await ReplyAsync($"**{user.Mention} has been banned for {i} hours from matchmaking**");
+                await ReplyAsync($"**{user.Mention} has been banned for {i} hours from matchmaking**");
             else
-            {
                 await ReplyAsync($"**{user.Mention} has been banned for {i} hours from matchmaking for:** {reason}");
-            }
         }
 
         /// <summary>
@@ -285,20 +283,17 @@ namespace ELO_Bot.Commands.Admin
 
 
                 if (Math.Round((user.Time - DateTime.UtcNow).TotalMinutes, 0) < 0)
+                {
                     toremove.Add(user);
+                }
                 else
                 {
                     if (user.Reason != null)
-                    {
                         desc +=
-                           $"{u} `{Math.Round((user.Time - DateTime.UtcNow).TotalMinutes, 0)} Minutes Left` for: {user.Reason}\n";
-                    }
+                            $"{u} `{Math.Round((user.Time - DateTime.UtcNow).TotalMinutes, 0)} Minutes Left` for: {user.Reason}\n";
                     else
-                    {
                         desc +=
-                           $"{u} `{Math.Round((user.Time - DateTime.UtcNow).TotalMinutes, 0)} Minutes Left`\n";
-                    }
-                    
+                            $"{u} `{Math.Round((user.Time - DateTime.UtcNow).TotalMinutes, 0)} Minutes Left`\n";
                 }
 
                 if (desc.Length <= 900) continue;

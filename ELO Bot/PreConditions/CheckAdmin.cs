@@ -12,23 +12,34 @@ namespace ELO_Bot.Preconditions
         public override async Task<PreconditionResult> CheckPermissions(ICommandContext context, CommandInfo command,
             IServiceProvider prov)
         {
-            var s1 = Servers.ServerList.First(x => x.ServerId == context.Guild.Id);
+            try
+            {
+                var s1 = Servers.ServerList.First(x => x.ServerId == context.Guild.Id);
 
-            var own = await context.Client.GetApplicationInfoAsync();
-            if (own.Owner.Id == context.User.Id)
-                return await Task.FromResult(PreconditionResult.FromSuccess());
-
-            if (s1.AdminRole != 0)
-                if (((IGuildUser) context.User).RoleIds.Contains(s1.AdminRole))
+                var own = await context.Client.GetApplicationInfoAsync();
+                if (own.Owner.Id == context.User.Id)
                     return await Task.FromResult(PreconditionResult.FromSuccess());
 
-            if (!(((IGuildUser) context.User).GuildPermissions.Administrator ||
-                  context.User.Id == context.Guild.OwnerId))
+                if (s1.AdminRole != 0)
+                    if (((IGuildUser) context.User).RoleIds.Contains(s1.AdminRole))
+                        return await Task.FromResult(PreconditionResult.FromSuccess());
+
+                if (!(((IGuildUser) context.User).GuildPermissions.Administrator ||
+                      context.User.Id == context.Guild.OwnerId))
+                    return await Task.FromResult(
+                        PreconditionResult.FromError(
+                            $"This Command requires admin permissions."));
+
+                return await Task.FromResult(PreconditionResult.FromSuccess());
+            }
+            catch
+            {
+                if (((IGuildUser) context.User).GuildPermissions.Administrator)
+                    return await Task.FromResult(PreconditionResult.FromSuccess());
                 return await Task.FromResult(
                     PreconditionResult.FromError(
                         $"This Command requires admin permissions."));
-
-            return await Task.FromResult(PreconditionResult.FromSuccess());
+            }
         }
     }
 
@@ -38,27 +49,38 @@ namespace ELO_Bot.Preconditions
         public override async Task<PreconditionResult> CheckPermissions(ICommandContext context, CommandInfo command,
             IServiceProvider prov)
         {
-            var s1 = Servers.ServerList.First(x => x.ServerId == context.Guild.Id);
+            try
+            {
+                var s1 = Servers.ServerList.First(x => x.ServerId == context.Guild.Id);
 
-            var own = await context.Client.GetApplicationInfoAsync();
-            if (own.Owner.Id == context.User.Id)
+                var own = await context.Client.GetApplicationInfoAsync();
+                if (own.Owner.Id == context.User.Id)
+                    return await Task.FromResult(PreconditionResult.FromSuccess());
+
+                if (s1.ModRole != 0)
+                    if (((IGuildUser) context.User).RoleIds.Contains(s1.ModRole))
+                        return await Task.FromResult(PreconditionResult.FromSuccess());
+
+                if (s1.AdminRole != 0)
+                    if (((IGuildUser) context.User).RoleIds.Contains(s1.AdminRole))
+                        return await Task.FromResult(PreconditionResult.FromSuccess());
+
+                if (!(((IGuildUser) context.User).GuildPermissions.Administrator ||
+                      context.User.Id == context.Guild.OwnerId))
+                    return await Task.FromResult(
+                        PreconditionResult.FromError(
+                            "This Command requires Moderator OR Admin permissions."));
+
                 return await Task.FromResult(PreconditionResult.FromSuccess());
-
-            if (s1.ModRole != 0)
-                if (((IGuildUser) context.User).RoleIds.Contains(s1.ModRole))
+            }
+            catch
+            {
+                if (((IGuildUser) context.User).GuildPermissions.Administrator)
                     return await Task.FromResult(PreconditionResult.FromSuccess());
-
-            if (s1.AdminRole != 0)
-                if (((IGuildUser) context.User).RoleIds.Contains(s1.AdminRole))
-                    return await Task.FromResult(PreconditionResult.FromSuccess());
-
-            if (!(((IGuildUser) context.User).GuildPermissions.Administrator ||
-                  context.User.Id == context.Guild.OwnerId))
                 return await Task.FromResult(
                     PreconditionResult.FromError(
-                        "This Command requires Moderator OR Admin permissions."));
-
-            return await Task.FromResult(PreconditionResult.FromSuccess());
+                        $"This Command requires Moderator OR Admin permissions."));
+            }
         }
     }
 
