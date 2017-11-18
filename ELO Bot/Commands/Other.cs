@@ -161,6 +161,12 @@ namespace ELO_Bot.Commands
                     x.Url =
                         $"https://discordapp.com/oauth2/authorize?client_id={client.CurrentUser.Id}&scope=bot&permissions=2146958591";
             });
+
+            if (changes.Length > 1000)
+            {
+                changes = changes.Substring(0, 1000);
+            }
+
             embed.AddField("Changes", changes);
             if (client != null)
             {
