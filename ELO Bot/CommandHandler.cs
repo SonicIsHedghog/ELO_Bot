@@ -66,7 +66,7 @@ namespace ELO_Bot
             var application = await _client.GetApplicationInfoAsync();
             Console.WriteLine(
                 $"Invite: https://discordapp.com/oauth2/authorize?client_id={application.Id}&scope=bot&permissions=2146958591");
-            await _client.SetGameAsync($"{Config.Load().Prefix}register");
+            //await _client.SetGameAsync($"{Config.Load().Prefix}register");
 
             var k = JsonConvert.DeserializeObject<List<string>>(
                 File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "setup/keys.json")));

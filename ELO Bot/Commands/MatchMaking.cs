@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Discord.WebSocket;
 using ELO_Bot.Preconditions;
 using ELO_Bot.PreConditions;
 
@@ -747,6 +748,46 @@ namespace ELO_Bot.Commands
             //adds each map in the list to the embed
 
             await ReplyAsync("", false, embed.Build());
+        }
+
+        [Command("showgame")]
+        [Summary("showgame <lobby> <match no.>")]
+        [Remarks("Show information about a previous game")]
+        public async Task Showgame(string lobbyname, int matchnumber)
+        {
+                var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
+                var lobby = ((SocketGuild) Context.Guild).Channels.FirstOrDefault(x => x.Name.ToLower() == lobbyname.ToLower());
+                if (lobby == null)
+                {
+                    throw new Exception("Invalid Lobbyname");
+                }
+
+                var game = server.Gamelist.FirstOrDefault(x => x.LobbyId == lobby.Id && x.GameNumber == matchnumber);
+                if (game == null)
+                {
+                    throw new Exception("Invalid Gamenumber");
+                }
+
+                var embed = new EmbedBuilder();
+                var gstring = "";
+                if (game.Result == null)
+                    gstring = "Undecided";
+                else if (game.Result is true)
+                    gstring = "Team1";
+                else if (game.Result is false)
+                    gstring = "Team2";
+
+                var team1 = server.UserList.Where(x => game.Team1.Contains(x.UserId)).Select(x => x.Username);
+                var team2 = server.UserList.Where(x => game.Team2.Contains(x.UserId)).Select(x => x.Username);
+
+
+                embed.Title = $"=game {lobbyname} {matchnumber}";
+                embed.AddField("Game Result", $"{gstring}\n\n");
+                embed.AddField("Team1", $"{string.Join("\n", team1)}");
+                embed.AddField("Team2", $"{string.Join("\n", team2)}");
+                embed.Color = Color.Purple;
+
+                await ReplyAsync("", false, embed.Build());            
         }
 
         /// <summary>
