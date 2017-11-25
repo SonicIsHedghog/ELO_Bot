@@ -755,39 +755,48 @@ namespace ELO_Bot.Commands
         [Remarks("Show information about a previous game")]
         public async Task Showgame(string lobbyname, int matchnumber)
         {
-                var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
-                var lobby = ((SocketGuild) Context.Guild).Channels.FirstOrDefault(x => x.Name.ToLower() == lobbyname.ToLower());
-                if (lobby == null)
-                {
-                    throw new Exception("Invalid Lobbyname");
-                }
+            try
+            {
+                    var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
+                    var lobby = ((SocketGuild) Context.Guild).TextChannels.FirstOrDefault(x => x.Name.ToLower() == lobbyname.ToLower());
+                    if (lobby == null)
+                    {
+                        throw new Exception("Invalid Lobbyname");
+                    }
 
-                var game = server.Gamelist.FirstOrDefault(x => x.LobbyId == lobby.Id && x.GameNumber == matchnumber);
-                if (game == null)
-                {
-                    throw new Exception("Invalid Gamenumber");
-                }
+                    var game = server.Gamelist.FirstOrDefault(x => x.LobbyId == lobby.Id && x.GameNumber == matchnumber);
+                    if (game == null)
+                    {
+                        throw new Exception("Invalid Gamenumber");
+                    }
 
-                var embed = new EmbedBuilder();
-                var gstring = "";
-                if (game.Result == null)
-                    gstring = "Undecided";
-                else if (game.Result is true)
-                    gstring = "Team1";
-                else if (game.Result is false)
-                    gstring = "Team2";
+                    var embed = new EmbedBuilder();
+                    var gstring = "";
+                    if (game.Result == null)
+                        gstring = "Undecided";
+                    else if (game.Result is true)
+                        gstring = "Team1";
+                    else if (game.Result is false)
+                        gstring = "Team2";
 
-                var team1 = server.UserList.Where(x => game.Team1.Contains(x.UserId)).Select(x => x.Username);
-                var team2 = server.UserList.Where(x => game.Team2.Contains(x.UserId)).Select(x => x.Username);
+                    var team1 = server.UserList.Where(x => game.Team1.Contains(x.UserId)).Select(x => x.Username);
+                    var team2 = server.UserList.Where(x => game.Team2.Contains(x.UserId)).Select(x => x.Username);
 
 
-                embed.Title = $"=game {lobbyname} {matchnumber}";
-                embed.AddField("Game Result", $"{gstring}\n\n");
-                embed.AddField("Team1", $"{string.Join("\n", team1)}");
-                embed.AddField("Team2", $"{string.Join("\n", team2)}");
-                embed.Color = Color.Purple;
+                    embed.Title = $"=game {lobbyname} {matchnumber}";
+                    embed.AddField("Game Result", $"{gstring}\n\n");
+                    embed.AddField("Team1", $"{string.Join("\n", team1)}");
+                    embed.AddField("Team2", $"{string.Join("\n", team2)}");
+                    embed.Color = Color.Purple;
 
-                await ReplyAsync("", false, embed.Build());            
+                    await ReplyAsync("", false, embed.Build());    
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.ToString());
+                throw;
+            }
+        
         }
 
         /// <summary>
@@ -943,13 +952,34 @@ namespace ELO_Bot.Commands
 
             //automatically select teams evenly based on points
             var sortedlist = userlist.OrderBy(x => x.Points).Reverse().ToList();
+
+
             var team1 = new List<Servers.Server.User>();
             var team2 = new List<Servers.Server.User>();
-            foreach (var user in sortedlist)
-                if (team1.Count > team2.Count)
-                    team2.Add(user);
-                else
-                    team1.Add(user);
+
+            if (sortedlist.Count == 10)
+            {
+                team1.Add(sortedlist[0]);
+                team1.Add(sortedlist[3]);
+                team1.Add(sortedlist[5]);
+                team1.Add(sortedlist[7]);
+                team1.Add(sortedlist[9]);
+
+                team2.Add(sortedlist[1]);
+                team2.Add(sortedlist[2]);
+                team2.Add(sortedlist[4]);
+                team2.Add(sortedlist[6]);
+                team2.Add(sortedlist[8]);
+            }
+            else
+            {
+                 foreach (var user in sortedlist)
+                    if (team1.Count > team2.Count)
+                        team2.Add(user);
+                    else
+                        team1.Add(user);               
+            }
+
 
             //creating the info for each team
             var t1Desc = "";

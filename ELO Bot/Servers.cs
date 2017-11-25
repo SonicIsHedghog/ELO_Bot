@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Raven.Client;
+using Raven.Client.Document;
+
 
 namespace ELO_Bot
 {
@@ -11,48 +15,24 @@ namespace ELO_Bot
 
         public static List<Server> ServerList = new List<Server>();
 
-        /*public static Server Load(IGuild guild)
+        /*public class DocumentStoreHolder
         {
-            if (!File.Exists(EloFile))
-                File.Create(EloFile).Dispose();
-            var obj = JsonConvert.DeserializeObject<Servers>(File.ReadAllText(EloFile));
+            private static readonly Lazy<IDocumentStore> LazyStore = new Lazy<IDocumentStore>(CreateStore);
 
-            foreach (var server in obj.Servers)
-                if (server.ServerId == guild.Id)
-                    return server;
+            public static IDocumentStore Store => LazyStore.Value;
 
-            var nullserver = new Server
+            private static IDocumentStore CreateStore()
             {
-                ServerId = guild.Id,
-                UserList = new List<Server.User>(),
-                RegisterRole = 0,
-                Registermessage = "Thankyou for Registering"
-            };
-            return nullserver;
-        }
-
-        public static Servers LoadFull()
-        {
-            if (!File.Exists(EloFile))
-                File.Create(EloFile).Dispose();
-            var obj = JsonConvert.DeserializeObject<Servers>(File.ReadAllText(EloFile));
-
-            return obj;
-        }
-
-        public static void Saveserver(Server serverconfig)
-        {
-            var file = JsonConvert.DeserializeObject<Servers>(File.ReadAllText(EloFile));
-            foreach (var server in file.Servers)
-                if (server.ServerId == serverconfig.ServerId)
+                var store = new DocumentStore
                 {
-                    file.Servers.Remove(server);
-                    break;
-                }
-            file.Servers.Add(serverconfig);
-            var output = JsonConvert.SerializeObject(file, Formatting.Indented);
-            File.WriteAllText(EloFile, output);
+                    Url = "http://localhost:8080",
+                    DefaultDatabase = "Servers"
+                }.Initialize();
+
+                return store;
+            }
         }*/
+
 
         public class Server
         {

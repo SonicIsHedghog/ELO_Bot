@@ -259,33 +259,45 @@ namespace ELO_Bot.Commands.Admin
         [Command("GameList")]
         [Summary("GameList")]
         [Remarks("List previous games and their results")]
-        public async Task GameList()
+        public async Task GameList([Remainder] string lobby = null)
         {
             var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
 
-            var games = server.Gamelist.Where(x => x.LobbyId == Context.Channel.Id)
+            IMessageChannel c = Context.Channel;
+
+            if (lobby != null)
+            {
+                c = Context.Guild.TextChannels.FirstOrDefault(x => x.Name.ToLower() == lobby.ToLower()) ?? Context.Channel;
+            }
+
+            var games = server.Gamelist.Where(x => x.LobbyId == c.Id)
                 .OrderByDescending(x => x.GameNumber);
             var gameresults = "";
+            var pages = new List<string>();
             foreach (var game in games)
             {
                 if (game.Result is true)
-                    gameresults += $"{Context.Channel.Name} {game.GameNumber} **Team1**\n";
+                    gameresults += $"{c.Name} {game.GameNumber} **Team1**\n";
                 else if (game.Result is false)
-                    gameresults += $"{Context.Channel.Name} {game.GameNumber} **Team2**\n";
+                    gameresults += $"{c.Name} {game.GameNumber} **Team2**\n";
                 else
-                    gameresults += $"{Context.Channel.Name} {game.GameNumber} **Undecided**\n";
+                    gameresults += $"{c.Name} {game.GameNumber} **Undecided**\n";
                 var numLines = gameresults.Split('\n').Length;
                 if (numLines > 20)
-                    break;
+                {
+                    pages.Add(gameresults);
+                    gameresults = "";
+                }
+                    
             }
-
-            var embed = new EmbedBuilder
+            var msg = new PaginatedMessage
             {
-                Title = $"{Context.Channel.Name} Results",
-                Description = gameresults
+                Pages = pages,
+                Title = "Previous Games List",
+                Color = Color.Green
             };
 
-            await ReplyAsync("", false, embed.Build());
+            await PagedReplyAsync(msg);
         }
     }
 }

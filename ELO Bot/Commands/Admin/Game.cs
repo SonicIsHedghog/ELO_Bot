@@ -292,6 +292,8 @@ namespace ELO_Bot.Commands.Admin
 
                 if (usr == null || user.Id != usr.UserId) continue;
                 {
+                    points = win ? server.Winamount : server.Lossamount;
+
                     //checks against possible ranks for each user. 
                     //if the user has a rank that has a different point modifier to the server's one, then modify 
                     //their points according to their rank
@@ -385,14 +387,14 @@ namespace ELO_Bot.Commands.Admin
                     //if the user has a rank that has a different point modifier to the server's one, then modify 
                     //their points according to their rank
                     //if there is no role then ignore this.
+                    points = win ? server.Winamount : server.Lossamount;
                     try
                     {
-                        var toprole = server.Ranks.Where(x => x.Points <= usr.Points).Max(x => x.Points);
-                        var top = server.Ranks.Where(x => x.Points == toprole);
+                        var toprole = server.Ranks.Where(x => x.Points <= usr.Points).OrderByDescending(x => x.Points);
 
                         try
                         {
-                            var rank = top.First();
+                            var rank = toprole.First();
                             if (rank.WinModifier != 0 && win)
                                 points = rank.WinModifier;
                             else if (rank.LossModifier != 0 && !win)
