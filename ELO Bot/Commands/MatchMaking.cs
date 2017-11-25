@@ -757,46 +757,42 @@ namespace ELO_Bot.Commands
         {
             try
             {
-                    var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
-                    var lobby = ((SocketGuild) Context.Guild).TextChannels.FirstOrDefault(x => x.Name.ToLower() == lobbyname.ToLower());
-                    if (lobby == null)
-                    {
-                        throw new Exception("Invalid Lobbyname");
-                    }
+                var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
+                var lobby = ((SocketGuild) Context.Guild).TextChannels.FirstOrDefault(x =>
+                    x.Name.ToLower() == lobbyname.ToLower());
+                if (lobby == null)
+                    throw new Exception("Invalid Lobbyname");
 
-                    var game = server.Gamelist.FirstOrDefault(x => x.LobbyId == lobby.Id && x.GameNumber == matchnumber);
-                    if (game == null)
-                    {
-                        throw new Exception("Invalid Gamenumber");
-                    }
+                var game = server.Gamelist.FirstOrDefault(x => x.LobbyId == lobby.Id && x.GameNumber == matchnumber);
+                if (game == null)
+                    throw new Exception("Invalid Gamenumber");
 
-                    var embed = new EmbedBuilder();
-                    var gstring = "";
-                    if (game.Result == null)
-                        gstring = "Undecided";
-                    else if (game.Result is true)
-                        gstring = "Team1";
-                    else if (game.Result is false)
-                        gstring = "Team2";
+                var embed = new EmbedBuilder();
+                var gstring = "";
+                if (game.Result == null)
+                    gstring = "Undecided";
+                else if (game.Result is true)
+                    gstring = "Team1";
+                else if (game.Result is false)
+                    gstring = "Team2";
 
-                    var team1 = server.UserList.Where(x => game.Team1.Contains(x.UserId)).Select(x => x.Username);
-                    var team2 = server.UserList.Where(x => game.Team2.Contains(x.UserId)).Select(x => x.Username);
+                var team1 = server.UserList.Where(x => game.Team1.Contains(x.UserId)).Select(x => x.Username);
+                var team2 = server.UserList.Where(x => game.Team2.Contains(x.UserId)).Select(x => x.Username);
 
 
-                    embed.Title = $"=game {lobbyname} {matchnumber}";
-                    embed.AddField("Game Result", $"{gstring}\n\n");
-                    embed.AddField("Team1", $"{string.Join("\n", team1)}");
-                    embed.AddField("Team2", $"{string.Join("\n", team2)}");
-                    embed.Color = Color.Purple;
+                embed.Title = $"=game {lobbyname} {matchnumber}";
+                embed.AddField("Game Result", $"{gstring}\n\n");
+                embed.AddField("Team1", $"{string.Join("\n", team1)}");
+                embed.AddField("Team2", $"{string.Join("\n", team2)}");
+                embed.Color = Color.Purple;
 
-                    await ReplyAsync("", false, embed.Build());    
+                await ReplyAsync("", false, embed.Build());
             }
             catch (Exception e)
             {
                 throw new Exception(e.ToString());
                 throw;
             }
-        
         }
 
         /// <summary>
@@ -973,11 +969,11 @@ namespace ELO_Bot.Commands
             }
             else
             {
-                 foreach (var user in sortedlist)
+                foreach (var user in sortedlist)
                     if (team1.Count > team2.Count)
                         team2.Add(user);
                     else
-                        team1.Add(user);               
+                        team1.Add(user);
             }
 
 

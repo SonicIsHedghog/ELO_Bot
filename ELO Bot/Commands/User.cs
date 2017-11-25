@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Addons.Interactive;
 using Discord.Commands;
 using ELO_Bot.PreConditions;
-using Newtonsoft.Json;
 
 namespace ELO_Bot.Commands
 {
@@ -66,13 +60,13 @@ namespace ELO_Bot.Commands
                         return;
                     }
 
-                    if (!((IGuildUser)Context.User).RoleIds.Contains(server.RegisterRole) && server.RegisterRole != 0)
+                    if (!((IGuildUser) Context.User).RoleIds.Contains(server.RegisterRole) && server.RegisterRole != 0)
                         try
                         {
                             var serverrole = Context.Guild.GetRole(server.RegisterRole);
                             try
                             {
-                                await ((IGuildUser)Context.User).AddRoleAsync(serverrole);
+                                await ((IGuildUser) Context.User).AddRoleAsync(serverrole);
                             }
                             catch
                             {
@@ -86,10 +80,10 @@ namespace ELO_Bot.Commands
 
                     try
                     {
-                        await ((IGuildUser)Context.User).ModifyAsync(x =>
-                       {
-                           x.Nickname = $"{userprofile.Points} ~ {username}";
-                       });
+                        await ((IGuildUser) Context.User).ModifyAsync(x =>
+                        {
+                            x.Nickname = $"{userprofile.Points} ~ {username}";
+                        });
 
                         userprofile.Username = username;
                     }
@@ -125,7 +119,7 @@ namespace ELO_Bot.Commands
             embed.WithColor(Color.Blue);
             try
             {
-                await ((IGuildUser)Context.User).ModifyAsync(x => { x.Nickname = $"0 ~ {username}"; });
+                await ((IGuildUser) Context.User).ModifyAsync(x => { x.Nickname = $"0 ~ {username}"; });
             }
             catch
             {
@@ -137,7 +131,7 @@ namespace ELO_Bot.Commands
                     var serverrole = Context.Guild.GetRole(server.RegisterRole);
                     try
                     {
-                        await ((IGuildUser)Context.User).AddRoleAsync(serverrole);
+                        await ((IGuildUser) Context.User).AddRoleAsync(serverrole);
                     }
                     catch
                     {

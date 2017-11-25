@@ -266,9 +266,8 @@ namespace ELO_Bot.Commands.Admin
             IMessageChannel c = Context.Channel;
 
             if (lobby != null)
-            {
-                c = Context.Guild.TextChannels.FirstOrDefault(x => x.Name.ToLower() == lobby.ToLower()) ?? Context.Channel;
-            }
+                c = Context.Guild.TextChannels.FirstOrDefault(x => x.Name.ToLower() == lobby.ToLower()) ??
+                    Context.Channel;
 
             var games = server.Gamelist.Where(x => x.LobbyId == c.Id)
                 .OrderByDescending(x => x.GameNumber);
@@ -288,7 +287,6 @@ namespace ELO_Bot.Commands.Admin
                     pages.Add(gameresults);
                     gameresults = "";
                 }
-                    
             }
             var msg = new PaginatedMessage
             {
