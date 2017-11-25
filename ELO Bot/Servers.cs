@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Raven.Client;
-using Raven.Client.Document;
 
 
 namespace ELO_Bot
