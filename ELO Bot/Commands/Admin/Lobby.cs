@@ -42,9 +42,9 @@ namespace ELO_Bot.Commands.Admin
                     "Please reply with a number for the amount of players you want for the lobby, ie. 10 gives two teams of 5");
                 var n1 = await NextMessageAsync(timeout: TimeSpan.FromMinutes(1d));
                 if (int.TryParse(n1.Content, out var i))
-                    if (i % 2 != 0 || i < 4)
+                    if (i % 2 != 0 || i < 2)
                     {
-                        await ReplyAsync("ERROR: Number must be even and greater than 4 (minimum 2v2)");
+                        await ReplyAsync("ERROR: Number must be even!");
                     }
                     else
                     {
@@ -57,7 +57,8 @@ namespace ELO_Bot.Commands.Admin
                             await ReplyAsync("Please specify a description for this lobby:\n" +
                                              "ie. \"Ranked Gamemode, 5v5 ELITE Players Only!\"");
                             var n3 = await NextMessageAsync(timeout: TimeSpan.FromMinutes(1d));
-
+                            if (i == 2)
+                                captains = false;
 
                             var ser = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
                             ser.Queue.Add(new Servers.Server.Q
@@ -288,6 +289,9 @@ namespace ELO_Bot.Commands.Admin
                     gameresults = "";
                 }
             }
+
+            pages.Add(gameresults);
+
             var msg = new PaginatedMessage
             {
                 Pages = pages,

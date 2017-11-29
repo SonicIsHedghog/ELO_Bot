@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
-
 
 namespace ELO_Bot
 {
@@ -80,6 +78,14 @@ namespace ELO_Bot
                 public ulong T2Captain { get; set; }
                 public List<ulong> Team1 { get; set; } = new List<ulong>();
                 public List<ulong> Team2 { get; set; } = new List<ulong>();
+
+                public List<Buddy> Pairs { get; set; } = new List<Buddy>();
+
+                public class Buddy
+                {
+                    public ulong User1 { get; set; } = 0;
+                    public ulong User2 { get; set; } = 0;
+                }
             }
 
             public class PreviouMatches

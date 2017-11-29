@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
+using Discord.Addons.Interactive;
 using Discord.Commands;
-using Discord.WebSocket;
 using ELO_Bot.Preconditions;
 using ELO_Bot.PreConditions;
 
@@ -18,7 +18,7 @@ namespace ELO_Bot.Commands
     [CheckRegistered]
     [CheckBlacklist]
     [RequireContext(ContextType.Guild)]
-    public class MatchMaking : ModuleBase
+    public class MatchMaking : InteractiveBase
     {
         /// <summary>
         ///     dusplays the current queue.
@@ -51,23 +51,23 @@ namespace ELO_Bot.Commands
                     var t2List = "";
                     var users = "";
 
-                    var cap1 = await Context.Guild.GetUserAsync(lobby.T1Captain);
-                    var cap2 = await Context.Guild.GetUserAsync(lobby.T2Captain);
+                    var cap1 = await ((IGuild) Context.Guild).GetUserAsync(lobby.T1Captain);
+                    var cap2 = await ((IGuild) Context.Guild).GetUserAsync(lobby.T2Captain);
 
                     //create a list of users in team 1 2 and users left
                     foreach (var us in lobby.Team1)
                     {
-                        var u = await Context.Client.GetUserAsync(us);
+                        var u = await ((IDiscordClient) Context.Client).GetUserAsync(us);
                         t1List += $"{u.Mention} ";
                     }
                     foreach (var us in lobby.Team2)
                     {
-                        var u = await Context.Client.GetUserAsync(us);
+                        var u = await ((IDiscordClient) Context.Client).GetUserAsync(us);
                         t2List += $"{u.Mention} ";
                     }
                     foreach (var us in lobby.Users)
                     {
-                        var u = await Context.Client.GetUserAsync(us);
+                        var u = await ((IDiscordClient) Context.Client).GetUserAsync(us);
                         users += $"{u.Mention} ";
                     }
                     embed.AddField("Lobby", $"[{lobby.Team1.Count}/{lobby.UserLimit / 2}]\n" +
@@ -251,13 +251,13 @@ namespace ELO_Bot.Commands
                     var t2List = "";
                     var users = "";
 
-                    var cap1 = await Context.Guild.GetUserAsync(lobby.T2Captain);
-                    var cap2 = await Context.Guild.GetUserAsync(lobby.T1Captain);
+                    var cap1 = await ((IGuild) Context.Guild).GetUserAsync(lobby.T2Captain);
+                    var cap2 = await ((IGuild) Context.Guild).GetUserAsync(lobby.T1Captain);
 
                     //create a list of users in team1, team2 and users left.
                     foreach (var us in lobby.Team1)
                     {
-                        var u = await Context.Client.GetUserAsync(us);
+                        var u = await ((IDiscordClient) Context.Client).GetUserAsync(us);
                         try
                         {
                             t1List += $"{u.Mention} ";
@@ -269,7 +269,7 @@ namespace ELO_Bot.Commands
                     }
                     foreach (var us in lobby.Team2)
                     {
-                        var u = await Context.Client.GetUserAsync(us);
+                        var u = await ((IDiscordClient) Context.Client).GetUserAsync(us);
                         try
                         {
                             t2List += $"{u.Mention} ";
@@ -281,7 +281,7 @@ namespace ELO_Bot.Commands
                     }
                     foreach (var us in lobby.Users)
                     {
-                        var u = await Context.Client.GetUserAsync(us);
+                        var u = await ((IDiscordClient) Context.Client).GetUserAsync(us);
                         try
                         {
                             users += $"{u.Mention} ";
@@ -340,12 +340,12 @@ namespace ELO_Bot.Commands
                     var t2List = "";
                     var users = "";
 
-                    var cap1 = await Context.Guild.GetUserAsync(lobby.T1Captain);
-                    var cap2 = await Context.Guild.GetUserAsync(lobby.T2Captain);
+                    var cap1 = await ((IGuild) Context.Guild).GetUserAsync(lobby.T1Captain);
+                    var cap2 = await ((IGuild) Context.Guild).GetUserAsync(lobby.T2Captain);
                     foreach (var us in lobby.Team1)
                         try
                         {
-                            var u = await Context.Client.GetUserAsync(us);
+                            var u = await ((IDiscordClient) Context.Client).GetUserAsync(us);
                             t1List += $"{u.Mention} ";
                         }
                         catch
@@ -355,7 +355,7 @@ namespace ELO_Bot.Commands
                     foreach (var us in lobby.Team2)
                         try
                         {
-                            var u = await Context.Client.GetUserAsync(us);
+                            var u = await ((IDiscordClient) Context.Client).GetUserAsync(us);
                             t2List += $"{u.Mention} ";
                         }
                         catch
@@ -365,7 +365,7 @@ namespace ELO_Bot.Commands
                     foreach (var us in lobby.Users)
                         try
                         {
-                            var u = await Context.Client.GetUserAsync(us);
+                            var u = await ((IDiscordClient) Context.Client).GetUserAsync(us);
                             users += $"{u.Mention} ";
                         }
                         catch
@@ -402,6 +402,181 @@ namespace ELO_Bot.Commands
                 await ReplyAsync("", false, embed.Build());
             }
         }
+
+        [Command("pair", RunMode = RunMode.Async)]
+        [Summary("pair <@user>")]
+        [Remarks("Pair with another player to ensure you both get into the same team")]
+        public async Task Pair(IUser user)
+        {
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
+            var embed = new EmbedBuilder();
+            Servers.Server.Q lobby;
+            try
+            {
+                lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
+                if (lobby == null)
+                {
+                    embed.AddField("ERROR", "Current Channel is not a lobby!");
+                    await ReplyAsync("", false, embed.Build());
+                    return;
+                }
+            }
+            catch
+            {
+                embed.AddField("ERROR", "Current Channel is not a lobby!");
+                await ReplyAsync("", false, embed.Build());
+                return;
+            }
+
+            if (user.Id == Context.User.Id)
+            {
+                embed.AddField("ERROR", "You cannot pair with yourself.");
+                await ReplyAsync("", false, embed.Build());
+                return;
+            }
+
+
+            if (server.UserList.Any(x => x.UserId == user.Id))
+            {
+                if (lobby.Pairs.Any(x =>
+                    x.User1 == Context.User.Id || x.User2 == Context.User.Id || x.User1 == user.Id ||
+                    x.User2 == user.Id))
+                {
+                    embed.AddField("ERROR", "User or User(s) are already paired with another player");
+                    await ReplyAsync("", false, embed.Build());
+                    return;
+                }
+
+
+                await ReplyAsync(
+                    $"{user.Mention}, please type `confirm pair` in your next message to confirm this pairing.");
+                try
+                {
+                    var i = 0;
+                    while (i < 10)
+                    {
+                        var next = await NextMessageAsync(false, timeout: TimeSpan.FromMinutes(1));
+                        if (next.Content.ToLower().Contains("confirm pair") && next.Author.Id == user.Id)
+                        {
+                            lobby.Pairs.Add(new Servers.Server.Q.Buddy
+                            {
+                                User1 = Context.User.Id,
+                                User2 = user.Id
+                            });
+                            embed.AddField("Success!",
+                                "You will now be paired with this player for the next game you both join.");
+
+                            await ReplyAsync("", false, embed.Build());
+                            break;
+                        }
+                        i++;
+                    }
+                }
+                catch
+                {
+                    //throw new Exception(e.ToString());
+                }
+            }
+            else
+            {
+                embed.AddField("ERROR", "Specified user is not registered");
+                await ReplyAsync("", false, embed.Build());
+            }
+        }
+
+        [Command("pairs")]
+        [Summary("pairs")]
+        [Remarks("list all pairs in this lobby")]
+        public async Task Pairs()
+        {
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
+            var embed = new EmbedBuilder();
+            Servers.Server.Q lobby;
+            try
+            {
+                lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
+                if (lobby == null)
+                {
+                    embed.AddField("ERROR", "Current Channel is not a lobby!");
+                    await ReplyAsync("", false, embed.Build());
+                    return;
+                }
+            }
+            catch
+            {
+                embed.AddField("ERROR", "Current Channel is not a lobby!");
+                await ReplyAsync("", false, embed.Build());
+                return;
+            }
+
+            if (lobby.Pairs.Count > 0)
+            {
+                var pages = new List<string>();
+                var pairstring = "";
+                foreach (var pair in lobby.Pairs)
+                {
+                    pairstring +=
+                        $"{server.UserList.FirstOrDefault(x => x.UserId == pair.User1)?.Username} + {server.UserList.FirstOrDefault(x => x.UserId == pair.User2)?.Username}\n";
+
+                    var numLines = pairstring.Split('\n').Length;
+                    if (numLines > 20)
+                    {
+                        pages.Add(pairstring);
+                        pairstring = "";
+                    }
+                }
+
+                pages.Add(pairstring);
+
+                var msg = new PaginatedMessage
+                {
+                    Pages = pages,
+                    Title = $"{Context.Channel.Name} Pairs",
+                    Color = Color.Green
+                };
+
+                await PagedReplyAsync(msg);
+            }
+        }
+
+        [Command("leavepair")]
+        [Summary("leavepair")]
+        [Remarks("Leave a pair")]
+        public async Task LeavePair()
+        {
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
+            var embed = new EmbedBuilder();
+            Servers.Server.Q lobby;
+            try
+            {
+                lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
+                if (lobby == null)
+                {
+                    embed.AddField("ERROR", "Current Channel is not a lobby!");
+                    await ReplyAsync("", false, embed.Build());
+                    return;
+                }
+            }
+            catch
+            {
+                embed.AddField("ERROR", "Current Channel is not a lobby!");
+                await ReplyAsync("", false, embed.Build());
+                return;
+            }
+
+            if (lobby.Pairs.Any(x => x.User1 == Context.User.Id || x.User2 == Context.User.Id))
+            {
+                lobby.Pairs.Remove(lobby.Pairs.First(x => x.User1 == Context.User.Id || x.User2 == Context.User.Id));
+                embed.AddField("Success!", "Pair has been removed.");
+                await ReplyAsync("", false, embed.Build());
+            }
+            else
+            {
+                embed.AddField("ERROR", "you are not paired with anyone yet!");
+                await ReplyAsync("", false, embed.Build());
+            }
+        }
+
 
         /// <summary>
         ///     join the current queue
@@ -613,12 +788,12 @@ namespace ELO_Bot.Commands
 
                 foreach (var u in oldgame.Team1)
                 {
-                    var use = await Context.Guild.GetUserAsync(u);
+                    var use = await ((IGuild) Context.Guild).GetUserAsync(u);
                     t1Mention.Add(use);
                 }
                 foreach (var u in oldgame.Team2)
                 {
-                    var use = await Context.Guild.GetUserAsync(u);
+                    var use = await ((IGuild) Context.Guild).GetUserAsync(u);
                     t2Mention.Add(use);
                 }
                 var announcement = "**__Game Has Been Updated__**\n" +
@@ -631,7 +806,7 @@ namespace ELO_Bot.Commands
 
                 try
                 {
-                    var channel = await Context.Guild.GetChannelAsync(server.AnnouncementsChannel);
+                    var channel = await ((IGuild) Context.Guild).GetChannelAsync(server.AnnouncementsChannel);
                     await ((IMessageChannel) channel).SendMessageAsync(announcement);
                 }
                 catch
@@ -758,7 +933,7 @@ namespace ELO_Bot.Commands
             try
             {
                 var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
-                var lobby = ((SocketGuild) Context.Guild).TextChannels.FirstOrDefault(x =>
+                var lobby = Context.Guild.TextChannels.FirstOrDefault(x =>
                     x.Name.ToLower() == lobbyname.ToLower());
                 if (lobby == null)
                     throw new Exception("Invalid Lobbyname");
@@ -808,7 +983,7 @@ namespace ELO_Bot.Commands
             var t1 = "";
             foreach (var user in team1)
             {
-                var u = await Context.Guild.GetUserAsync(user);
+                var u = await ((IGuild) Context.Guild).GetUserAsync(user);
                 team1Userlist.Add(u);
                 t1 += $"{u.Mention} ";
             }
@@ -817,7 +992,7 @@ namespace ELO_Bot.Commands
             var t2 = "";
             foreach (var user in team2)
             {
-                var u = await Context.Guild.GetUserAsync(user);
+                var u = await ((IGuild) Context.Guild).GetUserAsync(user);
                 team2Userlist.Add(u);
                 t2 += $"{u.Mention} ";
             }
@@ -830,7 +1005,7 @@ namespace ELO_Bot.Commands
                 return;
             }
 
-            var host = await Context.Guild.GetUserAsync(currentqueue.T1Captain);
+            var host = await ((IGuild) Context.Guild).GetUserAsync(currentqueue.T1Captain);
 
 
             if (currentqueue.Maps.Count > 0 && currentqueue.Maps != null)
@@ -909,22 +1084,22 @@ namespace ELO_Bot.Commands
                 {
                     var cap = Enumerable.Range(0, capranks.Count).OrderBy(x => rnd.Next()).Take(2)
                         .ToList();
-                    cap1 = await Context.Guild.GetUserAsync(capranks[cap[0]]);
-                    cap2 = await Context.Guild.GetUserAsync(capranks[cap[1]]);
+                    cap1 = await ((IGuild) Context.Guild).GetUserAsync(capranks[cap[0]]);
+                    cap2 = await ((IGuild) Context.Guild).GetUserAsync(capranks[cap[1]]);
                 }
                 else
                 {
                     var captains = Enumerable.Range(0, currentqueue.Users.Count).OrderBy(x => rnd.Next()).Take(2)
                         .ToList();
-                    cap1 = await Context.Guild.GetUserAsync(currentqueue.Users[captains[0]]);
-                    cap2 = await Context.Guild.GetUserAsync(currentqueue.Users[captains[1]]);
+                    cap1 = await ((IGuild) Context.Guild).GetUserAsync(currentqueue.Users[captains[0]]);
+                    cap2 = await ((IGuild) Context.Guild).GetUserAsync(currentqueue.Users[captains[1]]);
                 }
 
 
                 var players = "";
                 foreach (var user in currentqueue.Users)
                 {
-                    var u = await Context.Guild.GetUserAsync(user);
+                    var u = await ((IGuild) Context.Guild).GetUserAsync(user);
                     if (u != cap1 && u != cap2)
                         players += $"{u.Mention} ";
                 }
@@ -953,27 +1128,70 @@ namespace ELO_Bot.Commands
             var team1 = new List<Servers.Server.User>();
             var team2 = new List<Servers.Server.User>();
 
-            if (sortedlist.Count == 10)
+            if (currentqueue.Pairs.Any(
+                x => currentqueue.Users.Contains(x.User1) && currentqueue.Users.Contains(x.User2)))
             {
-                team1.Add(sortedlist[0]);
-                team1.Add(sortedlist[3]);
-                team1.Add(sortedlist[5]);
-                team1.Add(sortedlist[7]);
-                team1.Add(sortedlist[9]);
+                var validpairs = currentqueue.Pairs.Where(x =>
+                    currentqueue.Users.Contains(x.User1) && currentqueue.Users.Contains(x.User2));
+                foreach (var pair in validpairs)
+                    if (team1.Count > team2.Count)
+                    {
+                        team2.Add(server.UserList.First(x => x.UserId == pair.User1));
+                        team2.Add(server.UserList.First(x => x.UserId == pair.User2));
+                    }
+                    else
+                    {
+                        team1.Add(server.UserList.First(x => x.UserId == pair.User1));
+                        team1.Add(server.UserList.First(x => x.UserId == pair.User2));
+                    }
+                foreach (var user in currentqueue.Users)
+                    if (team1.Any(x => x.UserId == user) || team2.Any(x => x.UserId == user))
+                    {
+                        //
+                    }
+                    else
+                    {
+                        if (team1.Count > team2.Count)
+                            team2.Add(server.UserList.First(x => x.UserId == user));
+                        else
+                            team1.Add(server.UserList.First(x => x.UserId == user));
+                    }
 
-                team2.Add(sortedlist[1]);
-                team2.Add(sortedlist[2]);
-                team2.Add(sortedlist[4]);
-                team2.Add(sortedlist[6]);
-                team2.Add(sortedlist[8]);
+                if (team1.Count > team2.Count)
+                {
+                    team2.Add(team1.Last());
+                    team1.Remove(team1.Last());
+                }
+                else if (team2.Count > team1.Count)
+                {
+                    team1.Add(team2.Last());
+                    team2.Remove(team2.Last());
+                }
             }
             else
             {
-                foreach (var user in sortedlist)
-                    if (team1.Count > team2.Count)
-                        team2.Add(user);
-                    else
-                        team1.Add(user);
+                if (sortedlist.Count == 10)
+                {
+                    team1.Add(sortedlist[0]);
+                    team1.Add(sortedlist[3]);
+                    team1.Add(sortedlist[5]);
+                    team1.Add(sortedlist[7]);
+                    team1.Add(sortedlist[9]);
+
+                    team2.Add(sortedlist[1]);
+                    team2.Add(sortedlist[2]);
+                    team2.Add(sortedlist[4]);
+                    team2.Add(sortedlist[6]);
+                    team2.Add(sortedlist[8]);
+                }
+                else
+                {
+                    foreach (var user in sortedlist)
+                        if (team1.Count > team2.Count)
+                            team2.Add(user);
+                        else
+                            team1.Add(user);
+                }
             }
 
 
@@ -984,7 +1202,7 @@ namespace ELO_Bot.Commands
             foreach (var user in team1)
             {
                 t1Desc += $"{user.Username} - {user.Points}\n";
-                t1Users.Add(Context.Guild.GetUserAsync(user.UserId).Result);
+                t1Users.Add(((IGuild) Context.Guild).GetUserAsync(user.UserId).Result);
             }
 
             var t2Desc = "";
@@ -993,11 +1211,11 @@ namespace ELO_Bot.Commands
             foreach (var user in team2)
             {
                 t2Desc += $"{user.Username} - {user.Points}\n";
-                t2Users.Add(Context.Guild.GetUserAsync(user.UserId).Result);
+                t2Users.Add(((IGuild) Context.Guild).GetUserAsync(user.UserId).Result);
             }
 
             var random = new Random().Next(0, sortedlist.Count);
-            var gamehost = await Context.Guild.GetUserAsync(sortedlist[random].UserId);
+            var gamehost = await ((IGuild) Context.Guild).GetUserAsync(sortedlist[random].UserId);
 
             embed.Title = $"{Context.Channel.Name} Match #{currentqueue.Games}";
             embed.AddField($"Random Host", $"{gamehost.Mention}");
@@ -1060,20 +1278,21 @@ namespace ELO_Bot.Commands
             IMessageChannel channel;
             try
             {
-                channel = await Context.Guild.GetChannelAsync(server.AnnouncementsChannel) as IMessageChannel;
+                channel =
+                    await ((IGuild) Context.Guild).GetChannelAsync(server.AnnouncementsChannel) as IMessageChannel;
             }
             catch
             {
                 channel = Context.Channel;
             }
-            var lobbychannel = await Context.Client.GetChannelAsync(lobby.ChannelId);
+            var lobbychannel = Context.Guild.GetChannel(lobby.ChannelId);
 
             var cap1 = $"[{lobby.T1Captain}]";
             var cap2 = $"[{lobby.T2Captain}]";
 
             try
             {
-                var c1 = await Context.Guild.GetUserAsync(lobby.T1Captain);
+                var c1 = await ((IGuild) Context.Guild).GetUserAsync(lobby.T1Captain);
                 cap1 = $"[{c1.Mention}]";
             }
             catch
@@ -1083,7 +1302,7 @@ namespace ELO_Bot.Commands
 
             try
             {
-                var c2 = await Context.Guild.GetUserAsync(lobby.T2Captain);
+                var c2 = await ((IGuild) Context.Guild).GetUserAsync(lobby.T2Captain);
                 cap2 = $"[{c2.Mention}]";
             }
             catch
