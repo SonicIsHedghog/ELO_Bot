@@ -105,6 +105,14 @@ namespace ELO_Bot.Commands.Admin
                 try
                 {
                     await ((IGuildUser) user).ModifyAsync(x => { x.Nickname = $"0 ~ {username}"; });
+                    if (CommandHandler.VerifiedUsers != null)
+                    {
+                        if (CommandHandler.VerifiedUsers.Contains(user.Id))
+                        {
+                            await ((IGuildUser) user).ModifyAsync(x => { x.Nickname = $"👑0 ~ {username}"; });
+                        }
+                    }
+
                 }
                 catch
                 {
@@ -175,6 +183,15 @@ namespace ELO_Bot.Commands.Admin
                         {
                             x.Nickname = $"{member.Points} ~ {member.Username}";
                         });
+
+                        if (CommandHandler.VerifiedUsers != null)
+                        {
+                            if (CommandHandler.VerifiedUsers.Contains(user.Id))
+                            {
+                                await ((IGuildUser) user).ModifyAsync(x => { x.Nickname = $"👑{member.Points} ~ {member.Username}"; });
+                            }
+                        }
+
                     }
                     catch
                     {

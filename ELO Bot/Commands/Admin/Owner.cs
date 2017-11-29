@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Discord;
 using Discord.Commands;
+using Discord.WebSocket;
 using Newtonsoft.Json;
 
 namespace ELO_Bot.Commands.Admin
@@ -87,6 +90,48 @@ namespace ELO_Bot.Commands.Admin
             File.WriteAllText(Path.Combine(AppContext.BaseDirectory, $"setup/backups/{time}"), contents);
 
             await ReplyAsync($"Backup has been saved to serverlist.json and {time}");
+        }
+
+        [Command("VerifyPatreon")]
+        [Summary("VerifyPatreon <@user>")]
+        [Remarks("Varify a supporter of the top ELO Bot Patreon Tier")]
+        public async Task VerifyPatreon(IUser user)
+        {
+            if (CommandHandler.VerifiedUsers == null)
+            {
+                CommandHandler.VerifiedUsers = new List<ulong>{user.Id};
+            }
+            else
+            {
+                CommandHandler.VerifiedUsers.Add(user.Id);
+            }
+            
+            await ReplyAsync("User has been verified.");
+            
+            var verifiedusers = JsonConvert.SerializeObject(CommandHandler.VerifiedUsers);
+            File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "setup/verified.json"), verifiedusers);
+            await ReplyAsync("Object Saved");
+
+            foreach (var server in ((DiscordSocketClient)Context.Client).Guilds)
+            {
+                try
+                {
+                    var patreon = server.GetUser(user.Id);
+                    if (patreon != null)
+                    {
+                        var serverobject = Servers.ServerList.First(x => x.ServerId == server.Id);
+                        var userprofile = serverobject.UserList.First(x => x.UserId == user.Id);
+                        await patreon.ModifyAsync(x =>
+                        {
+                            x.Nickname = $"👑{userprofile.Points} ~ {userprofile.Username}";
+                        });
+                    }
+                }
+                catch
+                {
+                    //
+                }
+            }
         }
     }
 }

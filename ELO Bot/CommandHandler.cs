@@ -32,6 +32,7 @@ namespace ELO_Bot
         }
 
         public static List<string> Keys { get; set; }
+        public static List<ulong> VerifiedUsers { get; set; }
 
         private static async Task _client_UserUpdated(SocketUser userBefore, SocketUser userAfter)
         {
@@ -128,6 +129,7 @@ namespace ELO_Bot
                 $"Invite: https://discordapp.com/oauth2/authorize?client_id={application.Id}&scope=bot&permissions=2146958591");
             //await _client.SetGameAsync($"{Config.Load().Prefix}register");
 
+
             var k = JsonConvert.DeserializeObject<List<string>>(
                 File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "setup/keys.json")));
             if (k.Count > 0)
@@ -137,6 +139,39 @@ namespace ELO_Bot
                 "setup/serverlist.json");
             var jsonbackup = JsonConvert.SerializeObject(Servers.ServerList);
             File.WriteAllText(backupfile, jsonbackup);
+
+            var verif = JsonConvert.DeserializeObject<List<ulong>>(
+                File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "setup/verified.json")));
+            if (verif.Count > 0)
+            {
+                VerifiedUsers = verif;
+                foreach (var user in VerifiedUsers)
+                {
+                    foreach (var server in _client.Guilds)
+                    {
+                        try
+                        {
+                            var patreon = server.GetUser(user);
+                            if (patreon != null)
+                            {
+                                var serverobject = Servers.ServerList.First(x => x.ServerId == server.Id);
+                                var userprofile = serverobject.UserList.First(x => x.UserId == user);
+                                await patreon.ModifyAsync(x =>
+                                {
+                                    x.Nickname = $"👑{userprofile.Points} ~ {userprofile.Username}";
+                                });
+                            }
+                        }
+                        catch
+                        {
+                            //
+                        }
+                    }
+                }
+            }
+                
+
+           
         }
 
         public async Task DoCommand(SocketMessage parameterMessage)
