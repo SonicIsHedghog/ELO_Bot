@@ -53,15 +53,11 @@ namespace ELO_Bot.Commands.Admin
                                 });
 
                                 if (CommandHandler.VerifiedUsers != null)
-                                {
                                     if (CommandHandler.VerifiedUsers.Contains(user.Id))
-                                    {
                                         await ((IGuildUser) user).ModifyAsync(x =>
                                         {
                                             x.Nickname = $"👑{subject.Points} ~ {subject.Username}";
                                         });
-                                    }
-                                }
                             }
                             catch
                             {
@@ -117,12 +113,11 @@ namespace ELO_Bot.Commands.Admin
                                 x.Nickname = $"{subject.Points} ~ {subject.Username}";
                             });
                             if (CommandHandler.VerifiedUsers != null)
-                            {
                                 if (CommandHandler.VerifiedUsers.Contains(user.Id))
-                                {
-                                    await ((IGuildUser) user).ModifyAsync(x => { x.Nickname = $"👑{subject.Points} ~ {subject.Username}"; });
-                                }
-                            }
+                                    await ((IGuildUser) user).ModifyAsync(x =>
+                                    {
+                                        x.Nickname = $"👑{subject.Points} ~ {subject.Username}";
+                                    });
                         }
                         catch
                         {
@@ -170,12 +165,11 @@ namespace ELO_Bot.Commands.Admin
                     {
                         await ((IGuildUser) u).ModifyAsync(x => { x.Nickname = $"{user.Points} ~ {user.Username}"; });
                         if (CommandHandler.VerifiedUsers != null)
-                        {
                             if (CommandHandler.VerifiedUsers.Contains(u.Id))
-                            {
-                                await ((IGuildUser) u).ModifyAsync(x => { x.Nickname = $"👑{user.Points} ~ {user.Username}"; });
-                            }
-                        }
+                                await ((IGuildUser) u).ModifyAsync(x =>
+                                {
+                                    x.Nickname = $"👑{user.Points} ~ {user.Username}";
+                                });
 
                         embed.AddField($"{user.Username} MODIFIED", $"Current Points: {user.Points}");
                     }

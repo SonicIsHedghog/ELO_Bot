@@ -86,12 +86,11 @@ namespace ELO_Bot.Commands
                         });
 
                         if (CommandHandler.VerifiedUsers != null)
-                        {
                             if (CommandHandler.VerifiedUsers.Contains(Context.User.Id))
-                            {
-                                await ((IGuildUser) Context.User).ModifyAsync(x => { x.Nickname = $"👑{userprofile.Points} ~ {username}"; });
-                            }
-                        }
+                                await ((IGuildUser) Context.User).ModifyAsync(x =>
+                                {
+                                    x.Nickname = $"👑{userprofile.Points} ~ {username}";
+                                });
 
                         userprofile.Username = username;
                     }
@@ -129,13 +128,8 @@ namespace ELO_Bot.Commands
             {
                 await ((IGuildUser) Context.User).ModifyAsync(x => { x.Nickname = $"0 ~ {username}"; });
                 if (CommandHandler.VerifiedUsers != null)
-                {
                     if (CommandHandler.VerifiedUsers.Contains(Context.User.Id))
-                    {
                         await ((IGuildUser) Context.User).ModifyAsync(x => { x.Nickname = $"👑0 ~ {username}"; });
-                    }
-                }
-                
             }
             catch
             {

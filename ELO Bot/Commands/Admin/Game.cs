@@ -346,12 +346,11 @@ namespace ELO_Bot.Commands.Admin
                     {
                         await ((IGuildUser) user).ModifyAsync(x => { x.Nickname = $"{usr.Points} ~ {usr.Username}"; });
                         if (CommandHandler.VerifiedUsers != null)
-                        {
                             if (CommandHandler.VerifiedUsers.Contains(user.Id))
-                            {
-                                await ((IGuildUser) user).ModifyAsync(x => { x.Nickname = $"👑{usr.Points} ~ {usr.Username}"; });
-                            }
-                        }
+                                await ((IGuildUser) user).ModifyAsync(x =>
+                                {
+                                    x.Nickname = $"👑{usr.Points} ~ {usr.Username}";
+                                });
                     }
                     catch
                     {
@@ -441,15 +440,11 @@ namespace ELO_Bot.Commands.Admin
                     {
                         await ((IGuildUser) user).ModifyAsync(x => { x.Nickname = $"{usr.Points} ~ {usr.Username}"; });
                         if (CommandHandler.VerifiedUsers != null)
-                        {
                             if (CommandHandler.VerifiedUsers.Contains(user.Id))
-                            {
                                 await ((IGuildUser) user).ModifyAsync(x =>
                                 {
                                     x.Nickname = $"👑{usr.Points} ~ {usr.Username}";
                                 });
-                            }
-                        }
                     }
                     catch
                     {

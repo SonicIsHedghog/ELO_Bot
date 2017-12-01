@@ -106,13 +106,8 @@ namespace ELO_Bot.Commands.Admin
                 {
                     await ((IGuildUser) user).ModifyAsync(x => { x.Nickname = $"0 ~ {username}"; });
                     if (CommandHandler.VerifiedUsers != null)
-                    {
                         if (CommandHandler.VerifiedUsers.Contains(user.Id))
-                        {
                             await ((IGuildUser) user).ModifyAsync(x => { x.Nickname = $"👑0 ~ {username}"; });
-                        }
-                    }
-
                 }
                 catch
                 {
@@ -185,13 +180,11 @@ namespace ELO_Bot.Commands.Admin
                         });
 
                         if (CommandHandler.VerifiedUsers != null)
-                        {
                             if (CommandHandler.VerifiedUsers.Contains(user.Id))
-                            {
-                                await ((IGuildUser) user).ModifyAsync(x => { x.Nickname = $"👑{member.Points} ~ {member.Username}"; });
-                            }
-                        }
-
+                                await ((IGuildUser) user).ModifyAsync(x =>
+                                {
+                                    x.Nickname = $"👑{member.Points} ~ {member.Username}";
+                                });
                     }
                     catch
                     {
@@ -219,6 +212,7 @@ namespace ELO_Bot.Commands.Admin
         /// </summary>
         /// <param name="user">user to ban</param>
         /// <param name="i">hours to ban the user for.</param>
+        /// <param name="reason"></param>
         /// <returns></returns>
         [Command("ban")]
         [Summary("ban <@user> <hours> <reason>")]

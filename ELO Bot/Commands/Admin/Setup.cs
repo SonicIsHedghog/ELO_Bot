@@ -338,12 +338,8 @@ namespace ELO_Bot.Commands.Admin
                         {
                             await u.ModifyAsync(x => { x.Nickname = $"0 ~ {user.Username}"; });
                             if (CommandHandler.VerifiedUsers != null)
-                            {
                                 if (CommandHandler.VerifiedUsers.Contains(u.Id))
-                                {
                                     await u.ModifyAsync(x => { x.Nickname = $"👑0 ~ {user.Username}"; });
-                                }
-                            }
                             delay = 1000;
                         }
                         catch

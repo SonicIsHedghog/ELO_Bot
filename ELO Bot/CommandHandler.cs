@@ -146,32 +146,25 @@ namespace ELO_Bot
             {
                 VerifiedUsers = verif;
                 foreach (var user in VerifiedUsers)
-                {
-                    foreach (var server in _client.Guilds)
+                foreach (var server in _client.Guilds)
+                    try
                     {
-                        try
+                        var patreon = server.GetUser(user);
+                        if (patreon != null)
                         {
-                            var patreon = server.GetUser(user);
-                            if (patreon != null)
+                            var serverobject = Servers.ServerList.First(x => x.ServerId == server.Id);
+                            var userprofile = serverobject.UserList.First(x => x.UserId == user);
+                            await patreon.ModifyAsync(x =>
                             {
-                                var serverobject = Servers.ServerList.First(x => x.ServerId == server.Id);
-                                var userprofile = serverobject.UserList.First(x => x.UserId == user);
-                                await patreon.ModifyAsync(x =>
-                                {
-                                    x.Nickname = $"👑{userprofile.Points} ~ {userprofile.Username}";
-                                });
-                            }
-                        }
-                        catch
-                        {
-                            //
+                                x.Nickname = $"👑{userprofile.Points} ~ {userprofile.Username}";
+                            });
                         }
                     }
-                }
+                    catch
+                    {
+                        //
+                    }
             }
-                
-
-           
         }
 
         public async Task DoCommand(SocketMessage parameterMessage)

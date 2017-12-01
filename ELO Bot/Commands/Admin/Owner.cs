@@ -98,22 +98,17 @@ namespace ELO_Bot.Commands.Admin
         public async Task VerifyPatreon(IUser user)
         {
             if (CommandHandler.VerifiedUsers == null)
-            {
-                CommandHandler.VerifiedUsers = new List<ulong>{user.Id};
-            }
+                CommandHandler.VerifiedUsers = new List<ulong> {user.Id};
             else
-            {
                 CommandHandler.VerifiedUsers.Add(user.Id);
-            }
-            
+
             await ReplyAsync("User has been verified.");
-            
+
             var verifiedusers = JsonConvert.SerializeObject(CommandHandler.VerifiedUsers);
             File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "setup/verified.json"), verifiedusers);
             await ReplyAsync("Object Saved");
 
-            foreach (var server in ((DiscordSocketClient)Context.Client).Guilds)
-            {
+            foreach (var server in ((DiscordSocketClient) Context.Client).Guilds)
                 try
                 {
                     var patreon = server.GetUser(user.Id);
@@ -131,7 +126,6 @@ namespace ELO_Bot.Commands.Admin
                 {
                     //
                 }
-            }
         }
     }
 }
