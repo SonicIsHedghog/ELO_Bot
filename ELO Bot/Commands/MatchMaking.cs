@@ -428,6 +428,14 @@ namespace ELO_Bot.Commands
                 return;
             }
 
+
+            if (lobby.NoPairs)
+            {
+                embed.AddField("ERROR", "Pairing is disabled in this lobby.");
+                await ReplyAsync("", false, embed.Build());
+                return;
+            }
+
             if (user.Id == Context.User.Id)
             {
                 embed.AddField("ERROR", "You cannot pair with yourself.");
@@ -509,6 +517,14 @@ namespace ELO_Bot.Commands
                 return;
             }
 
+
+            if (lobby.NoPairs)
+            {
+                embed.AddField("ERROR", "Pairing is disabled in this lobby.");
+                await ReplyAsync("", false, embed.Build());
+                return;
+            }
+
             if (lobby.Pairs.Count > 0)
             {
                 var pages = new List<string>();
@@ -537,6 +553,11 @@ namespace ELO_Bot.Commands
 
                 await PagedReplyAsync(msg);
             }
+            else
+            {
+                embed.AddField("ERROR", "There are no pairs created in this lobby yet.");
+                await ReplyAsync("", false, embed.Build());
+            }
         }
 
         [Command("leavepair")]
@@ -546,20 +567,18 @@ namespace ELO_Bot.Commands
         {
             var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
             var embed = new EmbedBuilder();
-            Servers.Server.Q lobby;
-            try
-            {
-                lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
+
+                var lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
                 if (lobby == null)
                 {
                     embed.AddField("ERROR", "Current Channel is not a lobby!");
                     await ReplyAsync("", false, embed.Build());
                     return;
                 }
-            }
-            catch
+
+            if (lobby.NoPairs)
             {
-                embed.AddField("ERROR", "Current Channel is not a lobby!");
+                embed.AddField("ERROR", "Pairing is disabled in this lobby.");
                 await ReplyAsync("", false, embed.Build());
                 return;
             }
@@ -1129,7 +1148,7 @@ namespace ELO_Bot.Commands
             var team2 = new List<Servers.Server.User>();
 
             if (currentqueue.Pairs.Any(
-                x => currentqueue.Users.Contains(x.User1) && currentqueue.Users.Contains(x.User2)))
+                x => currentqueue.Users.Contains(x.User1) && currentqueue.Users.Contains(x.User2)) && !currentqueue.NoPairs)
             {
                 var validpairs = currentqueue.Pairs.Where(x =>
                     currentqueue.Users.Contains(x.User1) && currentqueue.Users.Contains(x.User2));

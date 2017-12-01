@@ -235,6 +235,34 @@ namespace ELO_Bot.Commands.Admin
             await ReplyAsync("", false, embed.Build());
         }
 
+        [Command("NoPair")]
+        [Summary("NoPair")]
+        [Remarks("Disable the use of pairing features in the current queue")]
+        public async Task NoPair()
+        {
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
+            var lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
+            if (lobby == null)
+            {
+                await ReplyAsync("Current channel is not a lobby!");
+                return;
+            }
+
+            lobby.NoPairs = !lobby.NoPairs;
+            if (lobby.NoPairs)
+            {
+                await ReplyAsync("Pairs will no longer be available to this lobbn" +
+                                 "NOTE: All pairs for the current lobby have now been deleted.");
+                lobby.Pairs = new List<Servers.Server.Q.Buddy>();
+            }
+            else
+            {
+                await ReplyAsync("Users may pair up with a friend in this lobby now");
+            }
+
+
+        }
+
         /// <summary>
         ///     clears all maps for the current lobby
         /// </summary>

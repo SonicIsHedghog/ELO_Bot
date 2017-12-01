@@ -74,6 +74,8 @@ namespace ELO_Bot
                 public bool Captains { get; set; } = false;
                 public bool IsPickingTeams { get; set; } = false;
 
+                public bool NoPairs { get; set; } = false;
+
                 public ulong T1Captain { get; set; }
                 public ulong T2Captain { get; set; }
                 public List<ulong> Team1 { get; set; } = new List<ulong>();
