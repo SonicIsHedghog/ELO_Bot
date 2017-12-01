@@ -323,17 +323,19 @@ namespace ELO_Bot.Commands.Admin
             var reset = server.UserList.ToList();
             foreach (var user in reset)
             {
-                if (user.Points == 0 || user.Wins == 0 || user.Losses == 0) continue;
-                user.Points = 0;
-                user.Wins = 0;
-                user.Losses = 0;
+                if (user.Points != 0 || user.Wins != 0 || user.Losses != 0)
+                {
+                    user.Points = 0;
+                    user.Wins = 0;
+                    user.Losses = 0;
+                }
             }
             server.UserList = reset;
 
             await ReplyAsync("Leaderboard Reset Complete!\n" +
                              "NOTE: Names and ranks will be reset over the next few minutes.");
 
-            foreach (var user in server.UserList)
+            foreach (var user in reset)
             {
                 try
                 {
@@ -354,6 +356,8 @@ namespace ELO_Bot.Commands.Admin
                     //
                 }
             }
+
+            await ReplyAsync("Reset fully complete.");
         }
 
         /// <summary>
