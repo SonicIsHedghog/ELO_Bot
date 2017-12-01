@@ -347,7 +347,11 @@ namespace ELO_Bot.Commands.Admin
                     });
                     if (CommandHandler.VerifiedUsers != null)
                         if (CommandHandler.VerifiedUsers.Contains(us.Id))
+                        {
+                            await Task.Delay(1000);
                             await us.ModifyAsync(x => { x.Nickname = $"👑0 ~ {user.Username}"; });
+                        }
+                    await Task.Delay(1000);
                     await us.RemoveRolesAsync(server.Ranks.Select(x => Context.Guild.GetRole(x.RoleId)));
                     await Task.Delay(1000);
                 }
