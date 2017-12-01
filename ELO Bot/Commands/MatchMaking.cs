@@ -1361,6 +1361,30 @@ namespace ELO_Bot.Commands
                                $"When the game finishes, type `=game {lobbychannel.Name} {lobby.Games} <team1 or team2>`\n" +
                                "This will modify each team's points respectively.";
 
+            foreach (var user in team1)
+            {
+                try
+                {
+                    await user.SendMessageAsync("", false, embed.Build());
+                }
+                catch
+                {
+                    //
+                }
+            }
+
+            foreach (var user in team2)
+            {
+                try
+                {
+                    await user.SendMessageAsync("", false, embed.Build());
+                }
+                catch
+                {
+                    //
+                }
+            }
+
             try
             {
                 if (channel != null)
