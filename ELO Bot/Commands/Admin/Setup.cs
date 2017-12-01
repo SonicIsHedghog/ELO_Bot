@@ -318,53 +318,42 @@ namespace ELO_Bot.Commands.Admin
         public async Task Reset()
         {
             var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
-            await ReplyAsync("Working...\n" +
-                             $"Estimated Reset time = {server.UserList.Count * 3} seconds");
-            var iiterations = 0;
-            foreach (var user in server.UserList)
+            await ReplyAsync("Working...");
+
+            var reset = server.UserList.ToList();
+            foreach (var user in reset)
             {
-                iiterations++;
-                if (iiterations % 20 == 0)
-                    await ReplyAsync($"{Math.Ceiling((double) (iiterations * 100) / server.UserList.Count)}% complete");
+                if (user.Points == 0 || user.Wins == 0 || user.Losses == 0) continue;
                 user.Points = 0;
                 user.Wins = 0;
                 user.Losses = 0;
+            }
+            server.UserList = reset;
+
+            await ReplyAsync("Leaderboard Reset Complete!\n" +
+                             "NOTE: Names and ranks will be reset over the next few minutes.");
+
+            foreach (var user in server.UserList)
+            {
                 try
                 {
-                    var delay = 0;
-                    var u = await Context.Guild.GetUserAsync(user.UserId);
-                    if (!u.Nickname.StartsWith("0 ~ "))
-                        try
-                        {
-                            await u.ModifyAsync(x => { x.Nickname = $"0 ~ {user.Username}"; });
-                            if (CommandHandler.VerifiedUsers != null)
-                                if (CommandHandler.VerifiedUsers.Contains(u.Id))
-                                    await u.ModifyAsync(x => { x.Nickname = $"👑0 ~ {user.Username}"; });
-                            delay = 1000;
-                        }
-                        catch
-                        {
-                            //
-                        }
-                    try
+                    var us = await Context.Guild.GetUserAsync(user.UserId);
+                    if (us.Nickname.StartsWith("0 ~ ")) continue;
+                    await us.ModifyAsync(x =>
                     {
-                        await u.RemoveRolesAsync(server.Ranks.Select(x => Context.Guild.GetRole(x.RoleId)));
-                        delay = 1000;
-                    }
-                    catch
-                    {
-                        //
-                    }
-                    await Task.Delay(delay);
+                        x.Nickname = $"0 ~ {user.Username}";
+                    });
+                    if (CommandHandler.VerifiedUsers != null)
+                        if (CommandHandler.VerifiedUsers.Contains(us.Id))
+                            await us.ModifyAsync(x => { x.Nickname = $"👑0 ~ {user.Username}"; });
+                    await us.RemoveRolesAsync(server.Ranks.Select(x => Context.Guild.GetRole(x.RoleId)));
+                    await Task.Delay(1000);
                 }
                 catch
                 {
                     //
                 }
             }
-
-
-            await ReplyAsync("Leaderboard Reset Complete!");
         }
 
         /// <summary>
