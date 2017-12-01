@@ -95,17 +95,17 @@ namespace ELO_Bot.Commands.Admin
         ///     toggle whether users are removed from queues when going idle/offline
         /// </summary>
         /// <returns></returns>
-        [Command("ToggleRemoveIdle")]
-        [Summary("ToggleRemoveIdle")]
-        [Remarks("Set if users are removed from the queue when going idle")]
+        [Command("ToggleAutoRemove")]
+        [Summary("ToggleAutoRemove")]
+        [Remarks("Set if users are removed from the queue when going offline")]
         public async Task IdleRemove()
         {
             var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
             server.Autoremove = !server.Autoremove;
             if (server.Autoremove)
-                await ReplyAsync("Users will be removed from queues if they go idle or if they go offline");
+                await ReplyAsync("Users will be removed from queues if they go offline");
             else
-                await ReplyAsync("Users will be removed from queues only if they go offline");
+                await ReplyAsync("Users will not be removed from queues if they go offline");
         }
 
         /// <summary>
