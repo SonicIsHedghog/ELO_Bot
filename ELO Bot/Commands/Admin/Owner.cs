@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
+using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.WebSocket;
 using Newtonsoft.Json;
@@ -11,7 +12,7 @@ using Newtonsoft.Json;
 namespace ELO_Bot.Commands.Admin
 {
     [RequireOwner]
-    public class Owner : ModuleBase
+    public class Owner : InteractiveBase
     {
         /// <summary>
         ///     Adds a list of keys to the premium list.
@@ -90,6 +91,70 @@ namespace ELO_Bot.Commands.Admin
             File.WriteAllText(Path.Combine(AppContext.BaseDirectory, $"setup/backups/{time}"), contents);
 
             await ReplyAsync($"Backup has been saved to serverlist.json and {time}");
+        }
+
+        [Command("Browse", RunMode = RunMode.Async)]
+        [Summary("browse")]
+        [Remarks("A list of servers")]
+        public async Task Broswe()
+        {
+            var list = new List<string>();
+            var stringtoadd = "";
+            foreach (var server in ((DiscordSocketClient) Context.Client).Guilds)
+            {
+                try
+                {
+                    if (server.Users.Count > 100)
+                    {
+                        foreach (var channel in server.Channels)
+                            try
+                            {
+
+                                string inv;
+                                if ((await server.GetInvitesAsync()).Count > 0)
+                                {
+                                    var invs = await server.GetInvitesAsync();
+                                    inv = invs.FirstOrDefault(x => x.MaxAge == null)?.Url ??
+                                          channel.CreateInviteAsync(null).Result.Url;
+                                }
+                                else
+                                {
+                                    inv = channel.CreateInviteAsync(null).Result.Url;
+                                }
+
+
+                                stringtoadd += $"{server.Name} [{server.Users.Count}] - {inv}\n";
+                                break;
+                            }
+                            catch
+                            {
+                                //
+                            }
+                    }
+                }
+                catch
+                {
+                    //
+                }
+
+                await Task.Delay(1000);
+
+                var numLines = stringtoadd.Split('\n').Length;
+                if (numLines > 20)
+                {
+                    list.Add(stringtoadd);
+                    stringtoadd = "";
+                }
+            }
+
+            var msg = new PaginatedMessage
+            {
+                Pages = list,
+                Title = "Server Browser",
+                Color = Color.Green
+            };
+
+            await PagedReplyAsync(msg);
         }
 
         [Command("VerifyPatreon")]

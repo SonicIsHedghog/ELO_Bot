@@ -34,6 +34,10 @@ namespace ELO_Bot.Preconditions
             }
             catch
             {
+                var own = await context.Client.GetApplicationInfoAsync();
+                if (own.Owner.Id == context.User.Id)
+                    return await Task.FromResult(PreconditionResult.FromSuccess());
+
                 if (((IGuildUser) context.User).GuildPermissions.Administrator)
                     return await Task.FromResult(PreconditionResult.FromSuccess());
                 return await Task.FromResult(
@@ -75,6 +79,10 @@ namespace ELO_Bot.Preconditions
             }
             catch
             {
+                var own = await context.Client.GetApplicationInfoAsync();
+                if (own.Owner.Id == context.User.Id)
+                    return await Task.FromResult(PreconditionResult.FromSuccess());
+
                 if (((IGuildUser) context.User).GuildPermissions.Administrator)
                     return await Task.FromResult(PreconditionResult.FromSuccess());
                 return await Task.FromResult(
