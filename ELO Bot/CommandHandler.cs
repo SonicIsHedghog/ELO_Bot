@@ -79,7 +79,7 @@ namespace ELO_Bot
             embed.AddField("ELO Bot",
                 $"Hi there, I am ELO Bot. Type `{Config.Load().Prefix}help` to see a list of my commands and type `{Config.Load().Prefix}register <name>` to get started");
             embed.WithColor(Color.Blue);
-            embed.AddField("Developed By PassiveModding", "Support Server: https://discord.gg/n2Vs38n ");
+            embed.AddField("Developed By PassiveModding", $"Support Server: {Config.Load().DiscordInvite} ");
             try
             {
                 await guild.DefaultChannel.SendMessageAsync("", false, embed.Build());

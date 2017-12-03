@@ -15,6 +15,7 @@ namespace ELO_Bot
         public string Prefix { get; set; } = "=";
         public string Token { get; set; } = "Token";
         public bool AutoRun { get; set; }
+        public string DiscordInvite { get; set; } = "https://discordapp.com/invite/ZKXqt2a";
 
         public void Save(string dir = "setup/config.json")
         {

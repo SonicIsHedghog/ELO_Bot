@@ -11,25 +11,6 @@ namespace ELO_Bot
 
         public static List<Server> ServerList = new List<Server>();
 
-        /*public class DocumentStoreHolder
-        {
-            private static readonly Lazy<IDocumentStore> LazyStore = new Lazy<IDocumentStore>(CreateStore);
-
-            public static IDocumentStore Store => LazyStore.Value;
-
-            private static IDocumentStore CreateStore()
-            {
-                var store = new DocumentStore
-                {
-                    Url = "http://localhost:8080",
-                    DefaultDatabase = "Servers"
-                }.Initialize();
-
-                return store;
-            }
-        }*/
-
-
         public class Server
         {
             public bool IsPremium { get; set; } = false;
@@ -51,6 +32,29 @@ namespace ELO_Bot
 
             public List<Q> Queue { get; set; } = new List<Q>();
             public List<PreviouMatches> Gamelist { get; set; } = new List<PreviouMatches>();
+
+            public List<Competition> ServerCompetitions { get; set; } = new List<Competition>();
+
+            public class Competition
+            {
+                public ulong Channel { get; set; }
+                public string Info { get; set; }
+                public int TeamLimit { get; set; } = 8;
+                public int PlayerLimit { get; set; } = 5;
+
+
+                public List<Team> Teams { get; set; }
+
+                public class Team
+                {
+                    public string Teamname { get; set; }
+                    public ulong TeamCaptain { get; set; }
+                    public List<ulong> Players { get; set; }
+                    public bool KnockedOut { get; set; } = false;
+                }
+
+            }
+
 
 
             public List<Ban> Bans { get; set; } = new List<Ban>();

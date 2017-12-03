@@ -543,6 +543,156 @@ namespace ELO_Bot.Commands.Admin
             await ReplyAsync("", false, embed.Build());
         }
 
+        /*
+        /// <summary>
+        ///     replaces a user in the current queue (for use if they are afk etc.)
+        /// </summary>
+        /// <param name="oldUser"></param>
+        /// <param name="newUser"></param>
+        /// <returns></returns>
+        [Command("lobbyswitch")]
+        [Summary("lobbyswitch <@olduser> <@newuser>")]
+        [Remarks("replace the given user in the queue")]
+        public async Task Sub(IUser oldUser, IUser newUser)
+        {
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
+            var embed = new EmbedBuilder();
+            var queue = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
+            //get the current lobbies queue.
+            if (queue != null)
+            {
+                if (queue.Users.Contains(newUser.Id))
+                {
+                    embed.AddField("ERROR", "User2 is already queued already queued");
+                    await ReplyAsync("", false, embed.Build());
+                    return;
+                }
+
+                if (queue.Users.Contains(oldUser.Id))
+                {
+                    queue.Users.Remove(oldUser.Id);
+                    queue.Users.Add(newUser.Id);
+                    embed.AddField("Success", $"{oldUser.Mention} has been replaced by {newUser.Mention}\n" +
+                                              $"**[{queue.Users.Count}/{queue.UserLimit}]**");
+                }
+                else
+                {
+                    embed.AddField("ERROR", $"{oldUser.Mention} is not queued\n" +
+                                            $"**[{queue.Users.Count}/{queue.UserLimit}]**");
+                }
+
+
+                await ReplyAsync("", false, embed.Build());
+            }
+            else
+            {
+                await ReplyAsync("Error: current channel is not a lobby.");
+            }
+        }
+
+        [Command("gameswitch")]
+        [Summary("gameswitch <match no.> <@OldUser> <@NewUser>")]
+        [Remarks("replace the specified user in the given game.")]
+        public async Task Replace(int gamenumber, IUser oldPlayer, IUser newPlayer)
+        {
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
+            var queue = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
+
+            if (queue == null)
+            {
+                await ReplyAsync("ERROR: Current Channel is not a lobby!");
+                return;
+            }
+
+            var oldgame =
+                server.Gamelist.FirstOrDefault(x => x.LobbyId == Context.Channel.Id && x.GameNumber == gamenumber);
+            if (oldgame != null)
+            {
+                //check thay you are not already in the old game.
+                if (oldgame.Team1.Contains(newPlayer.Id) || oldgame.Team2.Contains(newPlayer.Id))
+                {
+                    await ReplyAsync(
+                        "new player is already in a team for the provided game. Only users that aren't in this game can replace others.");
+                    return;
+                }
+
+                var oldprofile = server.UserList.FirstOrDefault(x => x.UserId == oldPlayer.Id);
+                var newprofile = server.UserList.FirstOrDefault(x => x.UserId == newPlayer.Id);
+
+                if (oldprofile == null || newprofile == null)
+                {
+                    await ReplyAsync(
+                        "ERROR: One of these users is not registered.");
+                    return;
+                }
+
+                if (oldgame.Team1.Contains(oldPlayer.Id))
+                {
+                    //remove specified user and replace with new user.
+                    oldgame.Team1.Remove(oldPlayer.Id);
+                    oldgame.Team1.Add(newPlayer.Id);
+
+                    await ReplyAsync(
+                        $"Game #{oldgame.GameNumber} Team 1: {oldPlayer.Mention} has been replaced by {newPlayer.Mention}");
+                }
+                if (oldgame.Team2.Contains(oldPlayer.Id))
+                {
+                    oldgame.Team2.Remove(oldPlayer.Id);
+                    oldgame.Team2.Add(newPlayer.Id);
+
+                    await ReplyAsync(
+                        $"Game #{oldgame.GameNumber} Team 2: {oldPlayer.Mention} has been replaced by {newPlayer.Mention}");
+                }
+
+
+
+                var t1Mention = new List<string>();
+                foreach (var u in oldgame.Team1)
+                {
+                    var use = server.UserList.FirstOrDefault(x => x.UserId == u)?.Username;
+                    if (use != null && string.Equals(use, newprofile.Username, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        use = $"{oldprofile.Username} => {newprofile.Username}";
+                    }
+                    t1Mention.Add(use);
+                }
+                    
+
+                var t2Mention = new List<string>();
+                foreach (var u in oldgame.Team2)
+                {
+                    var use = server.UserList.FirstOrDefault(x => x.UserId == u)?.Username;
+                    if (use != null && string.Equals(use, newprofile.Username, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        use = $"{oldprofile.Username} => {newprofile.Username}";
+                    }
+                    t2Mention.Add(use);
+                }
+                    
+
+                var announcement = "**__Game Has Been Updated__**\n" +
+                                   "**Lobby:** \n" +
+                                   $"{Context.Channel.Name} - Match #{oldgame.GameNumber}\n" +
+                                   $"**Team 1:** [{string.Join("\n", t1Mention)}]\n" +
+                                   $"**Team 2**: [{string.Join("\n", t2Mention)}]\n" +
+                                   $"When the game finishes, type `=game {Context.Channel.Name} {oldgame.GameNumber} <team1 or team2>`\n" +
+                                   "This will modify each team's points respectively.";
+
+                try
+                {
+                    var channel = await ((IGuild)Context.Guild).GetChannelAsync(server.AnnouncementsChannel);
+                    await ((IMessageChannel)channel).SendMessageAsync(announcement);
+                }
+                catch
+                {
+                    await ReplyAsync(announcement);
+                }
+            }
+            else
+            {
+                await ReplyAsync("Error: No game in this lobby with the specified match no.");
+            }
+        }*/
 
         /// <summary>
         ///     server owner only command, removes server users

@@ -173,7 +173,7 @@ namespace ELO_Bot.Commands.Admin
             File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "setup/verified.json"), verifiedusers);
             await ReplyAsync("Object Saved");
 
-            foreach (var server in ((DiscordSocketClient) Context.Client).Guilds)
+            foreach (var server in Context.Client.Guilds)
                 try
                 {
                     var patreon = server.GetUser(user.Id);

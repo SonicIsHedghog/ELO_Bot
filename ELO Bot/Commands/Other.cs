@@ -58,7 +58,7 @@ namespace ELO_Bot.Commands
                 }
 
             pages.Add("**Links**\n" +
-                      "[Support Server](https://discord.gg/n2Vs38n)\n" +
+                      $"[Support Server]({Config.Load().DiscordInvite})\n" +
                       "[Patreon](https://www.patreon.com/passivebot)\n" +
                       "[Invite the BOT](https://goo.gl/mbfnjj)");
 
@@ -105,7 +105,7 @@ namespace ELO_Bot.Commands
                 }
 
             pages.Add("**Links**\n" +
-                      "[Support Server](https://discord.gg/n2Vs38n)\n" +
+                      $"[Support Server]({Config.Load().DiscordInvite})\n" +
                       "[Patreon](https://www.patreon.com/passivebot)\n" +
                       "[Invite the BOT](https://goo.gl/mbfnjj)");
 
@@ -145,9 +145,9 @@ namespace ELO_Bot.Commands
                 {
                     dynamic result = JArray.Parse(await response.Content.ReadAsStringAsync());
                     changes =
-                        $"[{((string) result[0].sha).Substring(0, 7)}]({result[0].html_url}) {result[0].commit.message}\n" +
-                        $"[{((string) result[1].sha).Substring(0, 7)}]({result[1].html_url}) {result[1].commit.message}\n" +
-                        $"[{((string) result[2].sha).Substring(0, 7)}]({result[2].html_url}) {result[2].commit.message}";
+                        $"[{((string)result[0].sha).Substring(0, 7)}]({result[0].html_url}) {result[0].commit.message}\n" +
+                        $"[{((string)result[1].sha).Substring(0, 7)}]({result[1].html_url}) {result[1].commit.message}\n" +
+                        $"[{((string)result[2].sha).Substring(0, 7)}]({result[2].html_url}) {result[2].commit.message}";
                 }
                 response.Dispose();
             }
@@ -176,7 +176,7 @@ namespace ELO_Bot.Commands
                     $"Text: {client.Guilds.Sum(x => x.TextChannels.Count)}\n" +
                     $"Voice: {client.Guilds.Sum(x => x.VoiceChannels.Count)}\n" +
                     $"Total: {client.Guilds.Sum(x => x.Channels.Count)}", true);
-                embed.AddField("Guilds", $"{client.Guilds.Count}\n[Support Guild](https://discord.gg/ZKXqt2a)",
+                embed.AddField("Guilds", $"{client.Guilds.Count}\n[Support Guild]({Config.Load().DiscordInvite})",
                     true);
             }
             embed.AddField(":space_invader:",
@@ -194,7 +194,7 @@ namespace ELO_Bot.Commands
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        [Command("BugReport")]
+        [Command("BugReport", RunMode = RunMode.Async)]
         [Summary("BugReport <errormessage>")]
         [Remarks("an error or issue")]
         public async Task Report([Remainder] string message = null)
@@ -209,17 +209,161 @@ namespace ELO_Bot.Commands
             embed.AddField("ERROR REPORT", $"From: {Context.User.Username}\n" +
                                            $"Server: {Context.Guild.Name}\n" +
                                            $"Channel: {Context.Channel.Name}\n" +
-                                           $"Invite: {((SocketGuildChannel) Context.Channel).CreateInviteAsync(0).Result}\n" +
+                                           $"Invite: {((SocketGuildChannel)Context.Channel).CreateInviteAsync(0).Result}\n" +
                                            "ERROR MESSAGE:\n" +
                                            $"{message}");
 
             //var m = await Context.Channel.GetMessagesAsync(10).Flatten();
 
+
+
             var e = await Context.Client.GetApplicationInfoAsync();
+
+            try
+            {
+                var m = await Context.Channel.GetMessagesAsync(10).Flatten();
+                await e.Owner.SendMessageAsync($"-----**BUN REPORT**-----");
+                foreach (var itemMessage in m)
+                {
+                    try
+                    {
+                        if (itemMessage.Content != "")
+                        {
+                            await e.Owner.SendMessageAsync($"**{itemMessage.Author}**: \n {itemMessage.Content}");
+                        }
+                        if (itemMessage.Embeds.Count > 0)
+                        {
+                            var embed1 = itemMessage.Embeds.First();
+                            var newembed = new EmbedBuilder
+                            {
+                                Title = embed1.Title,
+                                Description = embed1.Description,
+                                Url = embed1.Url,
+                                Timestamp = embed1.Timestamp
+                            };
+
+                            if (embed1.Fields != null)
+                                foreach (var field in embed1.Fields)
+                                {
+                                    newembed.AddField($"{field.Name}", $"{field.Value}");
+                                }
+                            if (embed1.Footer != null)
+                                newembed.Footer = new EmbedFooterBuilder
+                                {
+                                    Text = embed1.Footer.Value.Text
+                                };
+
+                            await e.Owner.SendMessageAsync($"", false, newembed.Build());
+                        }
+
+
+
+
+
+                        await Task.Delay(1000);
+                    }
+                    catch
+                    {
+                        //
+                    }
+                }
+
+                await e.Owner.SendMessageAsync($"---------------");
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+            }
+
             await e.Owner.SendMessageAsync("", false, embed.Build());
 
             await ReplyAsync(
                 "Thankyou! Your Error report has been sent to the bot owner, along with some information about you and this current server.");
+        }
+
+
+        [Command("Suggest", RunMode = RunMode.Async)]
+        [Summary("Suggest <feature>")]
+        [Remarks("Suggest a feature to be added to the bot.")]
+        public async Task Suggest([Remainder] string message)
+        {
+            if (message == null)
+            {
+                await ReplyAsync("Please supply a suggestion :)");
+                return;
+            }
+            var embed = new EmbedBuilder();
+
+            embed.AddField("Suggestion", $"From: {Context.User.Username}\n" +
+                                           $"Server: {Context.Guild.Name}\n" +
+                                           $"Channel: {Context.Channel.Name}\n" +
+                                           $"Invite: {((SocketGuildChannel)Context.Channel).CreateInviteAsync(0).Result}\n" +
+                                           "Suggestion:\n" +
+                                           $"{message}");
+            embed.Color = Color.Green;
+            var e = await Context.Client.GetApplicationInfoAsync();
+
+            try
+            {
+                var m = await Context.Channel.GetMessagesAsync(10).Flatten();
+                await e.Owner.SendMessageAsync($"-----**SUGGESTION**-----");
+                foreach (var itemMessage in m)
+                {
+                    try
+                    {
+                        if (itemMessage.Content != "")
+                        {
+                            await e.Owner.SendMessageAsync($"**{itemMessage.Author}**: \n {itemMessage.Content}");
+                        }
+                        if (itemMessage.Embeds.Count > 0)
+                        {
+                            var embed1 = itemMessage.Embeds.First();
+                            var newembed = new EmbedBuilder
+                            {
+                                Title = embed1.Title,
+                                Description = embed1.Description,
+                                Url = embed1.Url,
+                                Timestamp = embed1.Timestamp
+                            };
+
+                            if (embed1.Fields != null)
+                                foreach (var field in embed1.Fields)
+                                {
+                                    newembed.AddField($"{field.Name}", $"{field.Value}");
+                                }
+                            if (embed1.Footer != null)
+                                newembed.Footer = new EmbedFooterBuilder
+                                {
+                                    Text = embed1.Footer.Value.Text
+                                };
+
+                            await e.Owner.SendMessageAsync($"", false, newembed.Build());
+                        }
+
+
+
+
+
+                        await Task.Delay(1000);
+                    }
+                    catch
+                    {
+                        //
+                    }
+                }
+
+                await e.Owner.SendMessageAsync($"---------------");
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+            }
+
+            await e.Owner.SendMessageAsync("", false, embed.Build());
+
+
+            await ReplyAsync(
+                "Thankyou! Your suggestion has been sent to the bot owner, along with some information about you and this current server.");
         }
     }
 }

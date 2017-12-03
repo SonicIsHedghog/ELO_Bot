@@ -1333,7 +1333,7 @@ namespace ELO_Bot.Commands
             var embed = new EmbedBuilder
             {
                 Title = "Game Has Started",
-                Url = "https://discord.gg/n2Vs38n"
+                Url = $"{Config.Load().DiscordInvite}"
             };
             embed.AddField("Info", "**Lobby:** \n" +
                                    $"{lobbychannel.Name} - Match #{lobby.Games}\n" +
