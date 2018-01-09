@@ -145,9 +145,9 @@ namespace ELO_Bot.Commands
                 {
                     dynamic result = JArray.Parse(await response.Content.ReadAsStringAsync());
                     changes =
-                        $"[{((string)result[0].sha).Substring(0, 7)}]({result[0].html_url}) {result[0].commit.message}\n" +
-                        $"[{((string)result[1].sha).Substring(0, 7)}]({result[1].html_url}) {result[1].commit.message}\n" +
-                        $"[{((string)result[2].sha).Substring(0, 7)}]({result[2].html_url}) {result[2].commit.message}";
+                        $"[{((string) result[0].sha).Substring(0, 7)}]({result[0].html_url}) {result[0].commit.message}\n" +
+                        $"[{((string) result[1].sha).Substring(0, 7)}]({result[1].html_url}) {result[1].commit.message}\n" +
+                        $"[{((string) result[2].sha).Substring(0, 7)}]({result[2].html_url}) {result[2].commit.message}";
                 }
                 response.Dispose();
             }
@@ -209,12 +209,11 @@ namespace ELO_Bot.Commands
             embed.AddField("ERROR REPORT", $"From: {Context.User.Username}\n" +
                                            $"Server: {Context.Guild.Name}\n" +
                                            $"Channel: {Context.Channel.Name}\n" +
-                                           $"Invite: {((SocketGuildChannel)Context.Channel).CreateInviteAsync(0).Result}\n" +
+                                           $"Invite: {((SocketGuildChannel) Context.Channel).CreateInviteAsync(0).Result}\n" +
                                            "ERROR MESSAGE:\n" +
                                            $"{message}");
 
             //var m = await Context.Channel.GetMessagesAsync(10).Flatten();
-
 
 
             var e = await Context.Client.GetApplicationInfoAsync();
@@ -224,13 +223,10 @@ namespace ELO_Bot.Commands
                 var m = await Context.Channel.GetMessagesAsync(10).Flatten();
                 await e.Owner.SendMessageAsync($"-----**BUN REPORT**-----");
                 foreach (var itemMessage in m)
-                {
                     try
                     {
                         if (itemMessage.Content != "")
-                        {
                             await e.Owner.SendMessageAsync($"**{itemMessage.Author}**: \n {itemMessage.Content}");
-                        }
                         if (itemMessage.Embeds.Count > 0)
                         {
                             var embed1 = itemMessage.Embeds.First();
@@ -244,9 +240,7 @@ namespace ELO_Bot.Commands
 
                             if (embed1.Fields != null)
                                 foreach (var field in embed1.Fields)
-                                {
                                     newembed.AddField($"{field.Name}", $"{field.Value}");
-                                }
                             if (embed1.Footer != null)
                                 newembed.Footer = new EmbedFooterBuilder
                                 {
@@ -257,16 +251,12 @@ namespace ELO_Bot.Commands
                         }
 
 
-
-
-
                         await Task.Delay(1000);
                     }
                     catch
                     {
                         //
                     }
-                }
 
                 await e.Owner.SendMessageAsync($"---------------");
             }
@@ -295,11 +285,11 @@ namespace ELO_Bot.Commands
             var embed = new EmbedBuilder();
 
             embed.AddField("Suggestion", $"From: {Context.User.Username}\n" +
-                                           $"Server: {Context.Guild.Name}\n" +
-                                           $"Channel: {Context.Channel.Name}\n" +
-                                           $"Invite: {((SocketGuildChannel)Context.Channel).CreateInviteAsync(0).Result}\n" +
-                                           "Suggestion:\n" +
-                                           $"{message}");
+                                         $"Server: {Context.Guild.Name}\n" +
+                                         $"Channel: {Context.Channel.Name}\n" +
+                                         $"Invite: {((SocketGuildChannel) Context.Channel).CreateInviteAsync(0).Result}\n" +
+                                         "Suggestion:\n" +
+                                         $"{message}");
             embed.Color = Color.Green;
             var e = await Context.Client.GetApplicationInfoAsync();
 
@@ -308,13 +298,10 @@ namespace ELO_Bot.Commands
                 var m = await Context.Channel.GetMessagesAsync(10).Flatten();
                 await e.Owner.SendMessageAsync($"-----**SUGGESTION**-----");
                 foreach (var itemMessage in m)
-                {
                     try
                     {
                         if (itemMessage.Content != "")
-                        {
                             await e.Owner.SendMessageAsync($"**{itemMessage.Author}**: \n {itemMessage.Content}");
-                        }
                         if (itemMessage.Embeds.Count > 0)
                         {
                             var embed1 = itemMessage.Embeds.First();
@@ -328,9 +315,7 @@ namespace ELO_Bot.Commands
 
                             if (embed1.Fields != null)
                                 foreach (var field in embed1.Fields)
-                                {
                                     newembed.AddField($"{field.Name}", $"{field.Value}");
-                                }
                             if (embed1.Footer != null)
                                 newembed.Footer = new EmbedFooterBuilder
                                 {
@@ -341,16 +326,12 @@ namespace ELO_Bot.Commands
                         }
 
 
-
-
-
                         await Task.Delay(1000);
                     }
                     catch
                     {
                         //
                     }
-                }
 
                 await e.Owner.SendMessageAsync($"---------------");
             }

@@ -104,10 +104,7 @@ namespace ELO_Bot.Commands.Admin
                 embed.WithColor(Color.Blue);
                 try
                 {
-                    await ((IGuildUser) user).ModifyAsync(x => { x.Nickname = $"0 ~ {username}"; });
-                    if (CommandHandler.VerifiedUsers != null)
-                        if (CommandHandler.VerifiedUsers.Contains(user.Id))
-                            await ((IGuildUser) user).ModifyAsync(x => { x.Nickname = $"👑0 ~ {username}"; });
+                    await UserRename(server.UsernameSelection, user, username, 0);
                 }
                 catch
                 {
@@ -174,17 +171,7 @@ namespace ELO_Bot.Commands.Admin
                     success = true;
                     try
                     {
-                        await ((IGuildUser) user).ModifyAsync(x =>
-                        {
-                            x.Nickname = $"{member.Points} ~ {member.Username}";
-                        });
-
-                        if (CommandHandler.VerifiedUsers != null)
-                            if (CommandHandler.VerifiedUsers.Contains(user.Id))
-                                await ((IGuildUser) user).ModifyAsync(x =>
-                                {
-                                    x.Nickname = $"👑{member.Points} ~ {member.Username}";
-                                });
+                        await UserRename(server.UsernameSelection, user, member.Username, member.Points);
                     }
                     catch
                     {
@@ -706,7 +693,7 @@ namespace ELO_Bot.Commands.Admin
         public async Task ClearUsers()
         {
             var rnd = new Random().Next(0, 100);
-            await ReplyAsync($"Reply with `{rnd}` string to delete all user profiles for this server.\n" +
+            await ReplyAsync($"Reply with `{rnd}` to delete all user profiles for this server.\n" +
                              "NOTE: Profiles can NOT be recovered, this also removes bans, lobbies and previous games.");
             var nextmessage = await NextMessageAsync();
             if (!nextmessage.Content.Contains(rnd.ToString()))
@@ -717,7 +704,7 @@ namespace ELO_Bot.Commands.Admin
             var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
             var modified = 0;
             var unmodified = 0;
-            await ReplyAsync($"Users Being Pruned. Estimated time: {server.UserList.Count * 2} seconds");
+            await ReplyAsync($"Users Being Pruned. Estimated time: {server.UserList.Count * 5} seconds");
             var iiterations = 0;
             foreach (var user in server.UserList)
             {
@@ -729,7 +716,7 @@ namespace ELO_Bot.Commands.Admin
                     var u = Context.Guild.GetUser(user.UserId);
                     await u.ModifyAsync(x => { x.Nickname = null; });
                     modified++;
-                    await Task.Delay(2000);
+                    await Task.Delay(5000);
                 }
                 catch
                 {
@@ -748,6 +735,35 @@ namespace ELO_Bot.Commands.Admin
                              $"Users Unavailable: {unmodified}\n" +
                              "[NOTE]\n" +
                              "Server queues, game logs and lobbies have also been cleared.");
+        }
+
+        public async Task UserRename(int usernameSelection, IUser user, string username, int userpoints)
+        {
+            //await UserRename(server.UsernameSelection, u, user.Username, user.Points);
+            if (usernameSelection == 1)
+            {
+                await ((IGuildUser) user).ModifyAsync(x => { x.Nickname = $"{userpoints} ~ {username}"; });
+
+                if (CommandHandler.VerifiedUsers != null)
+                    if (CommandHandler.VerifiedUsers.Contains(Context.User.Id))
+                        await ((IGuildUser) user).ModifyAsync(x => { x.Nickname = $"👑{userpoints} ~ {username}"; });
+            }
+            else if (usernameSelection == 2)
+            {
+                await ((IGuildUser) user).ModifyAsync(x => { x.Nickname = $"[{userpoints}] {username}"; });
+
+                if (CommandHandler.VerifiedUsers != null)
+                    if (CommandHandler.VerifiedUsers.Contains(Context.User.Id))
+                        await ((IGuildUser) user).ModifyAsync(x => { x.Nickname = $"👑[{userpoints}] {username}"; });
+            }
+            else if (usernameSelection == 3)
+            {
+                await ((IGuildUser) user).ModifyAsync(x => { x.Nickname = $"{username}"; });
+
+                if (CommandHandler.VerifiedUsers != null)
+                    if (CommandHandler.VerifiedUsers.Contains(Context.User.Id))
+                        await ((IGuildUser) user).ModifyAsync(x => { x.Nickname = $"👑{username}"; });
+            }
         }
     }
 }

@@ -344,13 +344,7 @@ namespace ELO_Bot.Commands.Admin
                     }
                     try
                     {
-                        await ((IGuildUser) user).ModifyAsync(x => { x.Nickname = $"{usr.Points} ~ {usr.Username}"; });
-                        if (CommandHandler.VerifiedUsers != null)
-                            if (CommandHandler.VerifiedUsers.Contains(user.Id))
-                                await ((IGuildUser) user).ModifyAsync(x =>
-                                {
-                                    x.Nickname = $"👑{usr.Points} ~ {usr.Username}";
-                                });
+                        await UserRename(server.UsernameSelection, user, usr.Username, usr.Points);
                     }
                     catch
                     {
@@ -438,13 +432,7 @@ namespace ELO_Bot.Commands.Admin
                     }
                     try
                     {
-                        await ((IGuildUser) user).ModifyAsync(x => { x.Nickname = $"{usr.Points} ~ {usr.Username}"; });
-                        if (CommandHandler.VerifiedUsers != null)
-                            if (CommandHandler.VerifiedUsers.Contains(user.Id))
-                                await ((IGuildUser) user).ModifyAsync(x =>
-                                {
-                                    x.Nickname = $"👑{usr.Points} ~ {usr.Username}";
-                                });
+                        await UserRename(server.UsernameSelection, user, usr.Username, usr.Points);
                     }
                     catch
                     {
@@ -490,6 +478,35 @@ namespace ELO_Bot.Commands.Admin
             catch
             {
                 // No available roles
+            }
+        }
+
+        public async Task UserRename(int usernameSelection, IUser user, string username, int userpoints)
+        {
+            //await UserRename(server.UsernameSelection, u, user.Username, user.Points);
+            if (usernameSelection == 1)
+            {
+                await ((IGuildUser) user).ModifyAsync(x => { x.Nickname = $"{userpoints} ~ {username}"; });
+
+                if (CommandHandler.VerifiedUsers != null)
+                    if (CommandHandler.VerifiedUsers.Contains(Context.User.Id))
+                        await ((IGuildUser) user).ModifyAsync(x => { x.Nickname = $"👑{userpoints} ~ {username}"; });
+            }
+            else if (usernameSelection == 2)
+            {
+                await ((IGuildUser) user).ModifyAsync(x => { x.Nickname = $"[{userpoints}] {username}"; });
+
+                if (CommandHandler.VerifiedUsers != null)
+                    if (CommandHandler.VerifiedUsers.Contains(Context.User.Id))
+                        await ((IGuildUser) user).ModifyAsync(x => { x.Nickname = $"👑[{userpoints}] {username}"; });
+            }
+            else if (usernameSelection == 3)
+            {
+                await ((IGuildUser) user).ModifyAsync(x => { x.Nickname = $"{username}"; });
+
+                if (CommandHandler.VerifiedUsers != null)
+                    if (CommandHandler.VerifiedUsers.Contains(Context.User.Id))
+                        await ((IGuildUser) user).ModifyAsync(x => { x.Nickname = $"👑{username}"; });
             }
         }
     }

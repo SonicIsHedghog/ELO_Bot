@@ -64,6 +64,45 @@ namespace ELO_Bot.Commands.Admin
             await ReplyAsync("GameAnnouncements will now be posted in this channel");
         }
 
+        [Command("SetNicknameFormat")]
+        [Summary("SetNicknameFormat [ID]")]
+        [Remarks("Set how scores are displayed in player nicknames")]
+        public async Task SetNickname(int choice = 0)
+        {
+            var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
+            if (choice == 0)
+            {
+                var desc = new EmbedBuilder
+                {
+                    Description =
+                        $"Type {Config.Load().Prefix} SetNickname [Option Number] to choose a layout for nicknames\n" +
+                        $"1. 0 ~ Name\n" +
+                        $"2. [0] Name\n" +
+                        $"3. Name"
+                };
+
+
+                await ReplyAsync("", false, desc.Build());
+            }
+            else if (choice == 1 || choice == 2 || choice == 3)
+            {
+                server.UsernameSelection = choice;
+                var desc = new EmbedBuilder
+                {
+                    Color = Color.Green,
+                    Description = $"Username option has been set to #{choice}\n" +
+                                  $"NOTE: Names are updated as scores are updated to reduce lag. As a result, inactive users may not have their usernames updated."
+                };
+
+
+                await ReplyAsync("", false, desc.Build());
+            }
+            else
+            {
+                throw new Exception("Invalid option specified");
+            }
+        }
+
         /// <summary>
         ///     set the role that users are given upon registering.
         /// </summary>
@@ -307,6 +346,7 @@ namespace ELO_Bot.Commands.Admin
             await ReplyAsync("", false, embed.Build());
         }
 
+        /*
         /// <summary>
         ///     server owner only command, resets all user scores on the scoreboard.
         /// </summary>
@@ -363,6 +403,7 @@ namespace ELO_Bot.Commands.Admin
 
             await ReplyAsync("Reset fully complete.");
         }
+        */
 
         /// <summary>
         ///     list all commands unavailable to regilar users

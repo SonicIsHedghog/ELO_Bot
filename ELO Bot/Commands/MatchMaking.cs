@@ -568,13 +568,13 @@ namespace ELO_Bot.Commands
             var server = Servers.ServerList.First(x => x.ServerId == Context.Guild.Id);
             var embed = new EmbedBuilder();
 
-                var lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
-                if (lobby == null)
-                {
-                    embed.AddField("ERROR", "Current Channel is not a lobby!");
-                    await ReplyAsync("", false, embed.Build());
-                    return;
-                }
+            var lobby = server.Queue.FirstOrDefault(x => x.ChannelId == Context.Channel.Id);
+            if (lobby == null)
+            {
+                embed.AddField("ERROR", "Current Channel is not a lobby!");
+                await ReplyAsync("", false, embed.Build());
+                return;
+            }
 
             if (lobby.NoPairs)
             {
@@ -985,7 +985,6 @@ namespace ELO_Bot.Commands
             catch (Exception e)
             {
                 throw new Exception(e.ToString());
-                throw;
             }
         }
 
@@ -1148,7 +1147,8 @@ namespace ELO_Bot.Commands
             var team2 = new List<Servers.Server.User>();
 
             if (currentqueue.Pairs.Any(
-                x => currentqueue.Users.Contains(x.User1) && currentqueue.Users.Contains(x.User2)) && !currentqueue.NoPairs)
+                    x => currentqueue.Users.Contains(x.User1) && currentqueue.Users.Contains(x.User2)) &&
+                !currentqueue.NoPairs)
             {
                 var validpairs = currentqueue.Pairs.Where(x =>
                     currentqueue.Users.Contains(x.User1) && currentqueue.Users.Contains(x.User2));
@@ -1381,7 +1381,6 @@ namespace ELO_Bot.Commands
                                "This will modify each team's points respectively.";
 
             foreach (var user in team1)
-            {
                 try
                 {
                     await user.SendMessageAsync("", false, embed.Build());
@@ -1390,10 +1389,8 @@ namespace ELO_Bot.Commands
                 {
                     //
                 }
-            }
 
             foreach (var user in team2)
-            {
                 try
                 {
                     await user.SendMessageAsync("", false, embed.Build());
@@ -1402,7 +1399,6 @@ namespace ELO_Bot.Commands
                 {
                     //
                 }
-            }
 
             try
             {

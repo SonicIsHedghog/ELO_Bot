@@ -259,8 +259,6 @@ namespace ELO_Bot.Commands.Admin
             {
                 await ReplyAsync("Users may pair up with a friend in this lobby now");
             }
-
-
         }
 
         /// <summary>

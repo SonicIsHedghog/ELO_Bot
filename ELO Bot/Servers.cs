@@ -30,10 +30,15 @@ namespace ELO_Bot
             public List<string> CmdBlacklist { get; set; } = new List<string>();
             public bool BlockMultiQueueing { get; set; } = false;
 
+            public int UsernameSelection { get; set; } = 1;
+
             public List<Q> Queue { get; set; } = new List<Q>();
             public List<PreviouMatches> Gamelist { get; set; } = new List<PreviouMatches>();
 
             public List<Competition> ServerCompetitions { get; set; } = new List<Competition>();
+
+
+            public List<Ban> Bans { get; set; } = new List<Ban>();
 
             public class Competition
             {
@@ -52,12 +57,7 @@ namespace ELO_Bot
                     public List<ulong> Players { get; set; }
                     public bool KnockedOut { get; set; } = false;
                 }
-
             }
-
-
-
-            public List<Ban> Bans { get; set; } = new List<Ban>();
 
             public class Ban
             {

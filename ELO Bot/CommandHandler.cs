@@ -43,9 +43,7 @@ namespace ELO_Bot
                     var server =
                         Servers.ServerList.FirstOrDefault(x => x.ServerId == ((SocketGuildUser) userAfter).Guild.Id);
                     if (server != null && server.Autoremove)
-                    {
                         foreach (var userqueue in server.Queue.Where(x => x.Users.Contains(userAfter.Id)))
-                        {
                             try
                             {
                                 if (userqueue.IsPickingTeams)
@@ -68,8 +66,6 @@ namespace ELO_Bot
                             {
                                 //
                             }
-                        }
-                    }
                 }
         }
 
@@ -133,10 +129,18 @@ namespace ELO_Bot
                         {
                             var serverobject = Servers.ServerList.First(x => x.ServerId == server.Id);
                             var userprofile = serverobject.UserList.First(x => x.UserId == user);
-                            await patreon.ModifyAsync(x =>
-                            {
-                                x.Nickname = $"👑{userprofile.Points} ~ {userprofile.Username}";
-                            });
+                            if (serverobject.UsernameSelection == 1)
+                                await patreon.ModifyAsync(x =>
+                                {
+                                    x.Nickname = $"👑{userprofile.Points} ~ {userprofile.Username}";
+                                });
+                            else if (serverobject.UsernameSelection == 2)
+                                await patreon.ModifyAsync(x =>
+                                {
+                                    x.Nickname = $"👑[{userprofile.Points}] {userprofile.Username}";
+                                });
+                            else if (serverobject.UsernameSelection == 3)
+                                await patreon.ModifyAsync(x => { x.Nickname = $"👑{userprofile.Username}"; });
                         }
                     }
                     catch

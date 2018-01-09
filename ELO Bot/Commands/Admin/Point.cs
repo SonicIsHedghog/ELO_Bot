@@ -47,17 +47,7 @@ namespace ELO_Bot.Commands.Admin
                             userval = subject.Points;
                             try
                             {
-                                await ((IGuildUser) user).ModifyAsync(x =>
-                                {
-                                    x.Nickname = $"{subject.Points} ~ {subject.Username}";
-                                });
-
-                                if (CommandHandler.VerifiedUsers != null)
-                                    if (CommandHandler.VerifiedUsers.Contains(user.Id))
-                                        await ((IGuildUser) user).ModifyAsync(x =>
-                                        {
-                                            x.Nickname = $"👑{subject.Points} ~ {subject.Username}";
-                                        });
+                                await UserRename(server.UsernameSelection, user, subject.Username, subject.Points);
                             }
                             catch
                             {
@@ -108,16 +98,7 @@ namespace ELO_Bot.Commands.Admin
                         userval = subject.Points;
                         try
                         {
-                            await ((IGuildUser) user).ModifyAsync(x =>
-                            {
-                                x.Nickname = $"{subject.Points} ~ {subject.Username}";
-                            });
-                            if (CommandHandler.VerifiedUsers != null)
-                                if (CommandHandler.VerifiedUsers.Contains(user.Id))
-                                    await ((IGuildUser) user).ModifyAsync(x =>
-                                    {
-                                        x.Nickname = $"👑{subject.Points} ~ {subject.Username}";
-                                    });
+                            await UserRename(server.UsernameSelection, user, subject.Username, subject.Points);
                         }
                         catch
                         {
@@ -163,13 +144,7 @@ namespace ELO_Bot.Commands.Admin
                         user.Points = 0;
                     try
                     {
-                        await ((IGuildUser) u).ModifyAsync(x => { x.Nickname = $"{user.Points} ~ {user.Username}"; });
-                        if (CommandHandler.VerifiedUsers != null)
-                            if (CommandHandler.VerifiedUsers.Contains(u.Id))
-                                await ((IGuildUser) u).ModifyAsync(x =>
-                                {
-                                    x.Nickname = $"👑{user.Points} ~ {user.Username}";
-                                });
+                        await UserRename(server.UsernameSelection, u, user.Username, user.Points);
 
                         embed.AddField($"{user.Username} MODIFIED", $"Current Points: {user.Points}");
                     }
@@ -300,6 +275,35 @@ namespace ELO_Bot.Commands.Admin
             }
             embed.Color = Color.Green;
             await ReplyAsync("", false, embed.Build());
+        }
+
+        public async Task UserRename(int usernameSelection, IUser user, string username, int userpoints)
+        {
+            //await UserRename(server.UsernameSelection, u, user.Username, user.Points);
+            if (usernameSelection == 1)
+            {
+                await ((IGuildUser) user).ModifyAsync(x => { x.Nickname = $"{userpoints} ~ {username}"; });
+
+                if (CommandHandler.VerifiedUsers != null)
+                    if (CommandHandler.VerifiedUsers.Contains(Context.User.Id))
+                        await ((IGuildUser) user).ModifyAsync(x => { x.Nickname = $"👑{userpoints} ~ {username}"; });
+            }
+            else if (usernameSelection == 2)
+            {
+                await ((IGuildUser) user).ModifyAsync(x => { x.Nickname = $"[{userpoints}] {username}"; });
+
+                if (CommandHandler.VerifiedUsers != null)
+                    if (CommandHandler.VerifiedUsers.Contains(Context.User.Id))
+                        await ((IGuildUser) user).ModifyAsync(x => { x.Nickname = $"👑[{userpoints}] {username}"; });
+            }
+            else if (usernameSelection == 3)
+            {
+                await ((IGuildUser) user).ModifyAsync(x => { x.Nickname = $"{username}"; });
+
+                if (CommandHandler.VerifiedUsers != null)
+                    if (CommandHandler.VerifiedUsers.Contains(Context.User.Id))
+                        await ((IGuildUser) user).ModifyAsync(x => { x.Nickname = $"👑{username}"; });
+            }
         }
     }
 }

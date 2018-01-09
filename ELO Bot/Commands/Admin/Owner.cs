@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Addons.Interactive;
 using Discord.Commands;
-using Discord.WebSocket;
 using Newtonsoft.Json;
 
 namespace ELO_Bot.Commands.Admin
@@ -100,16 +99,14 @@ namespace ELO_Bot.Commands.Admin
         {
             var list = new List<string>();
             var stringtoadd = "";
-            foreach (var server in ((DiscordSocketClient) Context.Client).Guilds)
+            foreach (var server in Context.Client.Guilds)
             {
                 try
                 {
                     if (server.Users.Count > 100)
-                    {
                         foreach (var channel in server.Channels)
                             try
                             {
-
                                 string inv;
                                 if ((await server.GetInvitesAsync()).Count > 0)
                                 {
@@ -130,7 +127,6 @@ namespace ELO_Bot.Commands.Admin
                             {
                                 //
                             }
-                    }
                 }
                 catch
                 {
@@ -181,10 +177,18 @@ namespace ELO_Bot.Commands.Admin
                     {
                         var serverobject = Servers.ServerList.First(x => x.ServerId == server.Id);
                         var userprofile = serverobject.UserList.First(x => x.UserId == user.Id);
-                        await patreon.ModifyAsync(x =>
-                        {
-                            x.Nickname = $"👑{userprofile.Points} ~ {userprofile.Username}";
-                        });
+                        if (serverobject.UsernameSelection == 1)
+                            await patreon.ModifyAsync(x =>
+                            {
+                                x.Nickname = $"👑{userprofile.Points} ~ {userprofile.Username}";
+                            });
+                        else if (serverobject.UsernameSelection == 2)
+                            await patreon.ModifyAsync(x =>
+                            {
+                                x.Nickname = $"👑[{userprofile.Points}] {userprofile.Username}";
+                            });
+                        else if (serverobject.UsernameSelection == 3)
+                            await patreon.ModifyAsync(x => { x.Nickname = $"👑{userprofile.Username}"; });
                     }
                 }
                 catch
