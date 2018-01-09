@@ -95,51 +95,99 @@ namespace ELO_Bot.Commands.Admin
         [Command("Browse", RunMode = RunMode.Async)]
         [Summary("browse")]
         [Remarks("A list of servers")]
-        public async Task Broswe()
+        public async Task Broswe(string name = null)
         {
             var list = new List<string>();
             var stringtoadd = "";
-            foreach (var server in Context.Client.Guilds)
+            if (name == null)
             {
-                try
+                foreach (var server in Context.Client.Guilds)
                 {
-                    if (server.Users.Count > 100)
-                        foreach (var channel in server.Channels)
-                            try
-                            {
-                                string inv;
-                                if ((await server.GetInvitesAsync()).Count > 0)
+                    try
+                    {
+                        if (server.Users.Count > 100)
+                            foreach (var channel in server.Channels)
+                                try
                                 {
-                                    var invs = await server.GetInvitesAsync();
-                                    inv = invs.FirstOrDefault(x => x.MaxAge == null)?.Url ??
-                                          channel.CreateInviteAsync(null).Result.Url;
+                                    string inv;
+                                    if ((await server.GetInvitesAsync()).Count > 0)
+                                    {
+                                        var invs = await server.GetInvitesAsync();
+                                        inv = invs.FirstOrDefault(x => x.MaxAge == null)?.Url ??
+                                              channel.CreateInviteAsync(null).Result.Url;
+                                    }
+                                    else
+                                    {
+                                        inv = channel.CreateInviteAsync(null).Result.Url;
+                                    }
+
+
+                                    stringtoadd += $"{server.Name} [{server.Users.Count}] - {inv}\n";
+                                    break;
                                 }
-                                else
+                                catch
                                 {
-                                    inv = channel.CreateInviteAsync(null).Result.Url;
+                                    //
                                 }
+                    }
+                    catch
+                    {
+                        //
+                    }
 
+                    await Task.Delay(1000);
 
-                                stringtoadd += $"{server.Name} [{server.Users.Count}] - {inv}\n";
-                                break;
-                            }
-                            catch
-                            {
-                                //
-                            }
+                    var numLines = stringtoadd.Split('\n').Length;
+                    if (numLines > 20)
+                    {
+                        list.Add(stringtoadd);
+                        stringtoadd = "";
+                    }
                 }
-                catch
+            }
+            else
+            {
+                foreach (var server in Context.Client.Guilds.Where(x => x.Name.ToLower().Contains(name.ToLower())))
                 {
-                    //
-                }
+                    try
+                    {
+                            foreach (var channel in server.Channels)
+                                try
+                                {
+                                    string inv;
+                                    if ((await server.GetInvitesAsync()).Count > 0)
+                                    {
+                                        var invs = await server.GetInvitesAsync();
+                                        inv = invs.FirstOrDefault(x => x.MaxAge == null)?.Url ??
+                                              channel.CreateInviteAsync(null).Result.Url;
+                                    }
+                                    else
+                                    {
+                                        inv = channel.CreateInviteAsync(null).Result.Url;
+                                    }
 
-                await Task.Delay(1000);
 
-                var numLines = stringtoadd.Split('\n').Length;
-                if (numLines > 20)
-                {
-                    list.Add(stringtoadd);
-                    stringtoadd = "";
+                                    stringtoadd += $"{server.Name} [{server.Users.Count}] - {inv}\n";
+                                    break;
+                                }
+                                catch
+                                {
+                                    //
+                                }
+                    }
+                    catch
+                    {
+                        //
+                    }
+
+                    await Task.Delay(1000);
+
+                    var numLines = stringtoadd.Split('\n').Length;
+                    if (numLines > 20)
+                    {
+                        list.Add(stringtoadd);
+                        stringtoadd = "";
+                    }
                 }
             }
 
