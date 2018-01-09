@@ -95,7 +95,7 @@ namespace ELO_Bot.Commands.Admin
         [Command("Browse", RunMode = RunMode.Async)]
         [Summary("browse")]
         [Remarks("A list of servers")]
-        public async Task Broswe(string name = null)
+        public async Task Broswe([Remainder]string name = null)
         {
             var list = new List<string>();
             var stringtoadd = "";
