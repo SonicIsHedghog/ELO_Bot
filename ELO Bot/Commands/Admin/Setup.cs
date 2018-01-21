@@ -346,7 +346,7 @@ namespace ELO_Bot.Commands.Admin
             await ReplyAsync("", false, embed.Build());
         }
 
-        /*
+        
         /// <summary>
         ///     server owner only command, resets all user scores on the scoreboard.
         /// </summary>
@@ -373,8 +373,9 @@ namespace ELO_Bot.Commands.Admin
             server.UserList = reset;
 
             await ReplyAsync("Leaderboard Reset Complete!\n" +
-                             "NOTE: Names and ranks will be reset over the next few minutes.");
-
+                             "NOTE: Names and ranks will be reset over the next few minutes.\n" +
+                             $"EST time = {reset.Count * 6/60/60} hours");
+            var i = 0;
             foreach (var user in reset)
             {
                 try
@@ -391,9 +392,14 @@ namespace ELO_Bot.Commands.Admin
                             await Task.Delay(1000);
                             await us.ModifyAsync(x => { x.Nickname = $"👑0 ~ {user.Username}"; });
                         }
-                    await Task.Delay(1000);
+                    await Task.Delay(5000);
                     await us.RemoveRolesAsync(server.Ranks.Select(x => Context.Guild.GetRole(x.RoleId)));
                     await Task.Delay(1000);
+                    i++;
+                    if (i % 50 == 0)
+                    {
+                        await ReplyAsync($"{i}/{reset.Count} completed");
+                    }
                 }
                 catch
                 {
@@ -403,7 +409,7 @@ namespace ELO_Bot.Commands.Admin
 
             await ReplyAsync("Reset fully complete.");
         }
-        */
+        
 
         /// <summary>
         ///     list all commands unavailable to regilar users
