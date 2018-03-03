@@ -189,6 +189,7 @@ namespace ELO_Bot.Commands
             await ReplyAsync("", embed: embed.Build());
         }
 
+        /*
         /// <summary>
         ///     report an issue directly to the bot owner
         /// </summary>
@@ -221,7 +222,7 @@ namespace ELO_Bot.Commands
             try
             {
                 var m = await Context.Channel.GetMessagesAsync(10).Flatten();
-                await e.Owner.SendMessageAsync($"-----**BUN REPORT**-----");
+                await e.Owner.SendMessageAsync($"-----**BUG REPORT**-----");
                 foreach (var itemMessage in m)
                     try
                     {
@@ -270,6 +271,7 @@ namespace ELO_Bot.Commands
             await ReplyAsync(
                 "Thankyou! Your Error report has been sent to the bot owner, along with some information about you and this current server.");
         }
+        */
 
 
         [Command("Suggest", RunMode = RunMode.Async)]
