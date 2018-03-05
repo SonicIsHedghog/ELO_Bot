@@ -20,7 +20,7 @@ namespace ELO_Bot.Preconditions
                 if (own.Owner.Id == context.User.Id)
                     return await Task.FromResult(PreconditionResult.FromSuccess());
 
-                if (s1.AdminRole != 0)
+                if (true)
                     if (((IGuildUser) context.User).RoleIds.Contains(s1.AdminRole))
                         return await Task.FromResult(PreconditionResult.FromSuccess());
 
